@@ -3,6 +3,7 @@
 #include "my_app.h"
 
 #include <cinder/app/App.h>
+#include "cinder/gl/gl.h"
 
 
 namespace myapp {
@@ -39,30 +40,27 @@ MyApp::MyApp() {
 }
 
 void MyApp::setup() {
-
 }
 
 void MyApp::update() {
-  //b2World world = *world_point;
-
   //Simulate
   float timeStep = 1.0f / 60.0f;
   int32 velocityIterations = 6;
   int32 positionIterations = 2;
+  world->Step(timeStep, velocityIterations, positionIterations);
+}
 
-  for (int32 i = 0; i < 60; ++i)
-  {
-    world->Step(timeStep, velocityIterations, positionIterations);
+void MyApp::draw() {
+    //https://github.com/asaeed/Box2DTest/blob/master/src/Particle.cpp
+    ci::Color color(1, 0, 0);
     b2Vec2 position = body->GetPosition();
     float angle = body->GetAngle();
 
-    //Doesn't print for some reason. Output verifiable w/debugger
-    printf("%4.2f %4.2f %4.2f\n", position.x, position.y, angle);
-    std::cout << position.x << position.y << angle << std::endl;
-  }
+    ci::gl::clear();
+    ci::gl::color(color);
+    ci::Rectf rect(position.x*50, position.y*50, position.x*50 + 50, position.y*50 + 50);
+    ci::gl::drawSolidRect(rect);
 }
-
-void MyApp::draw() { }
 
 void MyApp::keyDown(KeyEvent event) { }
 
