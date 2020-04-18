@@ -58,7 +58,9 @@ void MyApp::draw() {
 
     ci::gl::clear();
     ci::gl::color(color);
-    ci::Rectf rect(position.x*50, position.y*50, position.x*50 + 50, position.y*50 + 50);
+    int k = 125; //kPixelsPerMeter
+
+    ci::Rectf rect(position.x*k, getWindowHeight() - position.y*k, position.x*k + k, getWindowHeight() - position.y*k + k);
     ci::gl::drawSolidRect(rect);
 }
 
