@@ -64,6 +64,11 @@ void MyApp::draw() {
     ci::gl::drawSolidRect(rect);
 }
 
-void MyApp::keyDown(KeyEvent event) { }
+void MyApp::keyDown(KeyEvent event) {
+    if (event.getCode() == KeyEvent::KEY_UP) {
+        b2Vec2 impulse_vector(0.0f, 42.0f);//Arbitrarily chosen value, looks good in testing.
+        body->ApplyLinearImpulse(impulse_vector, body->GetPosition());
+    }
+}
 
 }  // namespace myapp
