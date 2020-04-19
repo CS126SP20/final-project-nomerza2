@@ -48,6 +48,7 @@ MyApp::MyApp() {
 
   //Set Up the Foot Sensor Listener
   world->SetContactListener(&contactListener);
+  jump_timer = 0;
 }
 
 void MyApp::setup() {
@@ -60,6 +61,12 @@ void MyApp::update() {
   int32 velocityIterations = 6;
   int32 positionIterations = 2;
   world->Step(timeStep, velocityIterations, positionIterations);
+
+  //using the timer the opposite way with the timer increasing at every tep would remove the need for the conditional,
+  //but the value could get very large and overflow if the program was left idling.
+  if (jump_timer > 0) {
+      jump_timer--;
+  }
 }
 
 void MyApp::draw() {
@@ -77,9 +84,10 @@ void MyApp::draw() {
 }
 
 void MyApp::keyDown(KeyEvent event) {
-    if (event.getCode() == KeyEvent::KEY_UP && sensor_contacts >= 1) {  // only jump if in contact with ground //TODO take event.getCode() out of conditional?
+    if (event.getCode() == KeyEvent::KEY_UP && sensor_contacts >= 1 && jump_timer == 0) {  // only jump if in contact with ground //TODO take event.getCode() out of conditional?
         b2Vec2 impulse_vector(0.0f, 42.0f);//Arbitrarily chosen value, looks good in testing.
         body->ApplyLinearImpulse(impulse_vector, body->GetPosition());
+        jump_timer = 10; // NOTE this was arbitrarily chosen, change if necessary.
 
     } else if (event.getCode() == KeyEvent::KEY_RIGHT) {
         b2Vec2 velocity(5.0f, body->GetLinearVelocity().y); // Need to use previous y velocity, or trying to move side to side mid-air will cause player to suddenly fall

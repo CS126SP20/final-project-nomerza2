@@ -27,6 +27,11 @@ class MyApp : public cinder::app::App {
   b2World* world;
   b2Body* body;
 
+  //The player may still be able to get a large jump by holding down the up key
+  //even with the contact listener, so this gives a slight cooldown time to
+  //prevent it. //todo shorten and clarify comment
+  int jump_timer;
+
   //This is a declaration for the subclass
   class ContactListener : public b2ContactListener { //TODO see if it is ok to have 2 classes in one file (OR subclass 'cause I guess that's what I'm doing)?
     void BeginContact(b2Contact* contact);
