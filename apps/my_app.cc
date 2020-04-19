@@ -65,9 +65,22 @@ void MyApp::draw() {
 }
 
 void MyApp::keyDown(KeyEvent event) {
-    if (event.getCode() == KeyEvent::KEY_UP) {
+    if (event.getCode() == KeyEvent::KEY_UP) { //TODO take event.getCode() out of conditional?
         b2Vec2 impulse_vector(0.0f, 42.0f);//Arbitrarily chosen value, looks good in testing.
         body->ApplyLinearImpulse(impulse_vector, body->GetPosition());
+    } else if (event.getCode() == KeyEvent::KEY_RIGHT) {
+        b2Vec2 velocity(5.0f, 0.0f);//TODO take velocity changes into helper function?
+        body->SetLinearVelocity(velocity);
+    } else if (event.getCode() == KeyEvent::KEY_LEFT) {
+        b2Vec2 velocity(-5.0f, 0.0f);
+        body->SetLinearVelocity(velocity);
+    }
+}
+
+void MyApp::keyUp(cinder::app::KeyEvent event) {
+    if (event.getCode() == KeyEvent::KEY_LEFT || event.getCode() == KeyEvent::KEY_RIGHT) {
+        b2Vec2 velocity(0.0f, 0.0f);
+        body->SetLinearVelocity(velocity);
     }
 }
 
