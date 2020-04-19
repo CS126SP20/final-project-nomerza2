@@ -15,13 +15,20 @@ MyApp::MyApp() {
   //All of this is copied straight from Box2D.org
   b2Vec2 gravity(0.0f, -10.0f);
   world = new b2World(gravity);
+
   b2BodyDef groundBodyDef;
   groundBodyDef.position.Set(0.0f, -10.0f);
   b2Body* groundBody = world->CreateBody(&groundBodyDef);
-  //b2Body* groundBody = world.CreateBody(&groundBodyDef);
   b2PolygonShape groundBox;
   groundBox.SetAsBox(50.0f, 10.0f);
   groundBody->CreateFixture(&groundBox, 0.0f);
+
+    b2BodyDef centerBodyDef;
+    centerBodyDef.position.Set(4.0f, 2.0f);
+    centerBody = world->CreateBody(&centerBodyDef);
+    b2PolygonShape centerBox;
+    centerBox.SetAsBox(2.0f, 3.0f);
+    centerBody->CreateFixture(&centerBox, 0.0f);
 
   //Dynamic now
   b2BodyDef bodyDef;
@@ -39,7 +46,7 @@ MyApp::MyApp() {
 
   //Foot Sensor for jumping
   b2PolygonShape sensor_box;
-  sensor_box.SetAsBox(0.9f, 0.1f, b2Vec2(0, -1), 0); //x is almost same as player, smaller to prevent jumping when leaning against wall. y is much smaller center in y must equal the negative half-height of the player
+  sensor_box.SetAsBox(0.9f, 0.3f, b2Vec2(0, -1), 0); //x is almost same as player, smaller to prevent jumping when leaning against wall. y is much smaller center in y must equal the negative half-height of the player
   b2FixtureDef sensor_fixture_def;
   sensor_fixture_def.shape = &sensor_box;
   sensor_fixture_def.isSensor = true;
@@ -71,21 +78,35 @@ void MyApp::update() {
 
 void MyApp::draw() {
     //https://github.com/asaeed/Box2DTest/blob/master/src/Particle.cpp
-    ci::Color color(1, 0, 0);
+    ci::Color color;
+    //Green if able to jump, red if not. Only for debugging.
+    if (sensor_contacts) {
+        ci::Color green(0,1,0);
+        color = green;
+    } else {
+        ci::Color red(1, 0, 0);
+        color = red;
+    }
+
     b2Vec2 position = body->GetPosition();
-    float angle = body->GetAngle();
 
     ci::gl::clear();
     ci::gl::color(color);
-    int k = 125; //kPixelsPerMeter
+    int k = 65; //kPixelsPerMeter
 
-    ci::Rectf rect(position.x*k, getWindowHeight() - position.y*k, position.x*k + k, getWindowHeight() - position.y*k + k);
+    ci::Rectf rect(position.x*k - k, getWindowHeight() - position.y*k - k, position.x*k + k, getWindowHeight() - position.y*k + k);
     ci::gl::drawSolidRect(rect);
+
+    b2Vec2 cposition = centerBody->GetPosition();
+    ci::Rectf rect2(cposition.x*k - 2*k, getWindowHeight() - cposition.y*k - 3*k, cposition.x*k + 2*k, getWindowHeight() - cposition.y*k + 3*k);
+    ci::Color wall_color(1,1,0);
+    ci::gl::color(wall_color);
+    ci::gl::drawSolidRect(rect2);
 }
 
 void MyApp::keyDown(KeyEvent event) {
     if (event.getCode() == KeyEvent::KEY_UP && sensor_contacts >= 1 && jump_timer == 0) {  // only jump if in contact with ground //TODO take event.getCode() out of conditional?
-        b2Vec2 impulse_vector(0.0f, 42.0f);//Arbitrarily chosen value, looks good in testing.
+        b2Vec2 impulse_vector(0.0f, 57.0f);//Arbitrarily chosen value, looks good in testing.
         body->ApplyLinearImpulse(impulse_vector, body->GetPosition());
         jump_timer = 10; // NOTE this was arbitrarily chosen, change if necessary.
 
