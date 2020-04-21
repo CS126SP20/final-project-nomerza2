@@ -33,6 +33,7 @@ MyApp::MyApp() {
   //Dynamic now
   b2BodyDef bodyDef;
   bodyDef.type = b2_dynamicBody;
+  bodyDef.fixedRotation = true;
   bodyDef.position.Set(0.0f, 4.0f);
   body = world->CreateBody(&bodyDef);
 
@@ -46,7 +47,7 @@ MyApp::MyApp() {
 
   //Foot Sensor for jumping
   b2PolygonShape sensor_box;
-  sensor_box.SetAsBox(0.9f, 0.3f, b2Vec2(0, -1), 0); //x is almost same as player, smaller to prevent jumping when leaning against wall. y is much smaller center in y must equal the negative half-height of the player
+  sensor_box.SetAsBox(0.8f, 0.3f, b2Vec2(0, -1), 0); //x is almost same as player, smaller to prevent jumping when leaning against wall. y is much smaller center in y must equal the negative half-height of the player
   b2FixtureDef sensor_fixture_def;
   sensor_fixture_def.shape = &sensor_box;
   sensor_fixture_def.isSensor = true;
