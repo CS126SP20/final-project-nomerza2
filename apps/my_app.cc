@@ -8,6 +8,10 @@
 
 int sensor_contacts = 0; //TODO extern definition here should it be fixed?
 
+const int kPixelsPerMeter = 90;
+const float kPlayerWidth = 1.0f;
+const float kPlayerHeight = (105.0f/90.0f);
+
 namespace myapp {
 
 using cinder::app::KeyEvent;
@@ -28,7 +32,7 @@ MyApp::MyApp() {
     centerBodyDef.position.Set(4.0f, 2.0f);
     centerBody = world->CreateBody(&centerBodyDef);
     b2PolygonShape centerBox;
-    centerBox.SetAsBox(2.0f, 3.0f);
+    centerBox.SetAsBox(1.5f, 2.3f);
     centerBody->CreateFixture(&centerBox, 0.0f);
 
   //Dynamic now
@@ -39,16 +43,16 @@ MyApp::MyApp() {
   body = world->CreateBody(&bodyDef);
 
   b2PolygonShape dynamicBox;
-  dynamicBox.SetAsBox(1.0f, 1.0f);
+  dynamicBox.SetAsBox(kPlayerWidth/2, kPlayerHeight/2); //Using sizes of the image, and 90 pixels = 1m. need half-width and half-height here. width set to 1m.
   b2FixtureDef fixtureDef;
   fixtureDef.shape = &dynamicBox;
-  fixtureDef.density = 1.0f;
+  fixtureDef.density = 2.0f;
   fixtureDef.friction = 0.3f;
   body->CreateFixture(&fixtureDef);
 
   //Foot Sensor for jumping
   b2PolygonShape sensor_box;
-  sensor_box.SetAsBox(0.8f, 0.3f, b2Vec2(0, -1), 0); //x is almost same as player, smaller to prevent jumping when leaning against wall. y is much smaller center in y must equal the negative half-height of the player
+  sensor_box.SetAsBox(kPlayerWidth/2 - 0.1f, 0.2f, b2Vec2(0, -1), 0); //x is almost same as player, smaller to prevent jumping when leaning against wall. y is much smaller center in y must equal the negative half-height of the player
   b2FixtureDef sensor_fixture_def;
   sensor_fixture_def.shape = &sensor_box;
   sensor_fixture_def.isSensor = true;
@@ -79,39 +83,27 @@ void MyApp::update() {
 }
 
 void MyApp::draw() {
-    //https://github.com/asaeed/Box2DTest/blob/master/src/Particle.cpp
-    ci::Color color;
-    //Green if able to jump, red if not. Only for debugging.
-    if (sensor_contacts) {
-        ci::Color green(0,1,0);
-        color = green;
-    } else {
-        ci::Color red(1, 0, 0);
-        color = red;
-    }
+  //https://github.com/asaeed/Box2DTest/blob/master/src/Particle.cpp
 
-    b2Vec2 position = body->GetPosition();
+  b2Vec2 position = body->GetPosition();
 
-    ci::gl::clear();
-    ci::gl::color(color);
-    int k = 65; //kPixelsPerMeter
+  ci::gl::clear();
+  int k = 90; //kPixelsPerMeter
 
-    ci::Rectf rect(position.x*k - k, getWindowHeight() - position.y*k - k, position.x*k + k, getWindowHeight() - position.y*k + k);
-    ci::gl::drawSolidRect(rect);
+  ci::gl::Texture2dRef texture2D = ci::gl::Texture2d::create(ci::loadImage(loadAsset("robot_right.png")));
+  ci::gl::draw(texture2D, ci::vec2(position.x*k - kPlayerWidth*kPixelsPerMeter/2, getWindowHeight() - (position.y*k + kPlayerHeight*kPixelsPerMeter/2)));
 
-    b2Vec2 cposition = centerBody->GetPosition();
-    ci::Rectf rect2(cposition.x*k - 2*k, getWindowHeight() - cposition.y*k - 3*k, cposition.x*k + 2*k, getWindowHeight() - cposition.y*k + 3*k);
-    ci::Color wall_color(1,1,0);
-    ci::gl::color(wall_color);
-    ci::gl::drawSolidRect(rect2);
+  b2Vec2 cposition = centerBody->GetPosition();
+  ci::Rectf rect2(cposition.x*k - 1.5*k, getWindowHeight() - cposition.y*k - 2.3*k, cposition.x*k + 1.5*k, getWindowHeight() - cposition.y*k + 2.3*k);
+  ci::Color wall_color(1,1,0);
+  ci::gl::color(wall_color);
+  ci::gl::drawSolidRect(rect2);
 
-    ci::gl::Texture2dRef texture2D = ci::gl::Texture2d::create(ci::loadImage(loadAsset("robogunright.png")));
-    ci::gl::draw(texture2D, ci::vec2(position.x*k, getWindowHeight() - position.y*k));
 }
 
 void MyApp::keyDown(KeyEvent event) {
     if (event.getCode() == KeyEvent::KEY_UP && sensor_contacts >= 1 && jump_timer == 0) {  // only jump if in contact with ground //TODO take event.getCode() out of conditional?
-        b2Vec2 impulse_vector(0.0f, 57.0f);//Arbitrarily chosen value, looks good in testing.
+        b2Vec2 impulse_vector(0.0f, 25.0f);//Arbitrarily chosen value, looks good in testing.
         body->ApplyLinearImpulse(impulse_vector, body->GetPosition());
         jump_timer = 10; // NOTE this was arbitrarily chosen, change if necessary.
 
