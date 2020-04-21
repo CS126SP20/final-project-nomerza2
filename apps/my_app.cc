@@ -4,6 +4,7 @@
 
 #include <cinder/app/App.h>
 #include "cinder/gl/gl.h"
+#include "cinder/gl/Texture.h"
 
 int sensor_contacts = 0; //TODO extern definition here should it be fixed?
 
@@ -103,6 +104,9 @@ void MyApp::draw() {
     ci::Color wall_color(1,1,0);
     ci::gl::color(wall_color);
     ci::gl::drawSolidRect(rect2);
+
+    ci::gl::Texture2dRef texture2D = ci::gl::Texture2d::create(ci::loadImage(loadAsset("robogunright.png")));
+    ci::gl::draw(texture2D, ci::vec2(position.x*k, getWindowHeight() - position.y*k));
 }
 
 void MyApp::keyDown(KeyEvent event) {
