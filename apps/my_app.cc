@@ -6,11 +6,9 @@
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
 
-int sensor_contacts = 0; //TODO extern definition here should it be fixed?
+using mylibrary::Player;
 
-const int kPixelsPerMeter = 90;
-const float kPlayerWidth = 1.0f;
-const float kPlayerHeight = (105.0f/90.0f);
+int sensor_contacts = 0; //TODO extern definition here should it be fixed?
 
 namespace myapp {
 
@@ -35,29 +33,7 @@ MyApp::MyApp() {
     centerBox.SetAsBox(1.5f, 2.3f);
     centerBody->CreateFixture(&centerBox, 0.0f);
 
-  //Dynamic now
-  b2BodyDef bodyDef;
-  bodyDef.type = b2_dynamicBody;
-  bodyDef.fixedRotation = true;
-  bodyDef.position.Set(0.0f, 4.0f);
-  body = world->CreateBody(&bodyDef);
-
-  b2PolygonShape dynamicBox;
-  dynamicBox.SetAsBox(kPlayerWidth/2, kPlayerHeight/2); //Using sizes of the image, and 90 pixels = 1m. need half-width and half-height here. width set to 1m.
-  b2FixtureDef fixtureDef;
-  fixtureDef.shape = &dynamicBox;
-  fixtureDef.density = 2.0f;
-  fixtureDef.friction = 0.3f;
-  body->CreateFixture(&fixtureDef);
-
-  //Foot Sensor for jumping
-  b2PolygonShape sensor_box;
-  sensor_box.SetAsBox(kPlayerWidth/2 - 0.1f, 0.2f, b2Vec2(0, -1), 0); //x is almost same as player, smaller to prevent jumping when leaning against wall. y is much smaller center in y must equal the negative half-height of the player
-  b2FixtureDef sensor_fixture_def;
-  sensor_fixture_def.shape = &sensor_box;
-  sensor_fixture_def.isSensor = true;
-  b2Fixture* sensor_fixture = body->CreateFixture(&sensor_fixture_def);
-  sensor_fixture->SetUserData((void*)3); //Not sure what this syntax does, but gives it tag of "3". Maybe use constant instead?
+  player_ = new Player(world);
 
   //Set Up the Foot Sensor Listener
   world->SetContactListener(&contactListener);
@@ -85,13 +61,12 @@ void MyApp::update() {
 void MyApp::draw() {
   //https://github.com/asaeed/Box2DTest/blob/master/src/Particle.cpp
 
-  b2Vec2 position = body->GetPosition();
+  b2Vec2 position = player_->getBody()->GetPosition();
 
   ci::gl::clear();
-  int k = 90; //kPixelsPerMeter
+  int k = kPixelsPerMeter; //TODO get rid o this
 
-  ci::gl::Texture2dRef texture2D = ci::gl::Texture2d::create(ci::loadImage(loadAsset("robot_right.png")));
-  ci::gl::draw(texture2D, ci::vec2(position.x*k - kPlayerWidth*kPixelsPerMeter/2, getWindowHeight() - (position.y*k + kPlayerHeight*kPixelsPerMeter/2)));
+  player_->Draw();
 
   b2Vec2 cposition = centerBody->GetPosition();
   ci::Rectf rect2(cposition.x*k - 1.5*k, getWindowHeight() - cposition.y*k - 2.3*k, cposition.x*k + 1.5*k, getWindowHeight() - cposition.y*k + 2.3*k);
@@ -102,26 +77,32 @@ void MyApp::draw() {
 }
 
 void MyApp::keyDown(KeyEvent event) {
-    if (event.getCode() == KeyEvent::KEY_UP && sensor_contacts >= 1 && jump_timer == 0) {  // only jump if in contact with ground //TODO take event.getCode() out of conditional?
-        b2Vec2 impulse_vector(0.0f, 25.0f);//Arbitrarily chosen value, looks good in testing.
-        body->ApplyLinearImpulse(impulse_vector, body->GetPosition());
-        jump_timer = 10; // NOTE this was arbitrarily chosen, change if necessary.
+  b2Body* body = player_->getBody();
 
-    } else if (event.getCode() == KeyEvent::KEY_RIGHT) {
-        b2Vec2 velocity(5.0f, body->GetLinearVelocity().y); // Need to use previous y velocity, or trying to move side to side mid-air will cause player to suddenly fall
-        // TODO take velocity changes into helper function?
-        body->SetLinearVelocity(velocity);
-    } else if (event.getCode() == KeyEvent::KEY_LEFT) {
-        b2Vec2 velocity(-5.0f, body->GetLinearVelocity().y);
-        body->SetLinearVelocity(velocity);
-    }
+  if (event.getCode() == KeyEvent::KEY_UP && sensor_contacts >= 1 && jump_timer == 0) {  // only jump if in contact with ground //TODO take event.getCode() out of conditional?
+      b2Vec2 impulse_vector(0.0f, 25.0f);//Arbitrarily chosen value, looks good in testing.
+      body->ApplyLinearImpulse(impulse_vector, body->GetPosition());
+      jump_timer = 10; // NOTE this was arbitrarily chosen, change if necessary.
+
+  } else if (event.getCode() == KeyEvent::KEY_RIGHT) {
+      b2Vec2 velocity(5.0f, body->GetLinearVelocity().y); // Need to use previous y velocity, or trying to move side to side mid-air will cause player to suddenly fall
+      // TODO take velocity changes into helper function?
+      body->SetLinearVelocity(velocity);
+      player_->setFacingRight(true);
+  } else if (event.getCode() == KeyEvent::KEY_LEFT) {
+      b2Vec2 velocity(-5.0f, body->GetLinearVelocity().y);
+      body->SetLinearVelocity(velocity);
+      player_->setFacingRight(false);
+  }
 }
 
 void MyApp::keyUp(cinder::app::KeyEvent event) {
-    if (event.getCode() == KeyEvent::KEY_LEFT || event.getCode() == KeyEvent::KEY_RIGHT) {
-        b2Vec2 velocity(0.0f, body->GetLinearVelocity().y);
-        body->SetLinearVelocity(velocity);
-    }
+  b2Body* body = player_->getBody();
+
+  if (event.getCode() == KeyEvent::KEY_LEFT || event.getCode() == KeyEvent::KEY_RIGHT) {
+      b2Vec2 velocity(0.0f, body->GetLinearVelocity().y);
+      body->SetLinearVelocity(velocity);
+  }
 }
 
 
@@ -131,14 +112,16 @@ void MyApp::keyUp(cinder::app::KeyEvent event) {
 
 void MyApp::ContactListener::BeginContact(b2Contact* contact) {
     //check if either fixture is the foot sensor
-    if ((int)contact->GetFixtureA()->GetUserData() == 3 || (int)contact->GetFixtureB()->GetUserData() == 3) {
+    if ((int)contact->GetFixtureA()->GetUserData() == kFootSensorID
+      || (int)contact->GetFixtureB()->GetUserData() == kFootSensorID) {
         sensor_contacts++;
     }
 }
 
 void MyApp::ContactListener::EndContact(b2Contact* contact) {
     //check if either fixture is the foot sensor
-    if ((int)contact->GetFixtureA()->GetUserData() == 3 || (int)contact->GetFixtureB()->GetUserData() == 3) {
+    if ((int)contact->GetFixtureA()->GetUserData() == kFootSensorID
+      || (int)contact->GetFixtureB()->GetUserData() == kFootSensorID) {
         sensor_contacts--;
     }
 }
