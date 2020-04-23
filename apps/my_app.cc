@@ -101,18 +101,18 @@ void MyApp::keyDown(KeyEvent event) {
   } else if (event.getCode() == KeyEvent::KEY_SPACE) {
     b2Vec2 player_position = player_->getBody()->GetPosition();
     b2Vec2 spawn_location;
-    b2Vec2 bullet_velocity;
+    b2Vec2 bullet_impulse;
 
     if (player_->isFacingRight()) {
-      spawn_location = b2Vec2(player_position.x + (kPlayerWidth/2), player_position.y);
-      bullet_velocity = b2Vec2(9.0f, 0.0f);
+      spawn_location = b2Vec2(player_position.x + (kPlayerWidth/2), player_position.y - (kPlayerHeight/5));// The kPlayerHeight/5 is to make it appear to spawn closer to the gun. this isn't the most clear solution prob.
+      bullet_impulse = b2Vec2(0.01f, 0.0f);
     } else {
-      spawn_location = b2Vec2(player_position.x - (kPlayerWidth/2), player_position.y);
-      bullet_velocity = b2Vec2(-9.0f, 0.0f);
+      spawn_location = b2Vec2(player_position.x - (kPlayerWidth/2), player_position.y - (kPlayerHeight/5));
+      bullet_impulse = b2Vec2(-0.01f, 0.0f);
     }
 
     Bullet bullet(world, spawn_location);
-    bullet.getBody()->SetLinearVelocity(bullet_velocity);
+    bullet.getBody()->ApplyLinearImpulse(bullet_impulse, spawn_location);
     bullet_manager_.push_back(bullet);
   }
 }

@@ -8,7 +8,7 @@
 #include <cinder/gl/gl.h>
 
 const int kPixelsPerMeter = 90; //TODO This is both here and in player.h. Figure out how to not repeat constant definitions
-const float kBulletRadius = 0.2f;
+const float kBulletRadius = 0.05f;
 
 namespace mylibrary {
 Bullet::Bullet(b2World* world, b2Vec2 position) {
@@ -23,8 +23,8 @@ Bullet::Bullet(b2World* world, b2Vec2 position) {
   circleShape.m_radius = kBulletRadius;
   b2FixtureDef fixtureDef;
   fixtureDef.shape = &circleShape;
-  //fixtureDef.density = 0.1f; //todo: decide how we want physics to affect bullet.
-  //fixtureDef.friction = 1.0f;
+  fixtureDef.density = 0.1f; //todo: decide how we want physics to affect bullet.
+  fixtureDef.friction = 1.0f;
   body_->CreateFixture(&fixtureDef);
 }
 
