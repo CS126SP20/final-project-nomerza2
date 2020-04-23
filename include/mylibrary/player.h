@@ -18,6 +18,7 @@ class Player {
   void Draw();
   void setFacingRight(bool facingRight);
   b2Body* getBody() const;
+  bool isFacingRight() const;
 
  private:
   //b2World* world_;

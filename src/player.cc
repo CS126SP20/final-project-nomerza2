@@ -3,6 +3,7 @@
 #include <Box2D/Box2D.h>
 #include <cinder/app/App.h>  //TODO check if ok to use Cinder in source file?
 #include <cinder/gl/draw.h>
+#include <cinder/gl/gl.h>
 #include <mylibrary/player.h>
 
 namespace mylibrary {
@@ -51,9 +52,12 @@ void Player::Draw() {
     image_ref = left_image_;
   }
 
+  ci::Color reset(1,1,1); //This is necessary or the image will be tinted the color of the last drawn object.
+  ci::gl::color(reset);
   ci::gl::draw(image_ref, ci::vec2(pixel_x, pixel_y));
 }
 
 void Player::setFacingRight(bool facingRight) { facing_right_ = facingRight; }
+bool Player::isFacingRight() const { return facing_right_; }
 b2Body* Player::getBody() const { return body_; }
 }  // namespace mylibrary

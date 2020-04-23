@@ -7,6 +7,7 @@
 #include "cinder/gl/Texture.h"
 
 using mylibrary::Player;
+using mylibrary::Bullet;
 
 int sensor_contacts = 0; //TODO extern definition here should it be fixed?
 
@@ -74,6 +75,9 @@ void MyApp::draw() {
   ci::gl::color(wall_color);
   ci::gl::drawSolidRect(rect2);
 
+  for (Bullet bullet : bullet_manager_) {
+    bullet.Draw();
+  }
 }
 
 void MyApp::keyDown(KeyEvent event) {
@@ -93,6 +97,23 @@ void MyApp::keyDown(KeyEvent event) {
       b2Vec2 velocity(-5.0f, body->GetLinearVelocity().y);
       body->SetLinearVelocity(velocity);
       player_->setFacingRight(false);
+
+  } else if (event.getCode() == KeyEvent::KEY_SPACE) {
+    b2Vec2 player_position = player_->getBody()->GetPosition();
+    b2Vec2 spawn_location;
+    b2Vec2 bullet_velocity;
+
+    if (player_->isFacingRight()) {
+      spawn_location = b2Vec2(player_position.x + (kPlayerWidth/2), player_position.y);
+      bullet_velocity = b2Vec2(9.0f, 0.0f);
+    } else {
+      spawn_location = b2Vec2(player_position.x - (kPlayerWidth/2), player_position.y);
+      bullet_velocity = b2Vec2(-9.0f, 0.0f);
+    }
+
+    Bullet bullet(world, spawn_location);
+    bullet.getBody()->SetLinearVelocity(bullet_velocity);
+    bullet_manager_.push_back(bullet);
   }
 }
 
