@@ -38,18 +38,29 @@ MyApp::MyApp() {
 
   //Set Up the Foot Sensor Listener
   world->SetContactListener(&contactListener);
+  contactListener.myApp = this;
   jump_timer = 0;
 }
 
 void MyApp::setup() {
-  //Bullet::Setup();
 }
 
 void MyApp::update() {
+  for (unsigned int bullet_ID : bullets_to_destroy_) {
+    DestroyBullet(bullet_ID);
+  }
+  bullets_to_destroy_.clear();
+
+  // Destroys bodies that aren't allowed to be destroyed in collision callbacks.
+  /*for (b2Body* body : to_destroy_) {
+    world->DestroyBody(body);
+  }*/
+
   //Simulate
   float timeStep = 1.0f / 60.0f;
-  int32 velocityIterations = 6;
-  int32 positionIterations = 2;
+  // Iterations affect how many calculations the program does. The values were recommended on Box2D.org
+  int32 velocityIterations = 8;
+  int32 positionIterations = 3;
   world->Step(timeStep, velocityIterations, positionIterations);
 
   //using the timer the opposite way with the timer increasing at every tep would remove the need for the conditional,
@@ -71,7 +82,7 @@ void MyApp::draw() {
 
   b2Vec2 cposition = centerBody->GetPosition();
   ci::Rectf rect2(cposition.x*k - 1.5*k, getWindowHeight() - cposition.y*k - 2.3*k, cposition.x*k + 1.5*k, getWindowHeight() - cposition.y*k + 2.3*k);
-  ci::Color wall_color(1,1,0);
+  ci::Color wall_color(1,1,0); //Yellow
   ci::gl::color(wall_color);
   ci::gl::drawSolidRect(rect2);
 
@@ -104,11 +115,11 @@ void MyApp::keyDown(KeyEvent event) {
     b2Vec2 bullet_impulse;
 
     if (player_->isFacingRight()) {
-      spawn_location = b2Vec2(player_position.x + (kPlayerWidth/2), player_position.y - (kPlayerHeight/5));// The kPlayerHeight/5 is to make it appear to spawn closer to the gun. this isn't the most clear solution prob.
+      spawn_location = b2Vec2(player_position.x + (3*kPlayerWidth/4), player_position.y - (kPlayerHeight/5));// The kPlayerHeight/5 is to make it appear to spawn closer to the gun. this isn't the most clear solution prob.
       bullet_impulse = b2Vec2(0.0133f, 0.0f);
     } else {
-      spawn_location = b2Vec2(player_position.x - (kPlayerWidth/2), player_position.y - (kPlayerHeight/5));
-      bullet_impulse = b2Vec2(-0.01f, 0.0f);
+      spawn_location = b2Vec2(player_position.x - (3*kPlayerWidth/4), player_position.y - (kPlayerHeight/5));
+      bullet_impulse = b2Vec2(-0.0133f, 0.0f);
     }
 
     Bullet bullet(world, spawn_location);
@@ -126,6 +137,19 @@ void MyApp::keyUp(cinder::app::KeyEvent event) {
   }
 }
 
+void MyApp::DestroyBullet(unsigned int bullet_ID) {
+  Bullet bullet = bullet_manager_.at(bullet_ID);
+  world->DestroyBody(bullet.getBody());
+  bullet_manager_.erase(bullet_ID);
+}
+
+void MyApp::BulletCollision(b2Fixture* bullet, b2Fixture* other) {
+  //Currently just destroys the bullet
+  unsigned int bullet_ID = (unsigned int) bullet->GetUserData();
+  bullets_to_destroy_.push_back(bullet_ID);
+  //to_destroy_.push_back(bullet->GetBody());
+  //bullet_manager_.erase(bullet_ID);
+}
 
 // Code for ContactListeners to determine if the user is able to jump (citation):
 // https://www.iforce2d.net/b2dtut/jumpability
@@ -140,9 +164,14 @@ void MyApp::ContactListener::BeginContact(b2Contact* contact) {
 
       sensor_contacts++;
   }
-  /*if ((int)contact->GetFixtureA()->GetUserData() == kBulletID) {
-    fixture_A->GetBody()->IsBullet();
-  } */
+
+  if (fixture_A->GetBody()->IsBullet()) {
+    this->myApp->BulletCollision(fixture_A, fixture_B);
+  }
+
+  if (fixture_B->GetBody()->IsBullet()) {
+    this->myApp->BulletCollision(fixture_B, fixture_A);
+  }
 }
 
 void MyApp::ContactListener::EndContact(b2Contact* contact) {

@@ -15,10 +15,6 @@ class Bullet {
  public:
   Bullet(b2World* world, b2Vec2 position);
   void Draw();
-
-  //This function should be called once and only once to initialize bullet_ID_
-  static void Setup();
-
   b2Body* getBody() const;
   static unsigned int getBulletId();
 

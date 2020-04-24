@@ -13,6 +13,7 @@ extern int sensor_contacts; //TODO is global ok? and should it be in this file?
 namespace myapp {
 
 class MyApp : public cinder::app::App {
+
  public:
   MyApp();
   void setup() override;
@@ -21,15 +22,25 @@ class MyApp : public cinder::app::App {
   void keyDown(cinder::app::KeyEvent) override;
   void keyUp(cinder::app::KeyEvent) override;
 
+  void BulletCollision(b2Fixture* bullet, b2Fixture* other);
+
  protected:
-  //TODO better name for sensor_contacts?
-  //int sensor_contacts; // TODO is making this static ok / will it cause problems
+  //friend void BulletCollision(b2Fixture* fixture);
 
  private:
+  void DestroyBullet(unsigned int bullet_ID);
+
   b2World* world;
   b2Body* centerBody;
   mylibrary::Player* player_;
   std::map<unsigned int, mylibrary::Bullet> bullet_manager_;
+
+  // Box2D bodies can't be destroyed during collision callbacks, so this is a
+  // temporary holder for bodies marked for destruction in the callback, but
+  // actually destroyed in update()
+  //std::vector<b2Body*> to_destroy_;
+
+  std::vector<unsigned int> bullets_to_destroy_;
 
   //The player may still be able to get a large jump by holding down the up key
   //even with the contact listener, so this gives a slight cooldown time to
@@ -40,11 +51,12 @@ class MyApp : public cinder::app::App {
   class ContactListener : public b2ContactListener { //TODO see if it is ok to have 2 classes in one file (OR subclass 'cause I guess that's what I'm doing)?
     void BeginContact(b2Contact* contact);
     void EndContact(b2Contact* contact);
+   public:
+    MyApp* myApp;
   };
 
   //This is a private member variable of MyApp
   ContactListener contactListener;
-
 };
 
 }  // namespace myapp

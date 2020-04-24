@@ -43,10 +43,6 @@ void Bullet::Draw() {
   ci::gl::drawSolidCircle(cinder_position, kBulletRadius*kPixelsPerMeter);
 }
 
-/*void Bullet::Setup() {
-  Bullet::bullet_ID_ = 0;
-}*/
-
 b2Body* Bullet::getBody() const { return body_; }
 unsigned int Bullet::getBulletId() { return bullet_ID_; }
 }
