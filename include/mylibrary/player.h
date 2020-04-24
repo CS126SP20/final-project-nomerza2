@@ -8,7 +8,7 @@
 const int kPixelsPerMeter = 90;
 const float kPlayerWidth = 1.0f;
 const float kPlayerHeight = (105.0f/90.0f);
-const int kFootSensorID = 12345; // Meaningless value, just needs to be unique.
+const int kFootSensorID = -12345; // Meaningless value, just needs to be unique. Negative to insure there is never conflict with BulletID system
 
 namespace mylibrary {
 

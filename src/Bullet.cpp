@@ -11,6 +11,9 @@ const int kPixelsPerMeter = 90; //TODO This is both here and in player.h. Figure
 const float kBulletRadius = 0.05f;
 
 namespace mylibrary {
+
+unsigned int Bullet::bullet_ID_ = 0;
+
 Bullet::Bullet(b2World* world, b2Vec2 position) {
   b2BodyDef bodyDef;
   bodyDef.type = b2_dynamicBody;
@@ -25,7 +28,11 @@ Bullet::Bullet(b2World* world, b2Vec2 position) {
   fixtureDef.shape = &circleShape;
   fixtureDef.density = 0.1f; //todo: decide how we want physics to affect bullet.
   fixtureDef.friction = 1.0f;
-  body_->CreateFixture(&fixtureDef);
+  b2Fixture* fixture = body_->CreateFixture(&fixtureDef);
+
+  bullet_ID_++;
+  fixture->SetUserData((void*)bullet_ID_); //Used for collision callback
+  //Increments first, so then bullet_ID_ = the ID of the new bullet afterwards
 }
 
 void Bullet::Draw() {
@@ -36,7 +43,12 @@ void Bullet::Draw() {
   ci::gl::drawSolidCircle(cinder_position, kBulletRadius*kPixelsPerMeter);
 }
 
+/*void Bullet::Setup() {
+  Bullet::bullet_ID_ = 0;
+}*/
+
 b2Body* Bullet::getBody() const { return body_; }
+unsigned int Bullet::getBulletId() { return bullet_ID_; }
 }
 
 

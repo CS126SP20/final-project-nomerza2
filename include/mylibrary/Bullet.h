@@ -7,17 +7,27 @@
 
 #include <Box2D/Box2D.h>
 
+//const int kBulletID = 55555; //Value unimportant, just needs to be unique
+
 namespace mylibrary {
 
 class Bullet {
  public:
   Bullet(b2World* world, b2Vec2 position);
   void Draw();
+
+  //This function should be called once and only once to initialize bullet_ID_
+  static void Setup();
+
   b2Body* getBody() const;
+  static unsigned int getBulletId();
 
  private:
   b2Body* body_;
-};
 
+  //Maintains a count for bullet IDs. Increments whenever a new one is made,
+  //so it will always be unique.
+  static unsigned int bullet_ID_;
+};
 }
 #endif  // FINALPROJECT_BULLET_H

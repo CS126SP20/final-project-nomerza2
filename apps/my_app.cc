@@ -42,7 +42,7 @@ MyApp::MyApp() {
 }
 
 void MyApp::setup() {
-
+  //Bullet::Setup();
 }
 
 void MyApp::update() {
@@ -75,8 +75,8 @@ void MyApp::draw() {
   ci::gl::color(wall_color);
   ci::gl::drawSolidRect(rect2);
 
-  for (Bullet bullet : bullet_manager_) {
-    bullet.Draw();
+  for (std::pair<unsigned int, Bullet> bullet_data : bullet_manager_) {
+    bullet_data.second.Draw();
   }
 }
 
@@ -105,7 +105,7 @@ void MyApp::keyDown(KeyEvent event) {
 
     if (player_->isFacingRight()) {
       spawn_location = b2Vec2(player_position.x + (kPlayerWidth/2), player_position.y - (kPlayerHeight/5));// The kPlayerHeight/5 is to make it appear to spawn closer to the gun. this isn't the most clear solution prob.
-      bullet_impulse = b2Vec2(0.01f, 0.0f);
+      bullet_impulse = b2Vec2(0.0133f, 0.0f);
     } else {
       spawn_location = b2Vec2(player_position.x - (kPlayerWidth/2), player_position.y - (kPlayerHeight/5));
       bullet_impulse = b2Vec2(-0.01f, 0.0f);
@@ -113,7 +113,7 @@ void MyApp::keyDown(KeyEvent event) {
 
     Bullet bullet(world, spawn_location);
     bullet.getBody()->ApplyLinearImpulse(bullet_impulse, spawn_location);
-    bullet_manager_.push_back(bullet);
+    bullet_manager_.insert(std::pair<unsigned int, Bullet> (Bullet::getBulletId(), bullet));
   }
 }
 
@@ -132,11 +132,17 @@ void MyApp::keyUp(cinder::app::KeyEvent event) {
 // Code has been modified to avoid repetition
 
 void MyApp::ContactListener::BeginContact(b2Contact* contact) {
-    //check if either fixture is the foot sensor
-    if ((int)contact->GetFixtureA()->GetUserData() == kFootSensorID
-      || (int)contact->GetFixtureB()->GetUserData() == kFootSensorID) {
-        sensor_contacts++;
-    }
+  b2Fixture* fixture_A = contact->GetFixtureA();
+  b2Fixture* fixture_B = contact->GetFixtureB();
+  //check if either fixture is the foot sensor
+  if ((int)fixture_A->GetUserData() == kFootSensorID
+    || (int)fixture_B->GetUserData() == kFootSensorID) {
+
+      sensor_contacts++;
+  }
+  /*if ((int)contact->GetFixtureA()->GetUserData() == kBulletID) {
+    fixture_A->GetBody()->IsBullet();
+  } */
 }
 
 void MyApp::ContactListener::EndContact(b2Contact* contact) {
