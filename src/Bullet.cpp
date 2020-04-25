@@ -12,9 +12,9 @@ const float kBulletRadius = 0.05f;
 
 namespace mylibrary {
 
-unsigned int Bullet::bullet_ID_ = 0;
-
 Bullet::Bullet(b2World* world, b2Vec2 position) {
+  entity_type_ = EntityType::type_bullet;
+
   b2BodyDef bodyDef;
   bodyDef.type = b2_dynamicBody;
   bodyDef.fixedRotation = true; //probable won't matter, but it shouldn't be rotating anyway
@@ -31,8 +31,8 @@ Bullet::Bullet(b2World* world, b2Vec2 position) {
   fixtureDef.friction = 1.0f;
   b2Fixture* fixture = body_->CreateFixture(&fixtureDef);
 
-  fixture->SetUserData((void*)++bullet_ID_); //Used for collision callback
-  //Increments first, so then bullet_ID_ = the ID of the new bullet afterwards
+  fixture->SetUserData((void*)++Entity::entity_ID_); //Used for collision callback
+  //Increments first, so then entity_ID_ = the ID of the new bullet afterwards
 
   //This makes gravity not affect bullets, so they shoot straight
   body_->SetGravityScale(0);
@@ -47,7 +47,6 @@ void Bullet::Draw() {
 }
 
 b2Body* Bullet::getBody() const { return body_; }
-unsigned int Bullet::getBulletId() { return bullet_ID_; }
 }
 
 

@@ -8,6 +8,7 @@
 
 using mylibrary::Player;
 using mylibrary::Bullet;
+using mylibrary::Entity;
 
 int sensor_contacts = 0; //TODO extern definition here should it be fixed?
 
@@ -135,7 +136,7 @@ void MyApp::keyDown(KeyEvent event) {
     Bullet bullet(world, spawn_location);
     //bullet.getBody()->ApplyLinearImpulse(bullet_impulse, spawn_location);
     bullet.getBody()->SetLinearVelocity(bullet_velocity);
-    bullet_manager_.insert(std::pair<unsigned int, Bullet> (Bullet::getBulletId(), bullet));
+    bullet_manager_.insert(std::pair<unsigned int, Bullet> (Entity::GetEntityID(), bullet));
   }
 }
 
@@ -171,10 +172,12 @@ void MyApp::ContactListener::BeginContact(b2Contact* contact) {
   b2Fixture* fixture_A = contact->GetFixtureA();
   b2Fixture* fixture_B = contact->GetFixtureB();
   //check if either fixture is the foot sensor
-  if ((int)fixture_A->GetUserData() == kFootSensorID
-    || (int)fixture_B->GetUserData() == kFootSensorID) {
+  /*(if ((int)fixture_A->GetUserData() == kFootSensorID
+    || (int)fixture_B->GetUserData() == kFootSensorID) {*/
+  if (fixture_A->IsSensor() || fixture_B->IsSensor()) { //TODO change or handle if new sensors are made.
 
       sensor_contacts++;
+      return;
   }
 
   if (fixture_A->GetBody()->IsBullet()) {
