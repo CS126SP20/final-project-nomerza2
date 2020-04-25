@@ -26,13 +26,16 @@ Bullet::Bullet(b2World* world, b2Vec2 position) {
   circleShape.m_radius = kBulletRadius;
   b2FixtureDef fixtureDef;
   fixtureDef.shape = &circleShape;
-  fixtureDef.density = 0.1f; //todo: decide how we want physics to affect bullet.
+  //fixtureDef.density = 0;
+  fixtureDef.density = 1.0f; //todo: decide how we want physics to affect bullet.
   fixtureDef.friction = 1.0f;
   b2Fixture* fixture = body_->CreateFixture(&fixtureDef);
 
-  bullet_ID_++;
-  fixture->SetUserData((void*)bullet_ID_); //Used for collision callback
+  fixture->SetUserData((void*)++bullet_ID_); //Used for collision callback
   //Increments first, so then bullet_ID_ = the ID of the new bullet afterwards
+
+  //This makes gravity not affect bullets, so they shoot straight
+  body_->SetGravityScale(0);
 }
 
 void Bullet::Draw() {

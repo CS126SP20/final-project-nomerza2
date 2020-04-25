@@ -3,10 +3,12 @@
 #ifndef FINALPROJECT_APPS_MYAPP_H_
 #define FINALPROJECT_APPS_MYAPP_H_
 
-#include <cinder/app/App.h>
 #include <Box2D/Box2D.h>
-#include <mylibrary/player.h>
+#include <cinder/app/App.h>
 #include <mylibrary/Bullet.h>
+#include <mylibrary/player.h>
+
+#include <set>
 
 extern int sensor_contacts; //TODO is global ok? and should it be in this file?
 
@@ -40,7 +42,10 @@ class MyApp : public cinder::app::App {
   // actually destroyed in update()
   //std::vector<b2Body*> to_destroy_;
 
-  std::vector<unsigned int> bullets_to_destroy_;
+  // Bodies can't be destroyed in callback, so must be tracked here to be destroyed later.
+  // Uses a set, since a body can collide with two things within the same step,
+  // and therefore could have the same body attempting to be destroyed after it has already been destroyed
+  std::set<unsigned int> bullets_to_destroy_;
 
   //The player may still be able to get a large jump by holding down the up key
   //even with the contact listener, so this gives a slight cooldown time to

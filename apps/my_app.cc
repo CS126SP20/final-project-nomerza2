@@ -112,18 +112,22 @@ void MyApp::keyDown(KeyEvent event) {
   } else if (event.getCode() == KeyEvent::KEY_SPACE) {
     b2Vec2 player_position = player_->getBody()->GetPosition();
     b2Vec2 spawn_location;
-    b2Vec2 bullet_impulse;
+    //b2Vec2 bullet_impulse;
+    b2Vec2 bullet_velocity;
 
     if (player_->isFacingRight()) {
       spawn_location = b2Vec2(player_position.x + (3*kPlayerWidth/4), player_position.y - (kPlayerHeight/5));// The kPlayerHeight/5 is to make it appear to spawn closer to the gun. this isn't the most clear solution prob.
-      bullet_impulse = b2Vec2(0.0133f, 0.0f);
+      //bullet_impulse = b2Vec2(0.0133f, 0.0f);
+      bullet_velocity = b2Vec2(6.0f, 0.0f);
     } else {
       spawn_location = b2Vec2(player_position.x - (3*kPlayerWidth/4), player_position.y - (kPlayerHeight/5));
-      bullet_impulse = b2Vec2(-0.0133f, 0.0f);
+      //bullet_impulse = b2Vec2(-0.0133f, 0.0f);
+      bullet_velocity = b2Vec2(-6.0f, 0.0f);
     }
 
     Bullet bullet(world, spawn_location);
-    bullet.getBody()->ApplyLinearImpulse(bullet_impulse, spawn_location);
+    //bullet.getBody()->ApplyLinearImpulse(bullet_impulse, spawn_location);
+    bullet.getBody()->SetLinearVelocity(bullet_velocity);
     bullet_manager_.insert(std::pair<unsigned int, Bullet> (Bullet::getBulletId(), bullet));
   }
 }
@@ -146,7 +150,8 @@ void MyApp::DestroyBullet(unsigned int bullet_ID) {
 void MyApp::BulletCollision(b2Fixture* bullet, b2Fixture* other) {
   //Currently just destroys the bullet
   unsigned int bullet_ID = (unsigned int) bullet->GetUserData();
-  bullets_to_destroy_.push_back(bullet_ID);
+  bullets_to_destroy_.insert(bullet_ID);
+  //bullets_to_destroy_.push_back(bullet_ID);
   //to_destroy_.push_back(bullet->GetBody());
   //bullet_manager_.erase(bullet_ID);
 }
