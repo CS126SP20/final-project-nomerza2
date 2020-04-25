@@ -40,6 +40,7 @@ MyApp::MyApp() {
   world->SetContactListener(&contactListener);
   contactListener.myApp = this;
   jump_timer = 0;
+  shooting_timer = 0;
 }
 
 void MyApp::setup() {
@@ -67,6 +68,10 @@ void MyApp::update() {
   //but the value could get very large and overflow if the program was left idling.
   if (jump_timer > 0) {
       jump_timer--;
+  }
+
+  if (shooting_timer > 0) {
+    shooting_timer--;
   }
 }
 
@@ -109,7 +114,9 @@ void MyApp::keyDown(KeyEvent event) {
       body->SetLinearVelocity(velocity);
       player_->setFacingRight(false);
 
-  } else if (event.getCode() == KeyEvent::KEY_SPACE) {
+  } else if (event.getCode() == KeyEvent::KEY_SPACE && shooting_timer == 0) {
+    shooting_timer = 25;
+
     b2Vec2 player_position = player_->getBody()->GetPosition();
     b2Vec2 spawn_location;
     //b2Vec2 bullet_impulse;

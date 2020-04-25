@@ -52,6 +52,9 @@ class MyApp : public cinder::app::App {
   //prevent it. //todo shorten and clarify comment
   int jump_timer;
 
+  //Require reload time in between shots.
+  int shooting_timer;
+
   //This is a declaration for the subclass
   class ContactListener : public b2ContactListener { //TODO see if it is ok to have 2 classes in one file (OR subclass 'cause I guess that's what I'm doing)?
     void BeginContact(b2Contact* contact);
