@@ -48,10 +48,10 @@ void MyApp::setup() {
 }
 
 void MyApp::update() {
-  for (unsigned int bullet_ID : bullets_to_destroy_) {
-    DestroyBullet(bullet_ID);
+  for (unsigned int bullet_ID : entities_to_destroy_) {
+    DestroyEntity(bullet_ID);
   }
-  bullets_to_destroy_.clear();
+  entities_to_destroy_.clear();
 
   // Destroys bodies that aren't allowed to be destroyed in collision callbacks.
   /*for (b2Body* body : to_destroy_) {
@@ -92,8 +92,8 @@ void MyApp::draw() {
   ci::gl::color(wall_color);
   ci::gl::drawSolidRect(rect2);
 
-  for (std::pair<unsigned int, Bullet> bullet_data : bullet_manager_) {
-    bullet_data.second.Draw();
+  for (std::pair<unsigned int, Entity*> entity_data : entity_manager_) {
+    entity_data.second->Draw();
   }
 }
 
@@ -133,10 +133,10 @@ void MyApp::keyDown(KeyEvent event) {
       bullet_velocity = b2Vec2(-6.0f, 0.0f);
     }
 
-    Bullet bullet(world, spawn_location);
+    Entity* bullet = new Bullet(world, spawn_location);
     //bullet.getBody()->ApplyLinearImpulse(bullet_impulse, spawn_location);
-    bullet.getBody()->SetLinearVelocity(bullet_velocity);
-    bullet_manager_.insert(std::pair<unsigned int, Bullet> (Entity::GetEntityID(), bullet));
+    bullet->getBody()->SetLinearVelocity(bullet_velocity);
+    entity_manager_.insert(std::pair<unsigned int, Entity*> (Entity::GetEntityID(), bullet));
   }
 }
 
@@ -149,19 +149,20 @@ void MyApp::keyUp(cinder::app::KeyEvent event) {
   }
 }
 
-void MyApp::DestroyBullet(unsigned int bullet_ID) {
-  Bullet bullet = bullet_manager_.at(bullet_ID);
-  world->DestroyBody(bullet.getBody());
-  bullet_manager_.erase(bullet_ID);
+void MyApp::DestroyEntity(unsigned int entity_ID){
+  Entity* entity = entity_manager_.at(entity_ID);
+  world->DestroyBody(entity->getBody());
+  entity_manager_.erase(entity_ID);
+  delete(entity);
 }
 
 void MyApp::BulletCollision(b2Fixture* bullet, b2Fixture* other) {
   //Currently just destroys the bullet
   unsigned int bullet_ID = (unsigned int) bullet->GetUserData();
-  bullets_to_destroy_.insert(bullet_ID);
-  //bullets_to_destroy_.push_back(bullet_ID);
+  entities_to_destroy_.insert(bullet_ID);
+  //entities_to_destroy_.push_back(bullet_ID);
   //to_destroy_.push_back(bullet->GetBody());
-  //bullet_manager_.erase(bullet_ID);
+  //entity_manager_.erase(bullet_ID);
 }
 
 // Code for ContactListeners to determine if the user is able to jump (citation):

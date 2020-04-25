@@ -16,10 +16,6 @@ class Bullet : public Entity {
  public:
   Bullet(b2World* world, b2Vec2 position);
   void Draw();
-  b2Body* getBody() const;
-
- private:
-  b2Body* body_;
 
 };
 }
