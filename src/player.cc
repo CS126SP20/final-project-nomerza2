@@ -1,7 +1,7 @@
 // Copyright (c) 2020 [Your Name]. All rights reserved.
 
 #include <Box2D/Box2D.h>
-#include <cinder/app/App.h>  //TODO check if ok to use Cinder in source file?
+#include <cinder/app/App.h>
 #include <cinder/gl/draw.h>
 #include <cinder/gl/gl.h>
 #include <mylibrary/player.h>

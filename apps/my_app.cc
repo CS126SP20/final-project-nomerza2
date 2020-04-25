@@ -5,10 +5,12 @@
 #include <cinder/app/App.h>
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
+#include <mylibrary/enemy.h>
 
 using mylibrary::Player;
 using mylibrary::Bullet;
 using mylibrary::Entity;
+using mylibrary::Enemy;
 
 int sensor_contacts = 0; //TODO extern definition here should it be fixed?
 
@@ -45,6 +47,8 @@ MyApp::MyApp() {
 }
 
 void MyApp::setup() {
+  Entity* enemy = new Enemy(world, b2Vec2(4.0f, 5.0f), true);
+  entity_manager_.insert(std::pair<unsigned int, Entity*> (Entity::GetEntityID(), enemy));
 }
 
 void MyApp::update() {
