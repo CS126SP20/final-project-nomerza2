@@ -5,7 +5,8 @@
 #include <cinder/app/App.h>
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
-#include <mylibrary/enemy.h>
+#include <cinder/Text.h>
+#include <cinder/Font.h>
 
 using mylibrary::Player;
 using mylibrary::Bullet;
@@ -42,6 +43,7 @@ MyApp::MyApp() {
   //Set Up the Foot Sensor Listener
   world->SetContactListener(&contactListener);
   contactListener.myApp = this;
+  lives_ = 3;
   jump_timer = 0;
   shooting_timer = 0;
   enemy_shooting_timer_ = 44;
@@ -55,6 +57,10 @@ void MyApp::setup() {
 }
 
 void MyApp::update() {
+  if (lives_ <= 0) {
+    return;
+  }
+
   for (unsigned int bullet_ID : entities_to_destroy_) {
     DestroyEntity(bullet_ID);
   }
@@ -104,12 +110,43 @@ void MyApp::update() {
   }
 }
 
+// The following function was 100% copied from the Snake assignment
+template <typename C>
+void PrintText(const std::string& text, const C& color, const cinder::ivec2& size,
+               const cinder::vec2& loc) {
+  cinder::gl::color(color);
+
+  auto box = cinder::TextBox()
+      .alignment(cinder::TextBox::CENTER)
+      .font(cinder::Font("Arial", 30))
+      .size(size)
+      .color(color)
+      .backgroundColor(cinder::ColorA(0, 0, 0, 0))
+      .text(text);
+
+  const auto box_size = box.getSize();
+  const cinder::vec2 locp = {loc.x - box_size.x / 2, loc.y - box_size.y / 2};
+  const auto surface = box.render();
+  const auto texture = cinder::gl::Texture::create(surface);
+  cinder::gl::draw(texture, locp);
+}
+
 void MyApp::draw() {
-  //https://github.com/asaeed/Box2DTest/blob/master/src/Particle.cpp
+
+  ci::gl::clear();
+
+  if (lives_ <= 0) {
+    ci::Color color(1,0,0); // Red
+    const cinder::ivec2 size = {500, 500};
+    const cinder::vec2 center = getWindowCenter();
+
+    PrintText("U DED", color, size, center);
+  }
+
+  //https://github.com/asaeed/Box2DTest/blob/master/src/Particle.cpp //TOdo figure out if this is still relevant
 
   b2Vec2 position = player_->getBody()->GetPosition();
 
-  ci::gl::clear();
   int k = kPixelsPerMeter; //TODO get rid o this
 
   player_->Draw();
@@ -188,6 +225,10 @@ void MyApp::BulletCollision(b2Fixture* bullet, b2Fixture* other) {
   //Currently just destroys the bullet
   unsigned int bullet_ID = (unsigned int) bullet->GetUserData();
   entities_to_destroy_.insert(bullet_ID);
+
+  if (other->GetBody() == player_->getBody()) { //TODO if Player becomes entity, this will be more straightforward inside the entities section
+    lives_--;
+  }
 
   void* other_data = other->GetUserData();
   if (other_data != NULL) { //Therefore, other must be an entity
