@@ -13,3 +13,6 @@ Organized Player data and output into the player class.
 
 **4/24/2020**
 Added ability for player to shoot bullets.
+
+**4/25/2020**
+Implemented enemies into the game, as well as the abstraction of a game "entity."
