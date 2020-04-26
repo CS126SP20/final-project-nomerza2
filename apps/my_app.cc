@@ -44,11 +44,14 @@ MyApp::MyApp() {
   contactListener.myApp = this;
   jump_timer = 0;
   shooting_timer = 0;
+  enemy_shooting_timer_ = 44;
 }
 
 void MyApp::setup() {
-  Entity* enemy = new Enemy(world, b2Vec2(4.0f, 5.0f), true);
-  entity_manager_.insert(std::pair<unsigned int, Entity*> (Entity::GetEntityID(), enemy));
+  Enemy* enemy = new Enemy(world, b2Vec2(4.0f, 5.0f), true);
+  std::pair<unsigned int, Enemy*> enemy_data(Entity::GetEntityID(), enemy);
+  entity_manager_.insert(enemy_data);
+  enemy_shooters_.insert(enemy_data);
 }
 
 void MyApp::update() {
@@ -77,6 +80,27 @@ void MyApp::update() {
 
   if (shooting_timer > 0) {
     shooting_timer--;
+  }
+
+  if (enemy_shooting_timer_ > 0) {
+    enemy_shooting_timer_--;
+  } else {
+    enemy_shooting_timer_ = 80;
+    for (std::pair<unsigned int, Enemy*> enemy_data : enemy_shooters_) {
+      Enemy* enemy = enemy_data.second;
+      b2Vec2 spawn_location = enemy->Calculate_Bullet_Spawn();
+      b2Vec2 bullet_velocity;
+
+      if (enemy->isFacingRight()) {
+        bullet_velocity = b2Vec2(6.0f, 0.0f);
+      } else {
+        bullet_velocity = b2Vec2(-6.0f, 0.0f);
+      }
+
+      Entity* bullet = new Bullet(world, spawn_location, false);
+      bullet->getBody()->SetLinearVelocity(bullet_velocity);
+      entity_manager_.insert(std::pair<unsigned int, Entity*> (Entity::GetEntityID(), bullet));
+    }
   }
 }
 
@@ -137,7 +161,7 @@ void MyApp::keyDown(KeyEvent event) {
       bullet_velocity = b2Vec2(-6.0f, 0.0f);
     }
 
-    Entity* bullet = new Bullet(world, spawn_location);
+    Entity* bullet = new Bullet(world, spawn_location, true);
     //bullet.getBody()->ApplyLinearImpulse(bullet_impulse, spawn_location);
     bullet->getBody()->SetLinearVelocity(bullet_velocity);
     entity_manager_.insert(std::pair<unsigned int, Entity*> (Entity::GetEntityID(), bullet));
@@ -167,7 +191,14 @@ void MyApp::BulletCollision(b2Fixture* bullet, b2Fixture* other) {
 
   void* other_data = other->GetUserData();
   if (other_data != NULL) { //Therefore, other must be an entity
-    Entity* entity = entity_manager_.at((unsigned int) other_data); //TODO delete this unless I decide I need it later
+    unsigned int other_ID = (unsigned int) other_data;
+    Entity* entity = entity_manager_.at(other_ID);
+
+    // If it is an enemy, it must be removed from the enemy_shooters_ map //todo useless comment?
+    if (entity->GetEntityType() == mylibrary::EntityType::type_enemy) {
+      enemy_shooters_.erase(other_ID);
+    }
+
     entities_to_destroy_.insert((unsigned int) other_data);
   }
   //entities_to_destroy_.push_back(bullet_ID);

@@ -12,8 +12,9 @@ const float kBulletRadius = 0.05f;
 
 namespace mylibrary {
 
-Bullet::Bullet(b2World* world, b2Vec2 position) {
+Bullet::Bullet(b2World* world, b2Vec2 position, bool player_made) {
   entity_type_ = EntityType::type_bullet;
+  player_made_ = player_made;
 
   b2BodyDef bodyDef;
   bodyDef.type = b2_dynamicBody;
@@ -39,13 +40,21 @@ Bullet::Bullet(b2World* world, b2Vec2 position) {
 }
 
 void Bullet::Draw() {
-  ci::Color color(1,0,0); //Red
+  ci::Color color;
+
+  if (player_made_) {
+    color = ci::Color(1,0,0); // Red
+  } else {
+    color = ci::Color(0,1,0); // Green
+  }
+
   ci::gl::color(color);
   b2Vec2 box2d_position = body_->GetPosition();
   ci::vec2 cinder_position(box2d_position.x * kPixelsPerMeter, ci::app::getWindowHeight() - (box2d_position.y * kPixelsPerMeter));
   ci::gl::drawSolidCircle(cinder_position, kBulletRadius*kPixelsPerMeter);
 }
 
+bool Bullet::isPlayerMade() const { return player_made_; }
 }
 
 

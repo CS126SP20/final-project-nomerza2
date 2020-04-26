@@ -7,6 +7,7 @@
 #include <cinder/app/App.h>
 #include <mylibrary/Bullet.h>
 #include <mylibrary/player.h>
+#include <mylibrary/enemy.h>
 
 #include <set>
 
@@ -42,6 +43,7 @@ class MyApp : public cinder::app::App {
   b2Body* centerBody;
   mylibrary::Player* player_;
   std::map<unsigned int, mylibrary::Entity*> entity_manager_;
+  std::map<unsigned int, mylibrary::Enemy*> enemy_shooters_;
 
   // Box2D bodies can't be destroyed during collision callbacks, so this is a
   // temporary holder for bodies marked for destruction in the callback, but
@@ -56,10 +58,12 @@ class MyApp : public cinder::app::App {
   //The player may still be able to get a large jump by holding down the up key
   //even with the contact listener, so this gives a slight cooldown time to
   //prevent it. //todo shorten and clarify comment
-  int jump_timer;
+  int jump_timer; //TODO refactor these to goog style guide
 
   //Require reload time in between shots.
   int shooting_timer;
+
+  int enemy_shooting_timer_;
 
   //This is a declaration for the subclass
   class ContactListener : public b2ContactListener { //TODO see if it is ok to have 2 classes in one file (OR subclass 'cause I guess that's what I'm doing)?

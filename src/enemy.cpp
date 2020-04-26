@@ -64,11 +64,12 @@ b2Vec2 Enemy::Calculate_Bullet_Spawn() {
   float x;
 
   if (facing_right_) {
-    x = position.x + (kEnemyWidth / 0.55f); //slightly over half, to ensure it doesn't collide with enemy itself //TODO: decide if 0.55 if is good.
+    x = position.x + (kEnemyWidth * 0.62f); //slightly over half, to ensure it doesn't collide with enemy itself
   } else {
-    x = position.x - (kEnemyWidth / 0.55f);
+    x = position.x - (kEnemyWidth * 0.62f);
   }
 
   return b2Vec2(x, y);
 }
+bool Enemy::isFacingRight() const { return facing_right_; }
 }
