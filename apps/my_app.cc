@@ -164,6 +164,12 @@ void MyApp::BulletCollision(b2Fixture* bullet, b2Fixture* other) {
   //Currently just destroys the bullet
   unsigned int bullet_ID = (unsigned int) bullet->GetUserData();
   entities_to_destroy_.insert(bullet_ID);
+
+  void* other_data = other->GetUserData();
+  if (other_data != NULL) { //Therefore, other must be an entity
+    Entity* entity = entity_manager_.at((unsigned int) other_data); //TODO delete this unless I decide I need it later
+    entities_to_destroy_.insert((unsigned int) other_data);
+  }
   //entities_to_destroy_.push_back(bullet_ID);
   //to_destroy_.push_back(bullet->GetBody());
   //entity_manager_.erase(bullet_ID);
