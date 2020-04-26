@@ -54,4 +54,21 @@ void Enemy::Draw() {
   ci::gl::color(reset);
   ci::gl::draw(image_ref, ci::vec2(pixel_x, pixel_y));
 }
+
+b2Vec2 Enemy::Calculate_Bullet_Spawn() {
+  b2Vec2 position = body_->GetPosition();
+
+  // Determined by counting pixels on the image
+  float percentage_gun_height = 76/105;
+  float y = percentage_gun_height * kEnemyHeight + position.y;
+  float x;
+
+  if (facing_right_) {
+    x = position.x + (kEnemyWidth / 0.55f); //slightly over half, to ensure it doesn't collide with enemy itself //TODO: decide if 0.55 if is good.
+  } else {
+    x = position.x - (kEnemyWidth / 0.55f);
+  }
+
+  return b2Vec2(x, y);
+}
 }

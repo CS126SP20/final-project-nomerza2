@@ -19,6 +19,7 @@ class Enemy : public Entity {
  public:
   Enemy(b2World* world, b2Vec2 position, bool is_facing_right);
   void Draw();
+  b2Vec2 Calculate_Bullet_Spawn();
 
  private:
   bool facing_right_;
