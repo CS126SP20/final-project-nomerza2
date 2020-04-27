@@ -143,6 +143,12 @@ void MyApp::draw() {
     PrintText("U DED", color, size, center);
   }
 
+  // Life Counter
+  ci::Color color(0,0,1); // Bleu
+  const cinder::ivec2 size = {50, 50};
+  const cinder::vec2 center(50.0f, 50.0f); //Top-left Corner
+  PrintText(std::to_string(lives_), color, size, center);
+
   //https://github.com/asaeed/Box2DTest/blob/master/src/Particle.cpp //TOdo figure out if this is still relevant
 
   b2Vec2 position = player_->getBody()->GetPosition();
