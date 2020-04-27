@@ -50,10 +50,15 @@ MyApp::MyApp() {
 }
 
 void MyApp::setup() {
-  Enemy* enemy = new Enemy(world, b2Vec2(4.0f, 5.0f), true);
+  Enemy* enemy = new Enemy(world, b2Vec2(5.0f, 5.0f), false);
   std::pair<unsigned int, Enemy*> enemy_data(Entity::GetEntityID(), enemy);
   entity_manager_.insert(enemy_data);
   enemy_shooters_.insert(enemy_data);
+
+  Enemy* enemy_2 = new Enemy(world, b2Vec2(3.0f, 5.0f), false);
+  std::pair<unsigned int, Enemy*> enemy_data_2(Entity::GetEntityID(), enemy_2);
+  entity_manager_.insert(enemy_data_2);
+  enemy_shooters_.insert(enemy_data_2);
 }
 
 void MyApp::update() {
@@ -243,14 +248,17 @@ void MyApp::BulletCollision(b2Fixture* bullet, b2Fixture* other) {
 
     // If it is an enemy, it must be removed from the enemy_shooters_ map //todo useless comment?
     if (entity->GetEntityType() == mylibrary::EntityType::type_enemy) {
+
+      // This prevents friendly-fire between enemies
+      if (!(((Bullet*) entity_manager_.at(bullet_ID))->isPlayerMade())) {
+        return;
+      }
+
       enemy_shooters_.erase(other_ID);
     }
 
     entities_to_destroy_.insert((unsigned int) other_data);
   }
-  //entities_to_destroy_.push_back(bullet_ID);
-  //to_destroy_.push_back(bullet->GetBody());
-  //entity_manager_.erase(bullet_ID);
 }
 
 // Code for ContactListeners to determine if the user is able to jump (citation):
