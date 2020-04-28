@@ -32,11 +32,18 @@ MyApp::MyApp() {
   groundBody->CreateFixture(&groundBox, 0.0f);
 
     b2BodyDef centerBodyDef;
-    centerBodyDef.position.Set(4.0f, 2.0f);
+    centerBodyDef.position.Set(8.0f, 2.0f);
     centerBody = world->CreateBody(&centerBodyDef);
     b2PolygonShape centerBox;
     centerBox.SetAsBox(1.5f, 2.3f);
     centerBody->CreateFixture(&centerBox, 0.0f);
+
+  b2BodyDef leftBodyDef;
+  leftBodyDef.position.Set(0.0f, 0.0f);
+  leftBody = world->CreateBody(&leftBodyDef);
+  b2PolygonShape leftBox;
+  leftBox.SetAsBox(1.0f, 1.5f);
+  leftBody->CreateFixture(&leftBox, 0.0f);
 
   player_ = new Player(world);
 
@@ -167,6 +174,10 @@ void MyApp::draw() {
   ci::Color wall_color(1,1,0); //Yellow
   ci::gl::color(wall_color);
   ci::gl::drawSolidRect(rect2);
+
+  b2Vec2 lposition = leftBody->GetPosition();
+  ci::Rectf rect3(lposition.x*k - k, getWindowHeight() - lposition.y*k - 1.5*k, lposition.x*k + k, getWindowHeight() - lposition.y*k + 1.5*k);
+  ci::gl::drawSolidRect(rect3);
 
   for (std::pair<unsigned int, Entity*> entity_data : entity_manager_) {
     entity_data.second->Draw();

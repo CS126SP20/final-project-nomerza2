@@ -41,6 +41,7 @@ class MyApp : public cinder::app::App {
 
   b2World* world;
   b2Body* centerBody;
+  b2Body* leftBody;
   mylibrary::Player* player_;
   std::map<unsigned int, mylibrary::Entity*> entity_manager_;
   std::map<unsigned int, mylibrary::Enemy*> enemy_shooters_;
