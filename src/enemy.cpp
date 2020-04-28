@@ -26,7 +26,7 @@ Enemy::Enemy(b2World* world, b2Vec2 position, bool is_facing_right) {
   b2FixtureDef fixtureDef;
   fixtureDef.shape = &dynamicBox;
   fixtureDef.density = 2.0f;
-  fixtureDef.friction = 0.3f;
+  fixtureDef.friction = 0.0f;
   b2Fixture* fixture = body_->CreateFixture(&fixtureDef);
 
   fixture->SetUserData((void*)++Entity::entity_ID_); //Used for collision callback
@@ -34,6 +34,15 @@ Enemy::Enemy(b2World* world, b2Vec2 position, bool is_facing_right) {
 
   right_image_ = ci::gl::Texture2d::create(ci::loadImage(cinder::app::loadAsset("badRobotRight.png")));
   left_image_ = ci::gl::Texture2d::create(ci::loadImage(cinder::app::loadAsset("badRobotLeft.png")));
+
+  b2Vec2 starting_velocity;
+  if (facing_right_) {
+    starting_velocity = b2Vec2(1.0f, 0);
+  } else {
+    starting_velocity = b2Vec2(-1.0f, 0);
+  }
+  body_->SetLinearVelocity(starting_velocity);
+
 }
 
 void Enemy::Draw() {
@@ -72,5 +81,19 @@ b2Vec2 Enemy::Calculate_Bullet_Spawn() {
 
   return b2Vec2(x, y);
 }
+
+void Enemy::TurnAround() {
+  facing_right_ = !facing_right_;
+  b2Vec2 linear_velocity;
+
+  if (facing_right_) {
+    linear_velocity = b2Vec2(2.0f, 0);
+  } else {
+    linear_velocity = b2Vec2(-2.0f, 0);
+  }
+
+  body_->SetLinearVelocity(linear_velocity);
+}
+
 bool Enemy::isFacingRight() const { return facing_right_; }
 }

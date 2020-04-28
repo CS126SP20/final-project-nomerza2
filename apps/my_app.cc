@@ -12,6 +12,7 @@ using mylibrary::Player;
 using mylibrary::Bullet;
 using mylibrary::Entity;
 using mylibrary::Enemy;
+using mylibrary::EntityType;
 
 int sensor_contacts = 0; //TODO extern definition here should it be fixed?
 
@@ -258,7 +259,7 @@ void MyApp::BulletCollision(b2Fixture* bullet, b2Fixture* other) {
     Entity* entity = entity_manager_.at(other_ID);
 
     // If it is an enemy, it must be removed from the enemy_shooters_ map //todo useless comment?
-    if (entity->GetEntityType() == mylibrary::EntityType::type_enemy) {
+    if (entity->GetEntityType() == EntityType::type_enemy) {
 
       // This prevents friendly-fire between enemies
       if (!(((Bullet*) entity_manager_.at(bullet_ID))->isPlayerMade())) {
@@ -290,10 +291,28 @@ void MyApp::ContactListener::BeginContact(b2Contact* contact) {
 
   if (fixture_A->GetBody()->IsBullet()) {
     this->myApp->BulletCollision(fixture_A, fixture_B);
+    return;
   }
 
   if (fixture_B->GetBody()->IsBullet()) {
     this->myApp->BulletCollision(fixture_B, fixture_A);
+    return;
+  }
+
+  // The Next two are for when an enemy collides with a non-bullet (which it can't be if it reached this point), non-player object
+
+  if (fixture_A->GetUserData() != NULL) {
+    Entity* entity = myApp->entity_manager_.at((unsigned int) fixture_A->GetUserData());
+    if (entity->GetEntityType() == EntityType::type_enemy && fixture_B->GetBody() != myApp->player_->getBody()) {
+      ((Enemy*) entity)->TurnAround();
+    }
+  }
+
+  if (fixture_B->GetUserData() != NULL) {
+    Entity* entity = myApp->entity_manager_.at((unsigned int) fixture_B->GetUserData());
+    if (entity->GetEntityType() == EntityType::type_enemy && fixture_A->GetBody() != myApp->player_->getBody()) {
+      ((Enemy*) entity)->TurnAround();
+    }
   }
 }
 

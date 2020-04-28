@@ -25,6 +25,9 @@ class Enemy : public Entity {
   Enemy(b2World* world, b2Vec2 position, bool is_facing_right);
   void Draw();
   b2Vec2 Calculate_Bullet_Spawn();
+
+  // Changes facing_right_, and reverses the direction of movement
+  void TurnAround();
   bool isFacingRight() const;
 
  private:
