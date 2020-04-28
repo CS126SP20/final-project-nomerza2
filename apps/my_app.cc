@@ -57,12 +57,12 @@ MyApp::MyApp() {
 }
 
 void MyApp::setup() {
-  Enemy* enemy = new Enemy(world, b2Vec2(5.0f, 5.0f), false);
+  Enemy* enemy = new Enemy(world, b2Vec2(5.0f, 5.0f), true);
   std::pair<unsigned int, Enemy*> enemy_data(Entity::GetEntityID(), enemy);
   entity_manager_.insert(enemy_data);
   enemy_shooters_.insert(enemy_data);
 
-  Enemy* enemy_2 = new Enemy(world, b2Vec2(3.0f, 5.0f), false);
+  Enemy* enemy_2 = new Enemy(world, b2Vec2(3.0f, 5.0f), true);
   std::pair<unsigned int, Enemy*> enemy_data_2(Entity::GetEntityID(), enemy_2);
   entity_manager_.insert(enemy_data_2);
   enemy_shooters_.insert(enemy_data_2);

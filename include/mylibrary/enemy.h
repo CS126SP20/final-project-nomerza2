@@ -10,8 +10,13 @@
 #include <cinder/gl/Texture.h>
 
 //TODO make different from player sizes?
-const float kEnemyWidth = 1.0f;
-const float kEnemyHeight = (105.0f/90.0f);
+const float kEnemyWidth = 52.0f/90.0f;
+const float kEnemyHeight = (105.0f/90.0f); // TODO the 90 references kPixelsPerMeter Clarify all height/width defs that it is # of pixels / pixels per meter
+// image is 84x105 pixels
+// for better interaction, Box2D box will be 52x105, with 16 pixels taken from
+// each side evenly so that way the center remains the same
+
+const float kTotalMeterWidth = 84.0f/90.0f;
 
 namespace mylibrary {
 

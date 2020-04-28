@@ -58,16 +58,16 @@ void Enemy::Draw() {
 b2Vec2 Enemy::Calculate_Bullet_Spawn() {
   b2Vec2 position = body_->GetPosition();
 
-  // Determined by counting pixels on the image
+  // Determined by measuring pixels on the image
   float percentage_gun_height = 76.0f/105.0f;
   // position.y is center, -0.5 height = bottom, + gun-height percent * enemyheight = gun position
   float y = (percentage_gun_height - 0.5f) * kEnemyHeight + position.y;
   float x;
 
   if (facing_right_) {
-    x = position.x + (kEnemyWidth * 0.62f); //slightly over half, to ensure it doesn't collide with enemy itself
+    x = position.x + (kTotalMeterWidth * 0.5f); //Uses the total width, so it references the image rather than the internal Box2D box
   } else {
-    x = position.x - (kEnemyWidth * 0.62f);
+    x = position.x - (kTotalMeterWidth * 0.5f);
   }
 
   return b2Vec2(x, y);
