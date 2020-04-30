@@ -29,3 +29,8 @@ Enemies are immune to each others' bullets. Enemy hitboxes have fine-tuned. A co
 for tracking the player's lives has been added. Due to the structure of enemy
 movement, I have chosen to not implement player targeting. The current enemy
 setup will be enough of a challenge to defeat as a starting enemy.
+
+**4/29/2020**
+Updated game display to now play in fullscreen. Implemented view scrolling.
+The view of the game shifts with the player as the player moves to the far
+left or right edges of the window.

@@ -68,6 +68,9 @@ class MyApp : public cinder::app::App {
 
   int enemy_shooting_timer_;
 
+  int scope_x_;
+  int scope_y_;
+
   //This is a declaration for the subclass
   class ContactListener : public b2ContactListener { //TODO see if it is ok to have 2 classes in one file (OR subclass 'cause I guess that's what I'm doing)?
     void BeginContact(b2Contact* contact);

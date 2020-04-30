@@ -7,6 +7,7 @@
 #include "cinder/gl/Texture.h"
 #include <cinder/Text.h>
 #include <cinder/Font.h>
+#include <cinder/app/Window.h>
 
 using mylibrary::Player;
 using mylibrary::Bullet;
@@ -55,9 +56,14 @@ MyApp::MyApp() {
   jump_timer = 0;
   shooting_timer = 0;
   enemy_shooting_timer_ = 44;
+  scope_x_ = 0;
+  scope_y_ = 0;
 }
 
 void MyApp::setup() {
+  cinder::app::WindowRef windowRef = this->getWindow();
+  windowRef->setFullScreen();
+
   Enemy* enemy = new Enemy(world, b2Vec2(5.0f, 5.0f), true);
   std::pair<unsigned int, Enemy*> enemy_data(Entity::GetEntityID(), enemy);
   entity_manager_.insert(enemy_data);
@@ -121,6 +127,26 @@ void MyApp::update() {
       entity_manager_.insert(std::pair<unsigned int, Entity*> (Entity::GetEntityID(), bullet));
     }
   }
+
+  //Window Scrolling
+  //Bounded at the right and left fifths of the screen
+  int right_bound = scope_x_ + (getWindowWidth() * 0.8);
+  int left_bound = scope_x_ + (getWindowWidth() * 0.2);
+  int player_position = (int) (player_->getBody()->GetPosition().x * kPixelsPerMeter);
+
+  if (player_position > right_bound) {
+    //This ensures the view shifts at the same speed of the player, so the player never has to wait for the view to catch up to it.
+    scope_x_ += player_position - right_bound;
+
+  } else if (player_position < left_bound && scope_x_ > 0) {
+    scope_x_ -= left_bound - player_position;
+
+    if (scope_x_ < 0) {
+      scope_x_ = 0;
+    }
+  }
+
+
 }
 
 // The following function was 100% copied from the Snake assignment
@@ -145,8 +171,9 @@ void PrintText(const std::string& text, const C& color, const cinder::ivec2& siz
 }
 
 void MyApp::draw() {
-
   ci::gl::clear();
+  ci::gl::setMatricesWindow(getWindowSize());
+  ci::gl::translate(-scope_x_, 0);
 
   if (lives_ <= 0) {
     ci::Color color(1,0,0); // Red
