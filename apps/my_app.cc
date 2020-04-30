@@ -197,7 +197,7 @@ void MyApp::draw() {
   // Life Counter
   ci::Color color(0,0,1); // Bleu
   const cinder::ivec2 size = {50, 50};
-  const cinder::vec2 center(50.0f, 50.0f); //Top-left Corner
+  const cinder::vec2 center(50.0f + scope_x_, 50.0f); //Top-left Corner
   PrintText(std::to_string(lives_), color, size, center);
 
   //https://github.com/asaeed/Box2DTest/blob/master/src/Particle.cpp //TOdo figure out if this is still relevant
