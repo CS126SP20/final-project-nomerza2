@@ -67,12 +67,17 @@ void MyApp::setup() {
   Enemy* enemy = new Enemy(world, b2Vec2(5.0f, 5.0f), true);
   std::pair<unsigned int, Enemy*> enemy_data(Entity::GetEntityID(), enemy);
   entity_manager_.insert(enemy_data);
-  enemy_shooters_.insert(enemy_data);
+  asleep_enemies_.insert(enemy_data);
 
   Enemy* enemy_2 = new Enemy(world, b2Vec2(3.0f, 5.0f), true);
   std::pair<unsigned int, Enemy*> enemy_data_2(Entity::GetEntityID(), enemy_2);
   entity_manager_.insert(enemy_data_2);
-  enemy_shooters_.insert(enemy_data_2);
+  asleep_enemies_.insert(enemy_data_2);
+
+  Enemy* far_enemy = new Enemy(world, b2Vec2((getWindowWidth() / kPixelsPerMeter) + 2.0f, 5.0f), true);
+  std::pair<unsigned int, Enemy*> far_enemy_data(Entity::GetEntityID(), far_enemy);
+  entity_manager_.insert(far_enemy_data);
+  asleep_enemies_.insert(far_enemy_data);
 }
 
 void MyApp::update() {
@@ -85,10 +90,27 @@ void MyApp::update() {
   }
   entities_to_destroy_.clear();
 
-  // Destroys bodies that aren't allowed to be destroyed in collision callbacks.
-  /*for (b2Body* body : to_destroy_) {
-    world->DestroyBody(body);
-  }*/
+  //If an enemy is within the window, it will be Activated
+  // Next 15 lines copied (with modifications) from:
+  // https://www.techiedelight.com/remove-entries-map-iterating-cpp/
+  // This method is necessary for iterating through map while erasing
+  // elements within map, since erasing invalidates the iterator
+  auto it = asleep_enemies_.cbegin();
+  while (it != asleep_enemies_.cend())
+  {
+    unsigned int id = it->first;
+    Enemy* enemy = it->second;
+
+    if ((enemy->Activate((scope_x_ / kPixelsPerMeter), ((scope_x_ + getWindowWidth()) / kPixelsPerMeter))))
+    {
+      enemy_shooters_.insert(std::pair< unsigned int, Enemy*> (id, enemy));
+      // supported in C++11
+      it = asleep_enemies_.erase(it);
+    }
+    else {
+      ++it;
+    }
+  }
 
   //Simulate
   float timeStep = 1.0f / 60.0f;
@@ -111,6 +133,7 @@ void MyApp::update() {
     enemy_shooting_timer_--;
   } else {
     enemy_shooting_timer_ = 80;
+
     for (std::pair<unsigned int, Enemy*> enemy_data : enemy_shooters_) {
       Enemy* enemy = enemy_data.second;
       b2Vec2 spawn_location = enemy->Calculate_Bullet_Spawn();

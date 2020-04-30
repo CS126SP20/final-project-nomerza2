@@ -28,6 +28,13 @@ class Enemy : public Entity {
 
   // Changes facing_right_, and reverses the direction of movement
   void TurnAround();
+
+  // Checks if the enemy is within the bounds.
+  // If it is, the body is "awoken" and changed from a static to dynamic body.
+  // Returns true if the body has been awoken
+  // bounds are in METERS, not pixels
+  bool Activate(float left_bound, float right_bound);
+
   bool isFacingRight() const;
 
  private:

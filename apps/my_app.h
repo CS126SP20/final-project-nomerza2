@@ -45,6 +45,7 @@ class MyApp : public cinder::app::App {
   mylibrary::Player* player_;
   std::map<unsigned int, mylibrary::Entity*> entity_manager_;
   std::map<unsigned int, mylibrary::Enemy*> enemy_shooters_;
+  std::map<unsigned int, mylibrary::Enemy*> asleep_enemies_;
 
   // Box2D bodies can't be destroyed during collision callbacks, so this is a
   // temporary holder for bodies marked for destruction in the callback, but

@@ -16,7 +16,7 @@ Enemy::Enemy(b2World* world, b2Vec2 position, bool is_facing_right) {
   facing_right_ = is_facing_right;
 
   b2BodyDef bodyDef;
-  bodyDef.type = b2_dynamicBody;
+  bodyDef.type = b2_staticBody;
   bodyDef.fixedRotation = true;
   bodyDef.position.Set(position.x, position.y);
   body_ = world->CreateBody(&bodyDef);
@@ -93,6 +93,18 @@ void Enemy::TurnAround() {
   }
 
   body_->SetLinearVelocity(linear_velocity);
+}
+
+bool Enemy::Activate(float left_bound, float right_bound) {
+  float x_pos = body_->GetPosition().x;
+
+  if (left_bound <= x_pos && x_pos <= right_bound) {
+    body_->SetType(b2_dynamicBody);
+    body_->SetAwake(true);
+    return true;
+  }
+
+  return false;
 }
 
 bool Enemy::isFacingRight() const { return facing_right_; }
