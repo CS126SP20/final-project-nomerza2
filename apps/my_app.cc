@@ -14,6 +14,7 @@ using mylibrary::Bullet;
 using mylibrary::Entity;
 using mylibrary::Enemy;
 using mylibrary::EntityType;
+using mylibrary::Wall;
 
 int sensor_contacts = 0; //TODO extern definition here should it be fixed?
 
@@ -26,32 +27,12 @@ MyApp::MyApp() {
   b2Vec2 gravity(0.0f, -10.0f);
   world = new b2World(gravity);
 
-  b2BodyDef groundBodyDef;
-  groundBodyDef.position.Set(0.0f, -10.0f);
-  b2Body* groundBody = world->CreateBody(&groundBodyDef);
-  b2PolygonShape groundBox;
-  groundBox.SetAsBox(50.0f, 10.0f);
-  groundBody->CreateFixture(&groundBox, 0.0f);
-
-    b2BodyDef centerBodyDef;
-    centerBodyDef.position.Set(8.0f, 2.0f);
-    centerBody = world->CreateBody(&centerBodyDef);
-    b2PolygonShape centerBox;
-    centerBox.SetAsBox(1.5f, 2.3f);
-    centerBody->CreateFixture(&centerBox, 0.0f);
-
-  b2BodyDef leftBodyDef;
-  leftBodyDef.position.Set(0.0f, 0.0f);
-  leftBody = world->CreateBody(&leftBodyDef);
-  b2PolygonShape leftBox;
-  leftBox.SetAsBox(1.0f, 1.5f);
-  leftBody->CreateFixture(&leftBox, 0.0f);
-
   player_ = new Player(world);
 
   //Set Up the Foot Sensor Listener
   world->SetContactListener(&contactListener);
   contactListener.myApp = this;
+
   lives_ = 3;
   jump_timer = 0;
   shooting_timer = 0;
@@ -63,6 +44,13 @@ MyApp::MyApp() {
 void MyApp::setup() {
   cinder::app::WindowRef windowRef = this->getWindow();
   windowRef->setFullScreen();
+
+  Wall* wall = new Wall(world, 0, -10.0f, 50.0f, 10.0f, ci::Color(0,0,0));
+  walls_.push_back(wall);
+  wall = new Wall(world, 0, 0, 1.0f, 1.5f, ci::Color(1,1,0));
+  walls_.push_back(wall);
+  wall = new Wall(world, 8.0f, 2.0f, 1.5f, 2.3f, ci::Color(1,1,0));
+  walls_.push_back(wall);
 
   Enemy* enemy = new Enemy(world, b2Vec2(5.0f, 5.0f), true);
   std::pair<unsigned int, Enemy*> enemy_data(Entity::GetEntityID(), enemy);
@@ -220,15 +208,9 @@ void MyApp::draw() {
 
   player_->Draw();
 
-  b2Vec2 cposition = centerBody->GetPosition();
-  ci::Rectf rect2(cposition.x*k - 1.5*k, getWindowHeight() - cposition.y*k - 2.3*k, cposition.x*k + 1.5*k, getWindowHeight() - cposition.y*k + 2.3*k);
-  ci::Color wall_color(1,1,0); //Yellow
-  ci::gl::color(wall_color);
-  ci::gl::drawSolidRect(rect2);
-
-  b2Vec2 lposition = leftBody->GetPosition();
-  ci::Rectf rect3(lposition.x*k - k, getWindowHeight() - lposition.y*k - 1.5*k, lposition.x*k + k, getWindowHeight() - lposition.y*k + 1.5*k);
-  ci::gl::drawSolidRect(rect3);
+  for (Wall* wall : walls_) {
+    wall->Draw();
+  }
 
   for (std::pair<unsigned int, Entity*> entity_data : entity_manager_) {
     entity_data.second->Draw();

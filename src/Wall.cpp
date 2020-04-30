@@ -11,6 +11,7 @@ namespace mylibrary {
 
 Wall::Wall(b2World* world, float x_loc, float y_loc, float half_width, float half_height, ci::Color color) {
   b2BodyDef bodyDef;
+  bodyDef.type = b2_staticBody;
   bodyDef.position.Set(x_loc, y_loc);
   body_ = world->CreateBody(&bodyDef);
   b2PolygonShape box;
