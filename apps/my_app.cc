@@ -45,7 +45,7 @@ void MyApp::setup() {
   cinder::app::WindowRef windowRef = this->getWindow();
   windowRef->setFullScreen();
 
-  Wall* wall = new Wall(world, 0, -10.0f, 50.0f, 10.0f, ci::Color(0,0,0));
+  Wall* wall = new Wall(world, 0, -9.8f, 27.0f, 10.0f, ci::Color(0,0,1));
   walls_.push_back(wall);
   wall = new Wall(world, 0, 0, 1.0f, 1.5f, ci::Color(1,1,0));
   walls_.push_back(wall);
@@ -107,7 +107,7 @@ void MyApp::update() {
   int32 positionIterations = 3;
   world->Step(timeStep, velocityIterations, positionIterations);
 
-  //using the timer the opposite way with the timer increasing at every tep would remove the need for the conditional,
+  //using the timer the opposite way with the timer increasing at every step would remove the need for the conditional,
   //but the value could get very large and overflow if the program was left idling.
   if (jump_timer > 0) {
       jump_timer--;
@@ -115,6 +115,11 @@ void MyApp::update() {
 
   if (shooting_timer > 0) {
     shooting_timer--;
+  }
+
+  //Death by falling
+  if (player_->getBody()->GetPosition().y < 0) {
+    lives_ = 0;
   }
 
   if (enemy_shooting_timer_ > 0) {
@@ -156,8 +161,6 @@ void MyApp::update() {
       scope_x_ = 0;
     }
   }
-
-
 }
 
 // The following function was 100% copied from the Snake assignment
@@ -191,7 +194,7 @@ void MyApp::draw() {
     const cinder::ivec2 size = {500, 500};
     const cinder::vec2 center = getWindowCenter();
 
-    PrintText("U DED", color, size, center);
+    PrintText("U DED", color, size, ci::vec2(center.x + scope_x_, center.y));
   }
 
   // Life Counter
