@@ -23,7 +23,6 @@ namespace myapp {
 using cinder::app::KeyEvent;
 
 MyApp::MyApp() {
-  //All of this is copied straight from Box2D.org
   b2Vec2 gravity(0.0f, -10.0f);
   world = new b2World(gravity);
 
@@ -38,7 +37,11 @@ MyApp::MyApp() {
   shooting_timer = 0;
   enemy_shooting_timer_ = 44;
   scope_x_ = 0;
-  scope_y_ = 0;
+
+  end_position_ = 40.0f;
+  finish_width_ = 2.5f;
+
+  won_game = false;
 }
 
 void MyApp::setup() {
@@ -50,6 +53,8 @@ void MyApp::setup() {
   wall = new Wall(world, 0, 0, 1.0f, 1.5f, ci::Color(1,1,0));
   walls_.push_back(wall);
   wall = new Wall(world, 8.0f, 2.0f, 1.5f, 2.3f, ci::Color(1,1,0));
+  walls_.push_back(wall);
+  wall = new Wall(world, 35.0f, -9.8f,  5.0f, 10.0f, ci::Color(0,0,1));
   walls_.push_back(wall);
 
   Enemy* enemy = new Enemy(world, b2Vec2(5.0f, 5.0f), true);
@@ -69,7 +74,7 @@ void MyApp::setup() {
 }
 
 void MyApp::update() {
-  if (lives_ <= 0) {
+  if (lives_ <= 0 || won_game) {
     return;
   }
 
@@ -117,9 +122,15 @@ void MyApp::update() {
     shooting_timer--;
   }
 
+  b2Vec2 player_position = player_->getBody()->GetPosition();
   //Death by falling
-  if (player_->getBody()->GetPosition().y < 0) {
+  if (player_position.y < 0) {
     lives_ = 0;
+  }
+
+  if (player_position.x > end_position_ - finish_width_) {
+    won_game = true;
+    EndGame();
   }
 
   if (enemy_shooting_timer_ > 0) {
@@ -153,17 +164,19 @@ void MyApp::update() {
   }
 
   //Window Scrolling
-  //Bounded at the right and left fifths of the screen
-  int right_bound = scope_x_ + (getWindowWidth() * 0.8);
-  int left_bound = scope_x_ + (getWindowWidth() * 0.2);
-  int player_position = (int) (player_->getBody()->GetPosition().x * kPixelsPerMeter);
+  //Bounded at the right and left thirds of the screen
+  int right_bound = scope_x_ + (getWindowWidth() * 0.67);
+  int left_bound = scope_x_ + (getWindowWidth() * 0.33);
+  int pixel_player_position = (int) (player_position.x * kPixelsPerMeter);
 
-  if (player_position > right_bound) {
+  if (pixel_player_position > right_bound
+    && (scope_x_ + getWindowWidth()) < (end_position_ * kPixelsPerMeter)) {
+
     //This ensures the view shifts at the same speed of the player, so the player never has to wait for the view to catch up to it.
-    scope_x_ += player_position - right_bound;
+    scope_x_ += pixel_player_position - right_bound;
 
-  } else if (player_position < left_bound && scope_x_ > 0) {
-    scope_x_ -= left_bound - player_position;
+  } else if (pixel_player_position < left_bound && scope_x_ > 0) {
+    scope_x_ -= left_bound - pixel_player_position;
 
     if (scope_x_ < 0) {
       scope_x_ = 0;
@@ -203,6 +216,14 @@ void MyApp::draw() {
     const cinder::vec2 center = getWindowCenter();
 
     PrintText("U DED", color, size, ci::vec2(center.x + scope_x_, center.y));
+  }
+
+  if (won_game) {
+    ci::Color color(0,1,0); // Green
+    const cinder::ivec2 size = {500, 500};
+    const cinder::vec2 center = getWindowCenter();
+
+    PrintText("U WiN", color, size, ci::vec2(center.x + scope_x_, center.y));
   }
 
   // Life Counter
@@ -368,5 +389,9 @@ void MyApp::ContactListener::EndContact(b2Contact* contact) {
       || (int)contact->GetFixtureB()->GetUserData() == kFootSensorID) {
         sensor_contacts--;
     }
+}
+
+void MyApp::EndGame() {
+  //TODO Delete if unused
 }
 }  // namespace myapp
