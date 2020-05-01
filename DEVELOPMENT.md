@@ -34,3 +34,11 @@ setup will be enough of a challenge to defeat as a starting enemy.
 Updated game display to now play in fullscreen. Implemented view scrolling.
 The view of the game shifts with the player as the player moves to the far
 left or right edges of the window.
+
+**5/01/2020**
+All game functionality has been completed. The game is now fullscreen, with a
+view window that scrolls to follow the player. The player and enemies can die
+by falling off of ledges. The game can be won by reaching the end of the level. 
+The game can be restarted by pressing r. Walls have been abstracted to the wall
+class to improve ease of development. Now that the game is functional, only the
+design for the level and aesthetics remain.

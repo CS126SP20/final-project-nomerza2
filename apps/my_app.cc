@@ -16,8 +16,6 @@ using mylibrary::Enemy;
 using mylibrary::EntityType;
 using mylibrary::Wall;
 
-int sensor_contacts = 0; //TODO extern definition here should it be fixed?
-
 namespace myapp {
 
 using cinder::app::KeyEvent;
@@ -28,7 +26,6 @@ MyApp::MyApp() {
 
   player_ = new Player(world);
 
-  //Set Up the Foot Sensor Listener
   world->SetContactListener(&contactListener);
   contactListener.myApp = this;
 
@@ -37,6 +34,7 @@ MyApp::MyApp() {
   shooting_timer = 0;
   enemy_shooting_timer_ = 44;
   scope_x_ = 0;
+  sensor_contacts = 0;
 
   end_position_ = 40.0f;
   finish_width_ = 2.5f;
@@ -289,6 +287,9 @@ void MyApp::keyDown(KeyEvent event) {
     //bullet.getBody()->ApplyLinearImpulse(bullet_impulse, spawn_location);
     bullet->getBody()->SetLinearVelocity(bullet_velocity);
     entity_manager_.insert(std::pair<unsigned int, Entity*> (Entity::GetEntityID(), bullet));
+
+  } else if (event.getCode() == KeyEvent::KEY_r) {
+    Restart();
   }
 }
 
@@ -352,7 +353,7 @@ void MyApp::ContactListener::BeginContact(b2Contact* contact) {
     || (int)fixture_B->GetUserData() == kFootSensorID) {*/
   if (fixture_A->IsSensor() || fixture_B->IsSensor()) { //TODO change or handle if new sensors are made.
 
-      sensor_contacts++;
+      myApp->sensor_contacts++;
       return;
   }
 
@@ -387,11 +388,53 @@ void MyApp::ContactListener::EndContact(b2Contact* contact) {
     //check if either fixture is the foot sensor
     if ((int)contact->GetFixtureA()->GetUserData() == kFootSensorID
       || (int)contact->GetFixtureB()->GetUserData() == kFootSensorID) {
-        sensor_contacts--;
+        myApp->sensor_contacts--;
     }
 }
 
 void MyApp::EndGame() {
   //TODO Delete if unused
 }
+
+void MyApp::Restart() {
+  delete world;  // Also deletes every b2body in the world
+  b2Vec2 gravity(0.0f, -10.0f);
+  world = new b2World(gravity);
+
+  delete player_;
+  player_ = new Player(world);
+
+  sensor_contacts = 0;
+  world->SetContactListener(&contactListener);
+  contactListener.myApp = this;
+
+  for (std::pair<unsigned int, Entity*> entity_data : entity_manager_) {
+    delete entity_data.second;
+  }
+  entity_manager_.clear();
+  for (Wall* wall : walls_) {
+    delete wall;
+  }
+  walls_.clear();
+  // Members deleted in entity_manager_
+  enemy_shooters_.clear();
+  asleep_enemies_.clear();
+  entities_to_destroy_.clear();
+
+  Entity::ResetID();
+
+  lives_ = 3;
+  jump_timer = 0;
+  shooting_timer = 0;
+  enemy_shooting_timer_ = 44;
+  scope_x_ = 0;
+
+  end_position_ = 40.0f;
+  finish_width_ = 2.5f;
+
+  won_game = false;
+
+  setup();
+}
+
 }  // namespace myapp

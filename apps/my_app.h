@@ -34,12 +34,17 @@ class MyApp : public cinder::app::App {
    * */
   void BulletCollision(b2Fixture* bullet, b2Fixture* other);
 
- protected:
-  //friend void BulletCollision(b2Fixture* fixture);
-
  private:
   void DestroyEntity(unsigned int entity_ID);
   void EndGame();
+
+  /**
+   * Deletes all data allocated on the heap
+   * Reassigns data to starting values found in constructor
+   * Calls Setup();
+   * Used to restart game.
+   * */
+  void Restart();
 
   b2World* world;
   mylibrary::Player* player_;
@@ -72,6 +77,8 @@ class MyApp : public cinder::app::App {
   int enemy_shooting_timer_;
 
   int scope_x_;
+
+  int sensor_contacts;
 
   float end_position_;
   float finish_width_;

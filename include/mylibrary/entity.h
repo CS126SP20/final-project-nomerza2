@@ -15,6 +15,10 @@ enum EntityType{type_player, type_bullet, type_enemy};
 class Entity {
  public:
   virtual void Draw() = 0;
+
+  // Called when game is being restarted, to reset the EntityID to 0.
+  static void ResetID();
+
   static unsigned int GetEntityID();
   EntityType GetEntityType();
   b2Body* getBody() const;
