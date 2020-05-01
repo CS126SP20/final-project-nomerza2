@@ -32,6 +32,9 @@ Enemy::Enemy(b2World* world, b2Vec2 position, bool is_facing_right) {
   fixture->SetUserData((void*)++Entity::entity_ID_); //Used for collision callback
   //Increments first, so then entity_ID_ = the ID of the new bullet afterwards
 
+  body_->SetUserData((void*)Entity::entity_ID_); // Same ID
+  // Used for death by falling where the fixture is unreachable
+
   right_image_ = ci::gl::Texture2d::create(ci::loadImage(cinder::app::loadAsset("badRobotRight.png")));
   left_image_ = ci::gl::Texture2d::create(ci::loadImage(cinder::app::loadAsset("badRobotLeft.png")));
 

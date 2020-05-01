@@ -132,6 +132,14 @@ void MyApp::update() {
       b2Vec2 spawn_location = enemy->Calculate_Bullet_Spawn();
       b2Vec2 bullet_velocity;
 
+      // Death by Falling for enemies
+      // Handled here since enemies are already being iterated through.
+      // Also better to do it where it isn't being iterated on every game step,
+      // since that is unnecessary. This is simply clean-up.
+      if (enemy->getBody()->GetPosition().y < 0) {
+        entities_to_destroy_.insert((unsigned int) enemy->getBody()->GetUserData());
+      }
+
       if (enemy->isFacingRight()) {
         bullet_velocity = b2Vec2(6.0f, 0.0f);
       } else {
@@ -274,6 +282,11 @@ void MyApp::keyUp(cinder::app::KeyEvent event) {
 
 void MyApp::DestroyEntity(unsigned int entity_ID){
   Entity* entity = entity_manager_.at(entity_ID);
+
+  if (entity->GetEntityType()  == mylibrary::type_enemy) {
+    enemy_shooters_.erase(entity_ID);
+  }
+
   world->DestroyBody(entity->getBody());
   entity_manager_.erase(entity_ID);
   delete(entity);
@@ -300,8 +313,6 @@ void MyApp::BulletCollision(b2Fixture* bullet, b2Fixture* other) {
       if (!(((Bullet*) entity_manager_.at(bullet_ID))->isPlayerMade())) {
         return;
       }
-
-      enemy_shooters_.erase(other_ID);
     }
 
     entities_to_destroy_.insert((unsigned int) other_data);
