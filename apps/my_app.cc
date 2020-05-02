@@ -24,10 +24,14 @@ const ci::Color kYellow = ci::Color(1,1,0);
 const ci::Color kGreen = ci::Color(0,1,0);
 const ci::Color kDarkGreen = ci::Color(0,0.4f,0);
 const ci::Color kRed = ci::Color(1,0,0);
+const ci::Color kLightBlue = ci::Color(0.4, 1, 1);
+const ci::Color kOrange = ci::Color(1,0.5f,0);
+const ci::Color kDarkPurple = ci::Color(0.4f, 0, 0.4f);
+const ci::Color kBlue = ci::Color(0,0,1);
+const b2Vec2 kGravity = b2Vec2(0, -18);
 
 MyApp::MyApp() {
-  b2Vec2 gravity(0.0f, -18.0f);
-  world = new b2World(gravity);
+  world = new b2World(kGravity);
 
   player_ = new Player(world);
 
@@ -41,7 +45,7 @@ MyApp::MyApp() {
   scope_x_ = 0;
   sensor_contacts = 0;
 
-  end_position_ = 50.0f;
+  end_position_ = 130.0f;
   finish_width_ = 2.5f;
 
   won_game = false;
@@ -52,8 +56,8 @@ void MyApp::setup() {
   cinder::app::WindowRef windowRef = this->getWindow();
   windowRef->setFullScreen();
 
-  //Intro
-  GroundInit(0, 50);
+  // Intro
+  GroundInit(0, 45);
   WallInit(3.0f, 0, 3, 2, kYellow);
   WallInit(11, 0, 3, 3.0f, kYellow);
   WallInit(14, 0, 3, 6.0f, kRed);
@@ -66,10 +70,40 @@ void MyApp::setup() {
   WallInit(34.5f, 4.5f, 2, 2, kDarkGreen);
   EnemyInit(36, 0.4f, false);
   WallInit(42, 0, 1.5f, 2, kDarkGreen);
+
+  // First Fall
+  WallInit(47, 3.5f, 2, 1, kLightBlue);
+  GroundInit(55.5f, 61);
+  EnemyInit(60, 0.4f, true);
+
+  // Separated Stairs
+  WallInit(66.1f, 1, 2, 2, kOrange);
+  WallInit(69.5f, 4.2f, 1.5f, 1.5f, kOrange);
+  WallInit(74.5f, 7.2f, 1.5f, 1.5f, kOrange);
+  WallInit(80.5f, 10, 8.5f, 0.5f, kOrange);
+  EnemyInit(88.5f, 11, true);
+
+  // Staircase of Enemies
+  GroundInit(96, 130);
+  EnemyInit(102, 0.4, true);
+  WallInit(105, 0, 4, 1.5f, kDarkPurple);
+  EnemyInit(107, 1.7f, false);
+  EnemyInit(108, 1.7f, true);
+  WallInit(109, 0, 4, 3.8f, kDarkPurple);
+  EnemyInit(110, 4, true);
+  EnemyInit(112, 4, false);
+  WallInit(113, 0, 4, 5.6f, kDarkPurple);
+  EnemyInit(113.2f, 5.8f, false);
+  EnemyInit(114.2f, 5.8f, true);
+  EnemyInit(115.2f, 5.8f, false);
+  EnemyInit(116.2f, 5.8f, true);
+  WallInit(117, 0, 4, 8.4f, kDarkPurple);
+  EnemyInit(120.5f, 8.6f, true);
 }
 
+// y_loc is the height of the enemy's feet
 void MyApp::EnemyInit(float x_loc, float y_loc, bool is_facing_right) {
-  Enemy* enemy = new Enemy(world, b2Vec2(x_loc, y_loc), is_facing_right);
+  Enemy* enemy = new Enemy(world, b2Vec2(x_loc, y_loc + kEnemyHeight), is_facing_right);
   std::pair<unsigned int, Enemy*> enemy_data(Entity::GetEntityID(), enemy);
   entity_manager_.insert(enemy_data);
   asleep_enemies_.insert(enemy_data);
@@ -230,19 +264,10 @@ void MyApp::draw() {
     PrintText("U DED", color, size, ci::vec2(center.x + scope_x_, center.y));
   }
 
-  if (won_game) {
-    ci::Color color(0,1,0); // Green
-    const cinder::ivec2 size = {500, 500};
-    const cinder::vec2 center = getWindowCenter();
-
-    PrintText("U WiN", color, size, ci::vec2(center.x + scope_x_, center.y));
-  }
-
   // Life Counter
-  ci::Color color(0,0,1); // Bleu
   const cinder::ivec2 size = {50, 50};
   const cinder::vec2 center(50.0f + scope_x_, 50.0f); //Top-left Corner
-  PrintText(std::to_string(lives_), color, size, center);
+  PrintText(std::to_string(lives_), kBlue, size, center);
 
   //https://github.com/asaeed/Box2DTest/blob/master/src/Particle.cpp //TOdo figure out if this is still relevant
 
@@ -256,6 +281,13 @@ void MyApp::draw() {
     wall->Draw();
   }
 
+  if (won_game) {
+    const cinder::ivec2 size = {500, 500};
+    const cinder::vec2 center = getWindowCenter();
+
+    PrintText("U WiN", kGreen, size, ci::vec2(center.x + scope_x_, center.y));
+  }
+
   for (std::pair<unsigned int, Entity*> entity_data : entity_manager_) {
     entity_data.second->Draw();
   }
@@ -267,7 +299,7 @@ void MyApp::draw() {
 
 void MyApp::DrawDeveloperMode() {
 
-  for (size_t i = 20; i < 44; i++) {
+  for (size_t i = 100; i < 115; i++) {
     PrintText(std::to_string(i), ci::Color(0,1,1), ci::ivec2(50,50), ci::vec2(i * kPixelsPerMeter, getWindowCenter().y));
   }
 
@@ -426,8 +458,7 @@ void MyApp::EndGame() {
 
 void MyApp::Restart() {
   delete world;  // Also deletes every b2body in the world
-  b2Vec2 gravity(0.0f, -10.0f);
-  world = new b2World(gravity);
+  world = new b2World(kGravity);
 
   delete player_;
   player_ = new Player(world);
@@ -456,9 +487,6 @@ void MyApp::Restart() {
   shooting_timer = 0;
   enemy_shooting_timer_ = 44;
   scope_x_ = 0;
-
-  end_position_ = 40.0f;
-  finish_width_ = 2.5f;
 
   won_game = false;
 
