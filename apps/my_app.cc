@@ -40,6 +40,7 @@ MyApp::MyApp() {
   finish_width_ = 2.5f;
 
   won_game = false;
+  developer_mode = true;
 }
 
 void MyApp::setup() {
@@ -224,6 +225,10 @@ void MyApp::draw() {
     PrintText("U WiN", color, size, ci::vec2(center.x + scope_x_, center.y));
   }
 
+  if (developer_mode) {
+    DrawDeveloperMode();
+  }
+
   // Life Counter
   ci::Color color(0,0,1); // Bleu
   const cinder::ivec2 size = {50, 50};
@@ -244,6 +249,17 @@ void MyApp::draw() {
 
   for (std::pair<unsigned int, Entity*> entity_data : entity_manager_) {
     entity_data.second->Draw();
+  }
+}
+
+void MyApp::DrawDeveloperMode() {
+
+  for (size_t i = 0; i < 20; i++) {
+    PrintText(std::to_string(i), ci::Color(0,1,1), ci::ivec2(50,50), ci::vec2(i * kPixelsPerMeter, getWindowCenter().y));
+  }
+
+  for (size_t i = 0; i < 13; i++) {
+    PrintText(std::to_string(i), ci::Color(1,0,1), ci::ivec2(50,50), ci::vec2(getWindowCenter().x + scope_x_, getWindowHeight() - i * kPixelsPerMeter));
   }
 }
 

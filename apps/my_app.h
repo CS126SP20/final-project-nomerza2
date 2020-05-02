@@ -46,6 +46,12 @@ class MyApp : public cinder::app::App {
    * */
   void Restart();
 
+  /**
+   * For use of level designer, prints x and y coordinates in meters across screen
+   * x limits are meant to be modified. Game lags if range is more than 25.
+   * */
+  void DrawDeveloperMode();
+
   b2World* world;
   mylibrary::Player* player_;
   std::map<unsigned int, mylibrary::Entity*> entity_manager_;
@@ -53,11 +59,6 @@ class MyApp : public cinder::app::App {
   std::map<unsigned int, mylibrary::Enemy*> asleep_enemies_;
 
   std::vector<mylibrary::Wall*> walls_;
-
-  // Box2D bodies can't be destroyed during collision callbacks, so this is a
-  // temporary holder for bodies marked for destruction in the callback, but
-  // actually destroyed in update()
-  //std::vector<b2Body*> to_destroy_;
 
   // Bodies can't be destroyed in callback, so must be tracked here to be destroyed later.
   // Uses a set, since a body can collide with two things within the same step,
@@ -83,6 +84,7 @@ class MyApp : public cinder::app::App {
   float end_position_;
   float finish_width_;
   bool won_game;
+  bool developer_mode;
 
   //This is a declaration for the subclass
   class ContactListener : public b2ContactListener { //TODO see if it is ok to have 2 classes in one file (OR subclass 'cause I guess that's what I'm doing)?
