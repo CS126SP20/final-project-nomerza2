@@ -47,29 +47,30 @@ void MyApp::setup() {
   cinder::app::WindowRef windowRef = this->getWindow();
   windowRef->setFullScreen();
 
-  Wall* wall = new Wall(world, 0, -9.8f, 27.0f, 10.0f, ci::Color(0,0,1));
-  walls_.push_back(wall);
-  wall = new Wall(world, 0, 0, 1.0f, 1.5f, ci::Color(1,1,0));
-  walls_.push_back(wall);
-  wall = new Wall(world, 8.0f, 2.0f, 1.5f, 2.3f, ci::Color(1,1,0));
-  walls_.push_back(wall);
-  wall = new Wall(world, 35.0f, -9.8f,  5.0f, 10.0f, ci::Color(0,0,1));
-  walls_.push_back(wall);
+  GroundInit(0, 27);
+  GroundInit(30, 40);
+  WallInit(0, 0, 1.0f, 1.5f, ci::Color(1,1,0));
+  WallInit(8.0f, 2.0f, 1.5f, 2.3f, ci::Color(1,1,0));
 
-  Enemy* enemy = new Enemy(world, b2Vec2(5.0f, 5.0f), true);
+  EnemyInit(b2Vec2(5.0f, 5.0f), true);
+  EnemyInit(b2Vec2(3.0f, 5.0f), true);
+  EnemyInit(b2Vec2((getWindowWidth() / kPixelsPerMeter) + 2.0f, 5.0f), true);
+}
+
+void MyApp::EnemyInit(b2Vec2 position, bool is_facing_right) {
+  Enemy* enemy = new Enemy(world, position, is_facing_right);
   std::pair<unsigned int, Enemy*> enemy_data(Entity::GetEntityID(), enemy);
   entity_manager_.insert(enemy_data);
   asleep_enemies_.insert(enemy_data);
+}
 
-  Enemy* enemy_2 = new Enemy(world, b2Vec2(3.0f, 5.0f), true);
-  std::pair<unsigned int, Enemy*> enemy_data_2(Entity::GetEntityID(), enemy_2);
-  entity_manager_.insert(enemy_data_2);
-  asleep_enemies_.insert(enemy_data_2);
+void MyApp::WallInit(float x_loc, float y_loc, float half_width, float half_height, ci::Color color) {
+  Wall* wall = new Wall(world, x_loc, y_loc, half_width, half_height, color);
+  walls_.push_back(wall);
+}
 
-  Enemy* far_enemy = new Enemy(world, b2Vec2((getWindowWidth() / kPixelsPerMeter) + 2.0f, 5.0f), true);
-  std::pair<unsigned int, Enemy*> far_enemy_data(Entity::GetEntityID(), far_enemy);
-  entity_manager_.insert(far_enemy_data);
-  asleep_enemies_.insert(far_enemy_data);
+void MyApp::GroundInit(float start, float end) {
+  WallInit((start + end)/2, 0, (end-start)/2, 0.2f, ci::Color(0, 0, 1));
 }
 
 void MyApp::update() {
@@ -267,7 +268,7 @@ void MyApp::keyDown(KeyEvent event) {
   b2Body* body = player_->getBody();
 
   if (event.getCode() == KeyEvent::KEY_UP && sensor_contacts >= 1 && jump_timer == 0) {  // only jump if in contact with ground //TODO take event.getCode() out of conditional?
-      b2Vec2 impulse_vector(0.0f, 25.0f);//Arbitrarily chosen value, looks good in testing.
+      b2Vec2 impulse_vector(0.0f, 17.0f); // Allows for ~3m jump
       body->ApplyLinearImpulse(impulse_vector, body->GetPosition());
       jump_timer = 10; // NOTE this was arbitrarily chosen, change if necessary.
 

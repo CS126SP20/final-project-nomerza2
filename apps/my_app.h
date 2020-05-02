@@ -52,6 +52,10 @@ class MyApp : public cinder::app::App {
    * */
   void DrawDeveloperMode();
 
+  void EnemyInit(b2Vec2 position, bool is_facing_right);
+  void WallInit(float x_loc, float y_loc, float half_width, float half_height, ci::Color color);
+  void GroundInit(float start, float end);
+
   b2World* world;
   mylibrary::Player* player_;
   std::map<unsigned int, mylibrary::Entity*> entity_manager_;
