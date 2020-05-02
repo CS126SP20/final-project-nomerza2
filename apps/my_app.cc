@@ -20,8 +20,13 @@ namespace myapp {
 
 using cinder::app::KeyEvent;
 
+const ci::Color kYellow = ci::Color(1,1,0);
+const ci::Color kGreen = ci::Color(0,1,0);
+const ci::Color kDarkGreen = ci::Color(0,0.4f,0);
+const ci::Color kRed = ci::Color(1,0,0);
+
 MyApp::MyApp() {
-  b2Vec2 gravity(0.0f, -10.0f);
+  b2Vec2 gravity(0.0f, -18.0f);
   world = new b2World(gravity);
 
   player_ = new Player(world);
@@ -36,7 +41,7 @@ MyApp::MyApp() {
   scope_x_ = 0;
   sensor_contacts = 0;
 
-  end_position_ = 40.0f;
+  end_position_ = 50.0f;
   finish_width_ = 2.5f;
 
   won_game = false;
@@ -47,30 +52,37 @@ void MyApp::setup() {
   cinder::app::WindowRef windowRef = this->getWindow();
   windowRef->setFullScreen();
 
-  GroundInit(0, 27);
-  GroundInit(30, 40);
-  WallInit(0, 0, 1.0f, 1.5f, ci::Color(1,1,0));
-  WallInit(8.0f, 2.0f, 1.5f, 2.3f, ci::Color(1,1,0));
+  //Intro
+  GroundInit(0, 50);
+  WallInit(3.0f, 0, 3, 2, kYellow);
+  WallInit(11, 0, 3, 3.0f, kYellow);
+  WallInit(14, 0, 3, 6.0f, kRed);
+  WallInit(17, 0, 3, 9.0f, kGreen);
+  EnemyInit(21, 0.4f, true);
 
-  EnemyInit(b2Vec2(5.0f, 5.0f), true);
-  EnemyInit(b2Vec2(3.0f, 5.0f), true);
-  EnemyInit(b2Vec2((getWindowWidth() / kPixelsPerMeter) + 2.0f, 5.0f), true);
+  // Double With Bridge
+  WallInit(28, 0, 2, 3, kDarkGreen);
+  EnemyInit(30, 0.4f, true);
+  WallInit(34.5f, 4.5f, 2, 2, kDarkGreen);
+  EnemyInit(36, 0.4f, false);
+  WallInit(42, 0, 1.5f, 2, kDarkGreen);
 }
 
-void MyApp::EnemyInit(b2Vec2 position, bool is_facing_right) {
-  Enemy* enemy = new Enemy(world, position, is_facing_right);
+void MyApp::EnemyInit(float x_loc, float y_loc, bool is_facing_right) {
+  Enemy* enemy = new Enemy(world, b2Vec2(x_loc, y_loc), is_facing_right);
   std::pair<unsigned int, Enemy*> enemy_data(Entity::GetEntityID(), enemy);
   entity_manager_.insert(enemy_data);
   asleep_enemies_.insert(enemy_data);
 }
 
-void MyApp::WallInit(float x_loc, float y_loc, float half_width, float half_height, ci::Color color) {
-  Wall* wall = new Wall(world, x_loc, y_loc, half_width, half_height, color);
+// x and y _loc are the bottom left corner
+void MyApp::WallInit(float x_loc, float y_loc, float width, float height, ci::Color color) {
+  Wall* wall = new Wall(world, x_loc + width/2, y_loc + height/2, width/2, height/2, color);
   walls_.push_back(wall);
 }
 
 void MyApp::GroundInit(float start, float end) {
-  WallInit((start + end)/2, 0, (end-start)/2, 0.2f, ci::Color(0, 0, 1));
+  WallInit(start, 0, (end-start), 0.2f, ci::Color(0, 0, 1));
 }
 
 void MyApp::update() {
@@ -226,10 +238,6 @@ void MyApp::draw() {
     PrintText("U WiN", color, size, ci::vec2(center.x + scope_x_, center.y));
   }
 
-  if (developer_mode) {
-    DrawDeveloperMode();
-  }
-
   // Life Counter
   ci::Color color(0,0,1); // Bleu
   const cinder::ivec2 size = {50, 50};
@@ -251,11 +259,15 @@ void MyApp::draw() {
   for (std::pair<unsigned int, Entity*> entity_data : entity_manager_) {
     entity_data.second->Draw();
   }
+
+  if (developer_mode) {
+    DrawDeveloperMode();
+  }
 }
 
 void MyApp::DrawDeveloperMode() {
 
-  for (size_t i = 0; i < 20; i++) {
+  for (size_t i = 20; i < 44; i++) {
     PrintText(std::to_string(i), ci::Color(0,1,1), ci::ivec2(50,50), ci::vec2(i * kPixelsPerMeter, getWindowCenter().y));
   }
 
@@ -268,17 +280,17 @@ void MyApp::keyDown(KeyEvent event) {
   b2Body* body = player_->getBody();
 
   if (event.getCode() == KeyEvent::KEY_UP && sensor_contacts >= 1 && jump_timer == 0) {  // only jump if in contact with ground //TODO take event.getCode() out of conditional?
-      b2Vec2 impulse_vector(0.0f, 17.0f); // Allows for ~3m jump
+      b2Vec2 impulse_vector(0.0f, 27.0f); // Allows for ~3m jump
       body->ApplyLinearImpulse(impulse_vector, body->GetPosition());
       jump_timer = 10; // NOTE this was arbitrarily chosen, change if necessary.
 
   } else if (event.getCode() == KeyEvent::KEY_RIGHT) {
-      b2Vec2 velocity(5.0f, body->GetLinearVelocity().y); // Need to use previous y velocity, or trying to move side to side mid-air will cause player to suddenly fall
+      b2Vec2 velocity(7.0f, body->GetLinearVelocity().y); // Need to use previous y velocity, or trying to move side to side mid-air will cause player to suddenly fall
       // TODO take velocity changes into helper function?
       body->SetLinearVelocity(velocity);
       player_->setFacingRight(true);
   } else if (event.getCode() == KeyEvent::KEY_LEFT) {
-      b2Vec2 velocity(-5.0f, body->GetLinearVelocity().y);
+      b2Vec2 velocity(-7.0f, body->GetLinearVelocity().y);
       body->SetLinearVelocity(velocity);
       player_->setFacingRight(false);
 
@@ -287,7 +299,6 @@ void MyApp::keyDown(KeyEvent event) {
 
     b2Vec2 player_position = player_->getBody()->GetPosition();
     b2Vec2 spawn_location;
-    //b2Vec2 bullet_impulse;
     b2Vec2 bullet_velocity;
 
     if (player_->isFacingRight()) {
