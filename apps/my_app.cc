@@ -30,6 +30,9 @@ const ci::Color kDarkPurple = ci::Color(0.4f, 0, 0.4f);
 const ci::Color kBlue = ci::Color(0,0,1);
 const b2Vec2 kGravity = b2Vec2(0, -18);
 
+//The enemies will activate when they are within this many pixels of the screen
+const int kActivateRange = 85;
+
 MyApp::MyApp() {
   world = new b2World(kGravity);
 
@@ -38,7 +41,7 @@ MyApp::MyApp() {
   world->SetContactListener(&contactListener);
   contactListener.myApp = this;
 
-  lives_ = 3;
+  lives_ = 5;
   jump_timer = 0;
   shooting_timer = 0;
   enemy_shooting_timer_ = 44;
@@ -49,7 +52,7 @@ MyApp::MyApp() {
   finish_width_ = 2.5f;
 
   won_game = false;
-  developer_mode = true;
+  developer_mode = false;
 }
 
 void MyApp::setup() {
@@ -140,8 +143,8 @@ void MyApp::update() {
     unsigned int id = it->first;
     Enemy* enemy = it->second;
 
-    if ((enemy->Activate((scope_x_ / kPixelsPerMeter), ((scope_x_ + getWindowWidth()) / kPixelsPerMeter))))
-    {
+    if ((enemy->Activate(((scope_x_ - kActivateRange)/ kPixelsPerMeter),
+        ((scope_x_ + getWindowWidth() + kActivateRange) / kPixelsPerMeter)))) {
       enemy_shooters_.insert(std::pair< unsigned int, Enemy*> (id, enemy));
       // supported in C++11
       it = asleep_enemies_.erase(it);
@@ -482,7 +485,7 @@ void MyApp::Restart() {
 
   Entity::ResetID();
 
-  lives_ = 3;
+  lives_ = 5;
   jump_timer = 0;
   shooting_timer = 0;
   enemy_shooting_timer_ = 44;
