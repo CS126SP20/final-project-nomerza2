@@ -31,7 +31,7 @@ const ci::Color kBlue = ci::Color(0,0,1);
 const b2Vec2 kGravity = b2Vec2(0, -18);
 
 //The enemies will activate when they are within this many pixels of the screen
-const int kActivateRange = 85;
+const int kActivateRange = 160;
 
 MyApp::MyApp() {
   world = new b2World(kGravity);

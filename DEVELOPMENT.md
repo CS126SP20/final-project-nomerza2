@@ -42,3 +42,8 @@ by falling off of ledges. The game can be won by reaching the end of the level.
 The game can be restarted by pressing r. Walls have been abstracted to the wall
 class to improve ease of development. Now that the game is functional, only the
 design for the level and aesthetics remain.
+
+**5/02/2020**
+A level has been created and the game is now in a complete, playable state.
+Extensions to the level or changes in aesthetics may be added later, but the
+requirements of the game are now complete.
