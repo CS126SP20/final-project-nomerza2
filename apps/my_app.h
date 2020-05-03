@@ -3,16 +3,15 @@
 #ifndef FINALPROJECT_APPS_MYAPP_H_
 #define FINALPROJECT_APPS_MYAPP_H_
 
+#include <set>
 #include <Box2D/Box2D.h>
 #include <cinder/app/App.h>
+#include <cinder/audio/audio.h>
 #include <mylibrary/Bullet.h>
 #include <mylibrary/player.h>
 #include <mylibrary/enemy.h>
+
 #include <mylibrary/Wall.h>
-
-#include <set>
-
-extern int sensor_contacts; //TODO is global ok? and should it be in this file?
 
 namespace myapp {
 
@@ -52,6 +51,8 @@ class MyApp : public cinder::app::App {
    * */
   void DrawDeveloperMode();
 
+  void AudioSetup();
+
   // These are helper functions to Update()
   void ActivateEnemies();
   void UpdateActiveEnemies();
@@ -76,6 +77,11 @@ class MyApp : public cinder::app::App {
   // and therefore could have the same body attempting to be destroyed after it has already been destroyed
   std::set<unsigned int> entities_to_destroy_;
 
+  ci::audio::VoiceSamplePlayerNodeRef music_player_;
+  ci::audio::VoiceRef laser_sound_;
+  ci::audio::VoiceRef boom_sound_;
+  ci::audio::VoiceRef damage_sound_;
+
   int lives_;
 
   //The player may still be able to get a large jump by holding down the up key
@@ -84,13 +90,10 @@ class MyApp : public cinder::app::App {
 
   //Require reload time in between shots.
   int shooting_timer_;
-
   int enemy_shooting_timer_;
 
   int window_shift_;
-
   int sensor_contacts_;
-
   float end_position_;
   float finish_width_;
   bool won_game_;

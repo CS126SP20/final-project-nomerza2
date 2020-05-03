@@ -30,6 +30,7 @@ const ci::Color kDarkGreen = ci::Color(0,0.4f,0);
 const ci::Color kLightBlue = ci::Color(0.4, 1, 1);
 const ci::Color kOrange = ci::Color(1,0.5f,0);
 const ci::Color kDarkPurple = ci::Color(0.4f, 0, 0.4f);
+
 const b2Vec2 kGravity = b2Vec2(0, -18);
 
 //The enemies will activate when they are within this many pixels of the screen
@@ -60,6 +61,8 @@ MyApp::MyApp() {
 void MyApp::setup() {
   cinder::app::WindowRef windowRef = this->getWindow();
   windowRef->setFullScreen();
+
+  AudioSetup();
 
   // Intro
   GroundInit(0, 45);
@@ -104,6 +107,26 @@ void MyApp::setup() {
   EnemyInit(116.2f, 5.8f, true);
   WallInit(117, 0, 4, 8.4f, kDarkPurple);
   EnemyInit(120.5f, 8.6f, true);
+}
+
+void MyApp::AudioSetup() {
+  ci::audio::SourceFileRef laser_file =
+      ci::audio::load(ci::app::loadAsset("laser.mp3"));
+  laser_sound_ = ci::audio::Voice::create(laser_file);
+
+  ci::audio::SourceFileRef boom_file =
+      ci::audio::load(ci::app::loadAsset("boom.mp3"));
+  boom_sound_ = ci::audio::Voice::create(boom_file);
+
+  ci::audio::SourceFileRef damage_file =
+      ci::audio::load(ci::app::loadAsset("damage.mp3"));
+  damage_sound_ = ci::audio::Voice::create(damage_file);
+
+  ci::audio::SourceFileRef music_file =
+      ci::audio::load(ci::app::loadAsset("Thrum.mp3"));
+  music_player_ = ci::audio::VoiceSamplePlayerNode::create(music_file);
+  music_player_->getSamplePlayerNode()->setLoopEnabled();
+  music_player_->start();
 }
 
 // y_loc is the height of the enemy's feet
@@ -341,6 +364,8 @@ void MyApp::keyDown(KeyEvent event) {
       player_->setFacingRight(false);
 
   } else if (key == KeyEvent::KEY_SPACE && shooting_timer_ == 0) {
+    laser_sound_->start();
+
     shooting_timer_ = 25;
 
     b2Vec2 player_position = player_->getBody()->GetPosition();
@@ -351,11 +376,11 @@ void MyApp::keyDown(KeyEvent event) {
       spawn_location = b2Vec2(player_position.x + (3*kPlayerWidth/4),
           player_position.y - (kPlayerHeight/5));
       // The kPlayerHeight/5 is to make it appear to spawn closer to the gun.
-      bullet_velocity = b2Vec2(6.0f, 0.0f);
+      bullet_velocity = b2Vec2(6.7f, 0.0f);
     } else {
       spawn_location = b2Vec2(player_position.x - (3*kPlayerWidth/4),
           player_position.y - (kPlayerHeight/5));
-      bullet_velocity = b2Vec2(-6.0f, 0.0f);
+      bullet_velocity = b2Vec2(-6.7f, 0.0f);
     }
 
     Entity* bullet = new Bullet(world_, spawn_location, true);
@@ -397,6 +422,7 @@ void MyApp::BulletCollision(b2Fixture* bullet, b2Fixture* other) {
 
   if (other->GetBody() == player_->getBody()) {
     lives_--;
+    damage_sound_->start();
   }
 
   void* other_data = other->GetUserData();
@@ -411,6 +437,9 @@ void MyApp::BulletCollision(b2Fixture* bullet, b2Fixture* other) {
       if (!(((Bullet*) entity_manager_.at(bullet_ID))->isPlayerMade())) {
         return;
       }
+
+      // At this point, it is a valid shot against an enemy.
+      boom_sound_->start();
     }
 
     entities_to_destroy_.insert((unsigned int) other_data);
