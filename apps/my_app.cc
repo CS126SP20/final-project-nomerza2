@@ -31,6 +31,7 @@ const ci::Color kLightBlue = ci::Color(0.4, 1, 1);
 const ci::Color kOrange = ci::Color(1,0.5f,0);
 const ci::Color kDarkPurple = ci::Color(0.4f, 0, 0.4f);
 const ci::Color kDeepRed = ci::Color(0.6f,0,0);
+const ci::Color kGray = ci::Color(0.57f, 0.57f, 0.57f);
 
 const b2Vec2 kGravity = b2Vec2(0, -18);
 
@@ -52,7 +53,7 @@ MyApp::MyApp() {
   window_shift_ = 0;
   sensor_contacts_ = 0;
 
-  end_position_ = 165.0f;
+  end_position_ = 187.0f;
   finish_width_ = 2.5f;
 
   won_game_ = false;
@@ -128,7 +129,22 @@ void MyApp::setup() {
   WallInit(151, 5.5, 0.1f,0.5f, kDeepRed);
   //Recombined
   WallInit(153, 2.5f, 3, 0.2f, kDeepRed);
-  GroundInit(157, 165);
+  GroundInit(157, 187);
+
+  // The Pit
+ WallInit(164, 0, 2, 3, kGray);
+ WallInit(166, 0, 2, 6, kGray);
+ WallInit(168, 0, 2, 9, kGray);
+ WallInit(170, 0, 8, 5, kGray);
+ EnemyInit(171, 5.1f, true);
+ EnemyInit(173, 5.1f, false);
+ EnemyInit(175, 5.1f, true);
+ EnemyInit(176.5f, 5.1f, false);
+ WallInit(177.9f, 5, 0.1f, 0.4f, kGray);
+ WallInit(179.4f, 2, 1.6f, 3, kGray);
+ WallInit(179.4f, 5, 0.1f, 0.4f, kGray);
+ EnemyInit(180, 5.1f, true);
+ WallInit(181, 2, 2, 9, kGray);
 
 }
 
@@ -149,7 +165,6 @@ void MyApp::AudioSetup() {
       ci::audio::load(ci::app::loadAsset("Spectral.mp3"));
   music_player_ = ci::audio::VoiceSamplePlayerNode::create(music_file);
   music_player_->getSamplePlayerNode()->setLoopEnabled();
-  //music_player_->start();
 }
 
 // y_loc is the height of the enemy's feet
@@ -375,14 +390,14 @@ void MyApp::DrawTitleScreen() {
   ci::ivec2 size(1500,1500);
   PrintText("ROBOT REVOLT", kRed, size, getWindowCenter(), 300);
   PrintText("Press Space to Begin", kGreen, size,
-      ci::ivec2(getWindowCenter().x, getWindowCenter().y + 250), 150);
+      ci::ivec2(getWindowCenter().x, getWindowCenter().y + 250), 120);
 
   player_->Draw();
 
   PrintText("Created by Nathan Omerza", kBlue, ci::ivec2(250,250),
       ci::ivec2(getWindowWidth() - 250, getWindowHeight() - 230), 30);
 
-  PrintText("Music: \"Spectral\" by Kyle Admontis", kBlue, ci::ivec2(250,250),
+  PrintText("Music: \"Spectral\" by Kyle Adomaitis", kBlue, ci::ivec2(250,250),
       ci::ivec2(getWindowWidth() - 250, getWindowHeight() - 150), 30);
 }
 
@@ -392,6 +407,7 @@ void MyApp::keyDown(KeyEvent event) {
 
   if (key == KeyEvent::KEY_UP && sensor_contacts_ >= 1 &&
       jump_timer_ == 0) {  // only jump if in contact with ground
+
       b2Vec2 impulse_vector(0.0f, 27.0f); // Allows for ~3m jump
       body->ApplyLinearImpulse(impulse_vector, body->GetPosition());
       jump_timer_ = 10; // NOTE this was arbitrarily chosen, change if necessary.
