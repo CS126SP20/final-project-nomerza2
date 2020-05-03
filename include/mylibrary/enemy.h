@@ -35,8 +35,10 @@ class Enemy : public Entity {
   bool Activate(float left_bound, float right_bound);
 
   bool isFacingRight() const;
+  bool isActive() const;
 
  private:
+  bool is_active_;
   bool facing_right_;
   ci::gl::Texture2dRef right_image_;
   ci::gl::Texture2dRef left_image_;

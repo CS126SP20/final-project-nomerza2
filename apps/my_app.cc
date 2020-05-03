@@ -144,7 +144,7 @@ void MyApp::AudioSetup() {
   damage_sound_ = ci::audio::Voice::create(damage_file);
 
   ci::audio::SourceFileRef music_file =
-      ci::audio::load(ci::app::loadAsset("Thrum.mp3"));
+      ci::audio::load(ci::app::loadAsset("Spectral.mp3"));
   music_player_ = ci::audio::VoiceSamplePlayerNode::create(music_file);
   music_player_->getSamplePlayerNode()->setLoopEnabled();
   music_player_->start();
@@ -429,7 +429,11 @@ void MyApp::DestroyEntity(unsigned int entity_ID){
   Entity* entity = entity_manager_.at(entity_ID);
 
   if (entity->GetEntityType()  == mylibrary::type_enemy) {
-    enemy_shooters_.erase(entity_ID);
+    if (((Enemy*) entity)->isActive()) {
+      enemy_shooters_.erase(entity_ID);
+    } else {
+      asleep_enemies_.erase(entity_ID);
+    }
   }
 
   world_->DestroyBody(entity->getBody());

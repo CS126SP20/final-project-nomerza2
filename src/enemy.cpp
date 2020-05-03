@@ -12,6 +12,7 @@ namespace mylibrary {
 Enemy::Enemy(b2World* world, b2Vec2 position, bool is_facing_right) {
   entity_type_ = EntityType::type_enemy;
   facing_right_ = is_facing_right;
+  is_active_ = false;
 
   b2BodyDef bodyDef;
   bodyDef.type = b2_staticBody;
@@ -43,7 +44,6 @@ Enemy::Enemy(b2World* world, b2Vec2 position, bool is_facing_right) {
     starting_velocity = b2Vec2(-1.0f, 0);
   }
   body_->SetLinearVelocity(starting_velocity);
-
 }
 
 void Enemy::Draw() {
@@ -102,6 +102,7 @@ bool Enemy::Activate(float left_bound, float right_bound) {
   if (left_bound <= x_pos && x_pos <= right_bound) {
     body_->SetType(b2_dynamicBody);
     body_->SetAwake(true);
+    is_active_ = true;
     return true;
   }
 
@@ -109,4 +110,5 @@ bool Enemy::Activate(float left_bound, float right_bound) {
 }
 
 bool Enemy::isFacingRight() const { return facing_right_; }
+bool Enemy::isActive() const { return is_active_; }
 }
