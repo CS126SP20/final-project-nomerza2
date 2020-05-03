@@ -50,6 +50,7 @@ class MyApp : public cinder::app::App {
    * x limits are meant to be modified. Game lags if range is more than 25.
    * */
   void DrawDeveloperMode();
+  void DrawTitleScreen();
 
   void AudioSetup();
 
@@ -97,7 +98,8 @@ class MyApp : public cinder::app::App {
   float end_position_;
   float finish_width_;
   bool won_game_;
-  bool developer_mode;
+  bool developer_mode_;
+  bool title_screen_;
 
   //This is a declaration for the internal ContactListener Class
   class ContactListener : public b2ContactListener {

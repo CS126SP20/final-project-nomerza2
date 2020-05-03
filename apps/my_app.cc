@@ -56,7 +56,8 @@ MyApp::MyApp() {
   finish_width_ = 2.5f;
 
   won_game_ = false;
-  developer_mode = false;
+  developer_mode_ = false;
+  title_screen_ = true;
 
   AudioSetup();
 }
@@ -67,6 +68,7 @@ void MyApp::setup() {
 
   // Intro
   GroundInit(0, 45);
+  WallInit(-0.1f, 0, 0.1f, getWindowHeight()/kPixelsPerMeter, kYellow);
   WallInit(3.0f, 0, 3, 2, kYellow);
   WallInit(11, 0, 3, 3.0f, kYellow);
   WallInit(14, 0, 3, 6.0f, kRed);
@@ -147,7 +149,7 @@ void MyApp::AudioSetup() {
       ci::audio::load(ci::app::loadAsset("Spectral.mp3"));
   music_player_ = ci::audio::VoiceSamplePlayerNode::create(music_file);
   music_player_->getSamplePlayerNode()->setLoopEnabled();
-  music_player_->start();
+  //music_player_->start();
 }
 
 // y_loc is the height of the enemy's feet
@@ -169,7 +171,7 @@ void MyApp::GroundInit(float start, float end) {
 }
 
 void MyApp::update() {
-  if (lives_ <= 0 || won_game_) {
+  if (lives_ <= 0 || won_game_ || title_screen_) {
     return;
   }
 
@@ -289,15 +291,15 @@ void MyApp::ScrollWindow() {
   }
 }
 
-// The following function was 100% copied from the Snake assignment
+// The following function was copied from the Snake assignment, with minor mods
 template <typename C>
 void PrintText(const std::string& text, const C& color, const cinder::ivec2& size,
-               const cinder::vec2& loc) {
+               const cinder::vec2& loc, int font_size) {
   cinder::gl::color(color);
 
   auto box = cinder::TextBox()
       .alignment(cinder::TextBox::CENTER)
-      .font(cinder::Font("Arial", 30))
+      .font(cinder::Font("Arial", font_size))
       .size(size)
       .color(color)
       .backgroundColor(cinder::ColorA(0, 0, 0, 0))
@@ -312,6 +314,12 @@ void PrintText(const std::string& text, const C& color, const cinder::ivec2& siz
 
 void MyApp::draw() {
   ci::gl::clear();
+
+  if (title_screen_) {
+    DrawTitleScreen();
+    return;
+  }
+
   ci::gl::setMatricesWindow(getWindowSize());
   ci::gl::translate(-window_shift_, 0);
 
@@ -319,13 +327,13 @@ void MyApp::draw() {
     const cinder::ivec2 size = {500, 500};
     const cinder::vec2 center = getWindowCenter();
 
-    PrintText("U DED", kRed, size, ci::vec2(center.x + window_shift_, center.y));
+    PrintText("U DED", kRed, size, ci::vec2(center.x + window_shift_, center.y), 100);
   }
 
   // Life Counter
   const cinder::ivec2 size = {50, 50};
   const cinder::vec2 center(50.0f + window_shift_, 50.0f); //Top-left Corner
-  PrintText(std::to_string(lives_), kBlue, size, center);
+  PrintText(std::to_string(lives_), kBlue, size, center,50);
 
   player_->Draw();
 
@@ -337,14 +345,14 @@ void MyApp::draw() {
     const cinder::ivec2 size = {500, 500};
     const cinder::vec2 center = getWindowCenter();
 
-    PrintText("U WiN", kGreen, size, ci::vec2(center.x + window_shift_, center.y));
+    PrintText("U WiN", kGreen, size, ci::vec2(center.x + window_shift_, center.y), 100);
   }
 
   for (std::pair<unsigned int, Entity*> entity_data : entity_manager_) {
     entity_data.second->Draw();
   }
 
-  if (developer_mode) {
+  if (developer_mode_) {
     DrawDeveloperMode();
   }
 }
@@ -353,14 +361,29 @@ void MyApp::DrawDeveloperMode() {
 
   for (size_t i = 100; i < 115; i++) {
     PrintText(std::to_string(i), kCyan, ci::ivec2(50,50),
-        ci::vec2(i * kPixelsPerMeter, getWindowCenter().y));
+        ci::vec2(i * kPixelsPerMeter, getWindowCenter().y), 30);
   }
 
   for (size_t i = 0; i < 13; i++) {
     PrintText(std::to_string(i), kPurple, ci::ivec2(50,50),
         ci::vec2(getWindowCenter().x + window_shift_,
-            getWindowHeight() - i * kPixelsPerMeter));
+            getWindowHeight() - i * kPixelsPerMeter), 30);
   }
+}
+
+void MyApp::DrawTitleScreen() {
+  ci::ivec2 size(1500,1500);
+  PrintText("ROBOT REVOLT", kRed, size, getWindowCenter(), 300);
+  PrintText("Press Space to Begin", kGreen, size,
+      ci::ivec2(getWindowCenter().x, getWindowCenter().y + 250), 150);
+
+  player_->Draw();
+
+  PrintText("Created by Nathan Omerza", kBlue, ci::ivec2(250,250),
+      ci::ivec2(getWindowWidth() - 250, getWindowHeight() - 230), 30);
+
+  PrintText("Music: \"Spectral\" by Kyle Admontis", kBlue, ci::ivec2(250,250),
+      ci::ivec2(getWindowWidth() - 250, getWindowHeight() - 150), 30);
 }
 
 void MyApp::keyDown(KeyEvent event) {
@@ -385,6 +408,12 @@ void MyApp::keyDown(KeyEvent event) {
       player_->setFacingRight(false);
 
   } else if (key == KeyEvent::KEY_SPACE && shooting_timer_ == 0) {
+    if (title_screen_) {
+      title_screen_ = false;
+      music_player_->start();
+      return;
+    }
+
     laser_sound_->start();
 
     shooting_timer_ = 25;
