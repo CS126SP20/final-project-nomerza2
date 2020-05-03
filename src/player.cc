@@ -13,7 +13,7 @@ Player::Player(b2World* world){
   b2BodyDef bodyDef;
   bodyDef.type = b2_dynamicBody;
   bodyDef.fixedRotation = true;
-  bodyDef.position.Set(0.0f, 4.0f);
+  bodyDef.position.Set(127.0f, 4.0f);
   body_ = world->CreateBody(&bodyDef);
 
   b2PolygonShape dynamicBox;

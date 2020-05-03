@@ -30,6 +30,7 @@ const ci::Color kDarkGreen = ci::Color(0,0.4f,0);
 const ci::Color kLightBlue = ci::Color(0.4, 1, 1);
 const ci::Color kOrange = ci::Color(1,0.5f,0);
 const ci::Color kDarkPurple = ci::Color(0.4f, 0, 0.4f);
+const ci::Color kDeepRed = ci::Color(0.6f,0,0);
 
 const b2Vec2 kGravity = b2Vec2(0, -18);
 
@@ -51,18 +52,18 @@ MyApp::MyApp() {
   window_shift_ = 0;
   sensor_contacts_ = 0;
 
-  end_position_ = 130.0f;
+  end_position_ = 165.0f;
   finish_width_ = 2.5f;
 
   won_game_ = false;
   developer_mode = false;
+
+  AudioSetup();
 }
 
 void MyApp::setup() {
   cinder::app::WindowRef windowRef = this->getWindow();
   windowRef->setFullScreen();
-
-  AudioSetup();
 
   // Intro
   GroundInit(0, 45);
@@ -107,6 +108,26 @@ void MyApp::setup() {
   EnemyInit(116.2f, 5.8f, true);
   WallInit(117, 0, 4, 8.4f, kDarkPurple);
   EnemyInit(120.5f, 8.6f, true);
+
+  // Split Path
+  WallInit(130, 3.2f, 3, 0.2f, kDeepRed);
+  // Bottom Section
+  WallInit(134, 0.5f, 0.6f, 0.2f,kDeepRed);
+  WallInit(142, 0.5f, 0.6f, 0.2f,kDeepRed);
+  WallInit(150, 0.5f, 0.6f, 0.2f,kDeepRed);
+  // Top Section
+  WallInit(134, 5.5f, 17, 0.2f, kDeepRed);
+  EnemyInit(137, 5.6f, false);
+  EnemyInit(139, 5.6f, true);
+  EnemyInit(141, 5.6f, false);
+  EnemyInit(143, 5.6f, true);
+  EnemyInit(145, 5.6f, false);
+  EnemyInit(147, 5.6f, true);
+  WallInit(151, 5.5, 0.1f,0.5f, kDeepRed);
+  //Recombined
+  WallInit(153, 2.5f, 3, 0.2f, kDeepRed);
+  GroundInit(157, 165);
+
 }
 
 void MyApp::AudioSetup() {
