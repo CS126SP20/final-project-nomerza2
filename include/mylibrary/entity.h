@@ -7,6 +7,8 @@
 
 #include <Box2D/Box2D.h>
 
+const int kPixelsPerMeter = 90;
+
 namespace mylibrary {
 
 //Originally called Player, Bullet, Enemy, caused name conflicts with class names

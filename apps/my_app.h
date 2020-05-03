@@ -52,11 +52,18 @@ class MyApp : public cinder::app::App {
    * */
   void DrawDeveloperMode();
 
+  // These are helper functions to Update()
+  void ActivateEnemies();
+  void UpdateActiveEnemies();
+  void ScrollWindow();
+
+  // These functions simplify level design, so every element can be added
+  // by only calling this function
   void EnemyInit(float x_loc, float y_loc, bool is_facing_right);
   void WallInit(float x_loc, float y_loc, float width, float height, ci::Color color);
   void GroundInit(float start, float end);
 
-  b2World* world;
+  b2World* world_;
   mylibrary::Player* player_;
   std::map<unsigned int, mylibrary::Entity*> entity_manager_;
   std::map<unsigned int, mylibrary::Enemy*> enemy_shooters_;
@@ -72,34 +79,35 @@ class MyApp : public cinder::app::App {
   int lives_;
 
   //The player may still be able to get a large jump by holding down the up key
-  //even with the contact listener, so this gives a slight cooldown time to
-  //prevent it. //todo shorten and clarify comment
-  int jump_timer; //TODO refactor these to goog style guide
+  //when near the ground, so this prevents that by giving a cooldown.
+  int jump_timer_;
 
   //Require reload time in between shots.
-  int shooting_timer;
+  int shooting_timer_;
 
   int enemy_shooting_timer_;
 
-  int scope_x_;
+  int window_shift_;
 
-  int sensor_contacts;
+  int sensor_contacts_;
 
   float end_position_;
   float finish_width_;
-  bool won_game;
+  bool won_game_;
   bool developer_mode;
 
-  //This is a declaration for the subclass
-  class ContactListener : public b2ContactListener { //TODO see if it is ok to have 2 classes in one file (OR subclass 'cause I guess that's what I'm doing)?
+  //This is a declaration for the internal ContactListener Class
+  class ContactListener : public b2ContactListener {
     void BeginContact(b2Contact* contact);
     void EndContact(b2Contact* contact);
+
    public:
-    MyApp* myApp;
+    // Needs to be able to call functions that change state of MyApp.
+    MyApp* myApp_;
   };
 
   //This is a private member variable of MyApp
-  ContactListener contactListener;
+  ContactListener contact_listener_;
 };
 
 }  // namespace myapp

@@ -4,11 +4,15 @@
 
 #include <Box2D/Box2D.h>
 #include <cinder/gl/Texture.h>
+#include "entity.h"
 
-const int kPixelsPerMeter = 90;
-const float kPlayerWidth = 1.0f;
-const float kPlayerHeight = (105.0f/90.0f);
-const int kFootSensorID = -12345; // Meaningless value, just needs to be unique. Negative to insure there is never conflict with BulletID system
+// These sizes are in meters, using the pixel height divided by PPM
+const float kPlayerWidth = 90.0f/kPixelsPerMeter;
+const float kPlayerHeight = (105.0f/kPixelsPerMeter);
+
+// Meaningless value, just needs to be unique.
+// Negative to insure there is never conflict with EntityID system
+const int kFootSensorID = -12345;
 
 namespace mylibrary {
 
@@ -21,7 +25,6 @@ class Player {
   bool isFacingRight() const;
 
  private:
-  //b2World* world_;
   b2Body* body_;
   bool facing_right_;
   ci::gl::Texture2dRef right_image_;

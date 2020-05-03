@@ -5,8 +5,6 @@
 #include "mylibrary/Wall.h"
 #include <cinder/app/App.h>
 
-const int kPixelsPerMeter = 90; //TODO Create unified declaration
-
 namespace mylibrary {
 
 Wall::Wall(b2World* world, float x_loc, float y_loc, float half_width, float half_height, ci::Color color) {

@@ -7,6 +7,7 @@
 
 #include <Box2D/Box2D.h>
 #include <cinder/gl/gl.h>
+#include "entity.h"
 
 namespace mylibrary {
 

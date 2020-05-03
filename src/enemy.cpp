@@ -7,8 +7,6 @@
 #include <cinder/gl/draw.h>
 #include <cinder/gl/gl.h>
 
-const int kPixelsPerMeter = 90;
-
 namespace mylibrary {
 
 Enemy::Enemy(b2World* world, b2Vec2 position, bool is_facing_right) {
@@ -49,7 +47,6 @@ Enemy::Enemy(b2World* world, b2Vec2 position, bool is_facing_right) {
 }
 
 void Enemy::Draw() {
-  //TODO maybe get a util since I legit just copy-pasted from the player.cc file?
   b2Vec2 position = body_->GetPosition();
 
   int pixel_x = position.x*kPixelsPerMeter - kEnemyWidth*kPixelsPerMeter/2;
@@ -62,7 +59,8 @@ void Enemy::Draw() {
     image_ref = left_image_;
   }
 
-  ci::Color reset(1,1,1); //This is necessary or the image will be tinted the color of the last drawn object.
+  // Necessary or the image will be tinted the color of the last drawn object.
+  ci::Color reset(1,1,1);
   ci::gl::color(reset);
   ci::gl::draw(image_ref, ci::vec2(pixel_x, pixel_y));
 }

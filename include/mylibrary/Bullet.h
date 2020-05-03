@@ -8,8 +8,6 @@
 #include <Box2D/Box2D.h>
 #include <mylibrary/entity.h>
 
-//const int kBulletID = 55555; //Value unimportant, just needs to be unique
-
 namespace mylibrary {
 
 class Bullet : public Entity {
