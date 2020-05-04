@@ -48,7 +48,7 @@ MyApp::MyApp() {
   world_->SetContactListener(&contact_listener_);
   contact_listener_.myApp_ = this;
 
-  lives_ = 5;
+  lives_ = 7;
   jump_timer_ = 0;
   shooting_timer_ = 0;
   enemy_shooting_timer_ = 44;
@@ -658,7 +658,7 @@ void MyApp::Restart() {
 
   Entity::ResetID();
 
-  lives_ = 5;
+  lives_ = 7;
   jump_timer_ = 0;
   shooting_timer_ = 0;
   enemy_shooting_timer_ = 44;
