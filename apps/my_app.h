@@ -83,6 +83,9 @@ class MyApp : public cinder::app::App {
   ci::audio::VoiceRef boom_sound_;
   ci::audio::VoiceRef damage_sound_;
 
+  ci::gl::Texture2dRef finish_line_bot_;
+  ci::gl::Texture2dRef finish_line_bot_win_;
+
   int lives_;
 
   //The player may still be able to get a large jump by holding down the up key

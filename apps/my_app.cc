@@ -60,6 +60,11 @@ MyApp::MyApp() {
   developer_mode_ = false;
   title_screen_ = true;
 
+  ci::ImageSourceRef finish_image = ci::loadImage(ci::app::loadAsset("redflagbot.png"));
+  ci::ImageSourceRef win_image= ci::loadImage(ci::app::loadAsset("greenflagbot.png"));
+  finish_line_bot_ = ci::gl::Texture2d::create(finish_image);
+  finish_line_bot_win_ = ci::gl::Texture2d::create(win_image);
+
   AudioSetup();
 }
 
@@ -145,7 +150,6 @@ void MyApp::setup() {
  WallInit(179.4f, 5, 0.1f, 0.4f, kGray);
  EnemyInit(180, 5.1f, true);
  WallInit(181, 2, 2, 9, kGray);
-
 }
 
 void MyApp::AudioSetup() {
@@ -338,13 +342,6 @@ void MyApp::draw() {
   ci::gl::setMatricesWindow(getWindowSize());
   ci::gl::translate(-window_shift_, 0);
 
-  if (lives_ <= 0) {
-    const cinder::ivec2 size = {500, 500};
-    const cinder::vec2 center = getWindowCenter();
-
-    PrintText("U DED", kRed, size, ci::vec2(center.x + window_shift_, center.y), 100);
-  }
-
   // Life Counter
   const cinder::ivec2 size = {50, 50};
   const cinder::vec2 center(50.0f + window_shift_, 50.0f); //Top-left Corner
@@ -356,12 +353,32 @@ void MyApp::draw() {
     wall->Draw();
   }
 
+  if (lives_ <= 0) {
+    const cinder::ivec2 size = {500, 500};
+    const cinder::vec2 center = getWindowCenter();
+
+    PrintText("U DED", kRed, size, ci::vec2(center.x + window_shift_, center.y), 100);
+  }
+
+  ci::gl::Texture2dRef finish_image;
+
   if (won_game_) {
     const cinder::ivec2 size = {500, 500};
     const cinder::vec2 center = getWindowCenter();
 
     PrintText("U WiN", kGreen, size, ci::vec2(center.x + window_shift_, center.y), 100);
+
+    finish_image = finish_line_bot_;
+
+  } else {
+    finish_image = finish_line_bot_win_;
   }
+
+  // Necessary or the image will be tinted the color of the last drawn object.
+  ci::Color reset(1,1,1);
+  ci::gl::color(reset);
+  // 182 = height of ground + half-height of robot image
+  ci::gl::draw(finish_image, ci::vec2(end_position_ - finish_width_/2, getWindowHeight() -  182));
 
   for (std::pair<unsigned int, Entity*> entity_data : entity_manager_) {
     entity_data.second->Draw();
