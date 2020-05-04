@@ -47,3 +47,9 @@ design for the level and aesthetics remain.
 A level has been created and the game is now in a complete, playable state.
 Extensions to the level or changes in aesthetics may be added later, but the
 requirements of the game are now complete.
+
+**5/03/2020**
+The game has been expanded to become more complete. Music, sound effects,
+a title screen, and a finish line marker have all been added. Also the text
+displayed during the game has been enhanced, and more obstacles have been 
+added to the level. 

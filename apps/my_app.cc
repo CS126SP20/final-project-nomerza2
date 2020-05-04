@@ -366,7 +366,7 @@ void MyApp::draw() {
     const cinder::ivec2 size = {500, 500};
     const cinder::vec2 center = getWindowCenter();
 
-    PrintText("U WiN", kGreen, size, ci::vec2(center.x + window_shift_, center.y), 100);
+    PrintText("You Win", kGreen, size, ci::vec2(center.x + window_shift_, center.y), 100);
 
     finish_image = finish_line_bot_win_;
 
