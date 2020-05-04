@@ -10,7 +10,7 @@
 #include <mylibrary/Bullet.h>
 #include <mylibrary/player.h>
 #include <mylibrary/enemy.h>
-
+#include <mylibrary/flying_enemy.h>
 #include <mylibrary/Wall.h>
 
 namespace myapp {
@@ -70,6 +70,7 @@ class MyApp : public cinder::app::App {
   std::map<unsigned int, mylibrary::Entity*> entity_manager_;
   std::map<unsigned int, mylibrary::Enemy*> enemy_shooters_;
   std::map<unsigned int, mylibrary::Enemy*> asleep_enemies_;
+  std::map<unsigned int, mylibrary::FlyingEnemy*> flying_enemies_;
 
   std::vector<mylibrary::Wall*> walls_;
 

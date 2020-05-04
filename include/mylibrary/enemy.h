@@ -22,7 +22,7 @@ namespace mylibrary {
 class Enemy : public Entity {
  public:
   Enemy(b2World* world, b2Vec2 position, bool is_facing_right);
-  void Draw();
+  virtual void Draw();
   b2Vec2 Calculate_Bullet_Spawn();
 
   // Changes facing_right_, and reverses the direction of movement
@@ -36,10 +36,12 @@ class Enemy : public Entity {
 
   bool isFacingRight() const;
   bool isActive() const;
+  bool isFlying() const;
 
- private:
+ protected:
   bool is_active_;
   bool facing_right_;
+  bool is_flying_;
   ci::gl::Texture2dRef right_image_;
   ci::gl::Texture2dRef left_image_;
 };

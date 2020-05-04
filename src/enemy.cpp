@@ -13,6 +13,7 @@ Enemy::Enemy(b2World* world, b2Vec2 position, bool is_facing_right) {
   entity_type_ = EntityType::type_enemy;
   facing_right_ = is_facing_right;
   is_active_ = false;
+  is_flying_ = false;
 
   b2BodyDef bodyDef;
   bodyDef.type = b2_staticBody;
@@ -111,4 +112,5 @@ bool Enemy::Activate(float left_bound, float right_bound) {
 
 bool Enemy::isFacingRight() const { return facing_right_; }
 bool Enemy::isActive() const { return is_active_; }
+bool Enemy::isFlying() const { return is_flying_; }
 }

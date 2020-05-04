@@ -15,6 +15,7 @@ using mylibrary::Entity;
 using mylibrary::Enemy;
 using mylibrary::EntityType;
 using mylibrary::Wall;
+using mylibrary::FlyingEnemy;
 
 namespace myapp {
 
@@ -229,13 +230,17 @@ void MyApp::update() {
     EndGame();
   }
 
+  for (std::pair< unsigned int, FlyingEnemy*> data_pair : flying_enemies_) {
+    data_pair.second->Fly();
+  }
+
   UpdateActiveEnemies();
   ScrollWindow();
 }
 
 void MyApp::ActivateEnemies() {
   //If an enemy is within the window, it will be Activated
-  // Next 15 lines copied (with modifications) from:
+  // Next 20 lines copied (with modifications) from:
   // https://www.techiedelight.com/remove-entries-map-iterating-cpp/
   // This method is necessary for iterating through map while erasing
   // elements within map, since erasing invalidates the iterator
@@ -248,6 +253,11 @@ void MyApp::ActivateEnemies() {
     if ((enemy->Activate(((window_shift_ - kActivateRange)/ kPixelsPerMeter),
                          ((window_shift_ + getWindowWidth() + kActivateRange) / kPixelsPerMeter)))) {
       enemy_shooters_.insert(std::pair< unsigned int, Enemy*> (id, enemy));
+
+      if (enemy->isFlying()) {
+        flying_enemies_.insert(std::pair< unsigned int, FlyingEnemy*> (id, (FlyingEnemy*) enemy));
+      }
+
       // supported in C++11
       it = asleep_enemies_.erase(it);
     }
@@ -492,9 +502,15 @@ void MyApp::DestroyEntity(unsigned int entity_ID){
   Entity* entity = entity_manager_.at(entity_ID);
 
   if (entity->GetEntityType()  == mylibrary::type_enemy) {
-    if (((Enemy*) entity)->isActive()) {
+    Enemy* enemy = (Enemy*) entity;
+    if (enemy->isActive()) {
       enemy_shooters_.erase(entity_ID);
-    } else {
+
+      if (enemy->isFlying()) {
+        flying_enemies_.erase(entity_ID);
+      }
+
+    } else { // not Active
       asleep_enemies_.erase(entity_ID);
     }
   }
@@ -617,6 +633,7 @@ void MyApp::Restart() {
   enemy_shooters_.clear();
   asleep_enemies_.clear();
   entities_to_destroy_.clear();
+  flying_enemies_.clear();
 
   Entity::ResetID();
 
