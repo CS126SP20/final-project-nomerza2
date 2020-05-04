@@ -25,7 +25,6 @@ This project should be placed inside that folder
 <br>
 
 ---
-<br>
 **Keyboard Controls**
 <br>
 Space - Fire weapon or start game
