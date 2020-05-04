@@ -368,17 +368,18 @@ void MyApp::draw() {
 
     PrintText("U WiN", kGreen, size, ci::vec2(center.x + window_shift_, center.y), 100);
 
-    finish_image = finish_line_bot_;
+    finish_image = finish_line_bot_win_;
 
   } else {
-    finish_image = finish_line_bot_win_;
+    finish_image = finish_line_bot_;
   }
 
   // Necessary or the image will be tinted the color of the last drawn object.
   ci::Color reset(1,1,1);
   ci::gl::color(reset);
-  // 182 = height of ground + half-height of robot image
-  ci::gl::draw(finish_image, ci::vec2(end_position_ - finish_width_/2, getWindowHeight() -  182));
+  // 3
+  // 346 = height of ground(18) + height of robot image(328)
+  ci::gl::draw(finish_image, ci::vec2((end_position_ - finish_width_) * kPixelsPerMeter, getWindowHeight() - 346));
 
   for (std::pair<unsigned int, Entity*> entity_data : entity_manager_) {
     entity_data.second->Draw();
