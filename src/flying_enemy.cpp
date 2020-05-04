@@ -45,12 +45,13 @@ void FlyingEnemy::Draw() {
 }
 
 void FlyingEnemy::Fly() {
-  if (rand() % 100 != 0 || body_->GetLinearVelocity().y > 0) {
+  // Gives 2% chance
+  if (rand() % 100 > 1 || body_->GetLinearVelocity().y > 0) {
     return;
   }
 
-  // impulse is from 20 to 40
-  body_->ApplyLinearImpulse(b2Vec2(0, rand() % 20 + 20), body_->GetPosition());
+  // impulse is from 10 to 30
+  body_->ApplyLinearImpulse(b2Vec2(0, rand() % 20 + 8), body_->GetPosition());
 }
 
 }

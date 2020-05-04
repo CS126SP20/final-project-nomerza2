@@ -62,6 +62,7 @@ class MyApp : public cinder::app::App {
   // These functions simplify level design, so every element can be added
   // by only calling this function
   void EnemyInit(float x_loc, float y_loc, bool is_facing_right);
+  void FlyingEnemyInit(float x_loc, float y_loc, bool is_facing_right);
   void WallInit(float x_loc, float y_loc, float width, float height, ci::Color color);
   void GroundInit(float start, float end);
 

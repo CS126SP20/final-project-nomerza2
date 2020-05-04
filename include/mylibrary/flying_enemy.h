@@ -9,7 +9,7 @@
 
 namespace mylibrary {
 
-class FlyingEnemy : Enemy {
+class FlyingEnemy : public Enemy {
  public:
   FlyingEnemy(b2World* world, b2Vec2 position, bool is_facing_right);
   void Draw();

@@ -89,9 +89,9 @@ void Enemy::TurnAround() {
   b2Vec2 linear_velocity;
 
   if (facing_right_) {
-    linear_velocity = b2Vec2(2.0f, 0);
+    linear_velocity = b2Vec2(2.0f, body_->GetLinearVelocity().y);
   } else {
-    linear_velocity = b2Vec2(-2.0f, 0);
+    linear_velocity = b2Vec2(-2.0f, body_->GetLinearVelocity().y);
   }
 
   body_->SetLinearVelocity(linear_velocity);

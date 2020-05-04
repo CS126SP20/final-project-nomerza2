@@ -33,6 +33,7 @@ const ci::Color kOrange = ci::Color(1,0.5f,0);
 const ci::Color kDarkPurple = ci::Color(0.4f, 0, 0.4f);
 const ci::Color kDeepRed = ci::Color(0.6f,0,0);
 const ci::Color kGray = ci::Color(0.57f, 0.57f, 0.57f);
+const ci::Color kGold = ci::Color(0.83f, 0.69f, 0.215f);
 
 const b2Vec2 kGravity = b2Vec2(0, -18);
 
@@ -54,7 +55,7 @@ MyApp::MyApp() {
   window_shift_ = 0;
   sensor_contacts_ = 0;
 
-  end_position_ = 187.0f;
+  end_position_ = 220.0f;
   finish_width_ = 2.5f;
 
   won_game_ = false;
@@ -135,7 +136,7 @@ void MyApp::setup() {
   WallInit(151, 5.5, 0.1f,0.5f, kDeepRed);
   //Recombined
   WallInit(153, 2.5f, 3, 0.2f, kDeepRed);
-  GroundInit(157, 187);
+  GroundInit(157, 220);
 
   // The Pit
  WallInit(164, 0, 2, 3, kGray);
@@ -151,6 +152,19 @@ void MyApp::setup() {
  WallInit(179.4f, 5, 0.1f, 0.4f, kGray);
  EnemyInit(180, 5.1f, true);
  WallInit(181, 2, 2, 9, kGray);
+
+ // Flying Enemy Cage
+ WallInit(188, 1.5, 2, 10.3f, kGold);
+ WallInit(206, 0, 2, 9.2f, kGold);
+ WallInit(204, 0, 2, 1.5f, kGold);
+ WallInit(198, 3.2, 2, 1.2f, kGold);
+ WallInit(192, 4.7, 2, 1, kGold);
+ WallInit(198, 7.3f, 2, 1, kGold);
+ WallInit(203, 9.2f, 5, 0.5f, kGold);
+ WallInit(188, 11.8f, 20, 0.3f, kGold);
+ FlyingEnemyInit(195, 1, true);
+ FlyingEnemyInit(202, 0.5f, false);
+ FlyingEnemyInit(192.5f, 6, false);
 }
 
 void MyApp::AudioSetup() {
@@ -175,6 +189,13 @@ void MyApp::AudioSetup() {
 // y_loc is the height of the enemy's feet
 void MyApp::EnemyInit(float x_loc, float y_loc, bool is_facing_right) {
   Enemy* enemy = new Enemy(world_, b2Vec2(x_loc, y_loc + kEnemyHeight), is_facing_right);
+  std::pair<unsigned int, Enemy*> enemy_data(Entity::GetEntityID(), enemy);
+  entity_manager_.insert(enemy_data);
+  asleep_enemies_.insert(enemy_data);
+}
+
+void MyApp::FlyingEnemyInit(float x_loc, float y_loc, bool is_facing_right){
+  FlyingEnemy* enemy = new FlyingEnemy(world_, b2Vec2(x_loc, y_loc + kEnemyHeight), is_facing_right);
   std::pair<unsigned int, Enemy*> enemy_data(Entity::GetEntityID(), enemy);
   entity_manager_.insert(enemy_data);
   asleep_enemies_.insert(enemy_data);
