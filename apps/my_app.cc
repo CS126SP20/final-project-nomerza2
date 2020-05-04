@@ -34,6 +34,7 @@ const ci::Color kDarkPurple = ci::Color(0.4f, 0, 0.4f);
 const ci::Color kDeepRed = ci::Color(0.6f,0,0);
 const ci::Color kGray = ci::Color(0.57f, 0.57f, 0.57f);
 const ci::Color kGold = ci::Color(0.83f, 0.69f, 0.215f);
+const ci::Color kDarkPink = ci::Color(1, 0, 0.5f);
 
 const b2Vec2 kGravity = b2Vec2(0, -18);
 
@@ -55,7 +56,7 @@ MyApp::MyApp() {
   window_shift_ = 0;
   sensor_contacts_ = 0;
 
-  end_position_ = 220.0f;
+  end_position_ = 257.0f;
   finish_width_ = 2.5f;
 
   won_game_ = false;
@@ -136,7 +137,7 @@ void MyApp::setup() {
   WallInit(151, 5.5, 0.1f,0.5f, kDeepRed);
   //Recombined
   WallInit(153, 2.5f, 3, 0.2f, kDeepRed);
-  GroundInit(157, 220);
+  GroundInit(157, 257);
 
   // The Pit
  WallInit(164, 0, 2, 3, kGray);
@@ -165,6 +166,22 @@ void MyApp::setup() {
  FlyingEnemyInit(195, 1, true);
  FlyingEnemyInit(202, 0.5f, false);
  FlyingEnemyInit(192.5f, 6, false);
+
+ // Pyramid
+ WallInit(217, 1.5f, 1, 12, kDarkPink);
+ WallInit(221, 0, 21, 2, kDarkPink);
+ WallInit(224, 0, 15, 4, kDarkPink);
+ WallInit(227, 0, 9, 6, kDarkPink);
+ WallInit(230, 0, 3, 8, kDarkPink);
+ WallInit(246, 1.5f, 1, 12, kDarkPink);
+ WallInit(218, 11.8f, 28, 0.3f, kDarkPink);
+ FlyingEnemyInit(220, 1, false);
+ FlyingEnemyInit(226, 6, true);
+ EnemyInit(228, 6.3f, true);
+ FlyingEnemyInit(232, 8.5f, false);
+ EnemyInit(235, 6.3f, false);
+ FlyingEnemyInit(238, 4.5f, false);
+ FlyingEnemyInit(244, 0.5f, true);
 }
 
 void MyApp::AudioSetup() {
