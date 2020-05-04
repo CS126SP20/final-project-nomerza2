@@ -53,3 +53,9 @@ The game has been expanded to become more complete. Music, sound effects,
 a title screen, and a finish line marker have all been added. Also the text
 displayed during the game has been enhanced, and more obstacles have been 
 added to the level. 
+
+**5/04/2020**
+Added in new type of Enemy, the Flying Enemy, which uses a jetpack to fly
+randomly during gameplay. The Flying Enemy has been added into new obstacles
+at the end of the level. Since flying is random, the new enemy is less predictable,
+making gameplay more exciting and helps the game feel more complete.
