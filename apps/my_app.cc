@@ -346,7 +346,8 @@ void MyApp::ScrollWindow() {
   if (pixel_player_position > right_bound
       && (window_shift_ + getWindowWidth()) < (end_position_ * kPixelsPerMeter)) {
 
-    //This ensures the view shifts at the same speed of the player, so the player never has to wait for the view to catch up to it.
+    //This ensures the view shifts at the same speed of the player,
+    // so the player never has to wait for the view to catch up to it.
     window_shift_ += pixel_player_position - right_bound;
 
   } else if (pixel_player_position < left_bound && window_shift_ > 0) {
@@ -390,15 +391,14 @@ void MyApp::draw() {
   ci::gl::setMatricesWindow(getWindowSize());
   ci::gl::translate(-window_shift_, 0);
 
-  // Life Counter
-  const cinder::ivec2 size = {50, 50};
-  const cinder::vec2 center(50.0f + window_shift_, 50.0f); //Top-left Corner
-  PrintText(std::to_string(lives_), kBlue, size, center,50);
-
   player_->Draw();
 
   for (Wall* wall : walls_) {
     wall->Draw();
+  }
+
+  for (std::pair<unsigned int, Entity*> entity_data : entity_manager_) {
+    entity_data.second->Draw();
   }
 
   if (lives_ <= 0) {
@@ -407,6 +407,11 @@ void MyApp::draw() {
 
     PrintText("U DED", kRed, size, ci::vec2(center.x + window_shift_, center.y), 100);
   }
+
+  // Life Counter
+  const cinder::ivec2 size = {50, 50};
+  const cinder::vec2 center(50.0f + window_shift_, 50.0f); //Top-left Corner
+  PrintText(std::to_string(lives_), kBlue, size, center,50);
 
   ci::gl::Texture2dRef finish_image;
 
@@ -425,13 +430,8 @@ void MyApp::draw() {
   // Necessary or the image will be tinted the color of the last drawn object.
   ci::Color reset(1,1,1);
   ci::gl::color(reset);
-  // 3
   // 346 = height of ground(18) + height of robot image(328)
   ci::gl::draw(finish_image, ci::vec2((end_position_ - finish_width_) * kPixelsPerMeter, getWindowHeight() - 346));
-
-  for (std::pair<unsigned int, Entity*> entity_data : entity_manager_) {
-    entity_data.second->Draw();
-  }
 
   if (developer_mode_) {
     DrawDeveloperMode();
@@ -440,7 +440,7 @@ void MyApp::draw() {
 
 void MyApp::DrawDeveloperMode() {
 
-  for (size_t i = 100; i < 115; i++) {
+  for (size_t i = 0; i < 20; i++) {
     PrintText(std::to_string(i), kCyan, ci::ivec2(50,50),
         ci::vec2(i * kPixelsPerMeter, getWindowCenter().y), 30);
   }
