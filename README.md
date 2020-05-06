@@ -10,6 +10,7 @@ layout.
 
 ---
 **Requirements and Dependencies**
+<br>
 -Windows
 
 This project was created for a windows computer. Functionality cannot be guaranteed on other operating systems.
@@ -34,7 +35,8 @@ CLion as the development IDE, but this isn't necessary. If you aren't using CLio
 instructions for adding Visual Studio as the environment and Cinder as an external library.
 
 -[Box2D](https://box2d.org/)
-...Box2D is a two-dimensional physics engine used in this project. Box2D controls all object creation, movement, and collisions.
+
+Box2D is a two-dimensional physics engine used in this project. Box2D controls all object creation, movement, and collisions.
 Box2D is a CinderBlock that has been imported as part of the CMake files, so no additional installation is need for the user.
 <br>
 ---
