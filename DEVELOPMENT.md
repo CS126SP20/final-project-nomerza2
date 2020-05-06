@@ -61,5 +61,5 @@ at the end of the level. Since flying is random, the new enemy is less predictab
 making gameplay more exciting and helps the game feel more complete.
 
 **5/06/2020**
-Improved organization and completed documentation of project, including code, README, 
-and PROPOSAL. Project is now ready for final turn-in.
+Improved organization and formatting of code. Completed documentation of project,
+including code comments, README, and PROPOSAL. Project is now ready for final turn-in.

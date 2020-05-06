@@ -41,6 +41,10 @@ const b2Vec2 kGravity = b2Vec2(0, -18);
 //The enemies will activate when they are within this many pixels of the screen
 const int kActivateRange = 160;
 
+const int kStartingLives = 7;
+const int kEnemyReloadTime = 80;
+const int kPlayerReloadTime = 25;
+
 MyApp::MyApp() {
   world_ = new b2World(kGravity);
 
@@ -49,10 +53,10 @@ MyApp::MyApp() {
   world_->SetContactListener(&contact_listener_);
   contact_listener_.myApp_ = this;
 
-  lives_ = 7;
+  lives_ = kStartingLives;
   jump_timer_ = 0;
   shooting_timer_ = 0;
-  enemy_shooting_timer_ = 44;
+  enemy_shooting_timer_ = kEnemyReloadTime;
   window_shift_ = 0;
   sensor_contacts_ = 0;
 
@@ -317,7 +321,7 @@ void MyApp::UpdateActiveEnemies() {
   if (enemy_shooting_timer_ > 0) {
     enemy_shooting_timer_--;
   } else {
-    enemy_shooting_timer_ = 80;
+    enemy_shooting_timer_ = kEnemyReloadTime;
 
     for (std::pair<unsigned int, Enemy*> enemy_data : enemy_shooters_) {
       Enemy* enemy = enemy_data.second;
@@ -506,7 +510,7 @@ void MyApp::keyDown(KeyEvent event) {
 
     laser_sound_->start();
 
-    shooting_timer_ = 25;
+    shooting_timer_ = kPlayerReloadTime;
 
     b2Vec2 player_position = player_->getBody()->GetPosition();
     b2Vec2 spawn_location;
@@ -678,10 +682,10 @@ void MyApp::Restart() {
 
   Entity::ResetID();
 
-  lives_ = 7;
+  lives_ = kStartingLives;
   jump_timer_ = 0;
   shooting_timer_ = 0;
-  enemy_shooting_timer_ = 44;
+  enemy_shooting_timer_ = kEnemyReloadTime;
   window_shift_ = 0;
 
   won_game_ = false;
