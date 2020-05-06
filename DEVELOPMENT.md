@@ -59,3 +59,7 @@ Added in new type of Enemy, the Flying Enemy, which uses a jetpack to fly
 randomly during gameplay. The Flying Enemy has been added into new obstacles
 at the end of the level. Since flying is random, the new enemy is less predictable,
 making gameplay more exciting and helps the game feel more complete.
+
+**5/06/2020**
+Improved organization and completed documentation of project, including code, README, 
+and PROPOSAL. Project is now ready for final turn-in.

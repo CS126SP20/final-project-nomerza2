@@ -9,12 +9,11 @@
 #include <Box2D/Box2D.h>
 #include <cinder/gl/Texture.h>
 
-const float kEnemyWidth = 52.0f/kPixelsPerMeter;
-const float kEnemyHeight = (105.0f/kPixelsPerMeter);
 // image is 84x105 pixels
 // for better interaction, Box2D box will be 52x105, with 16 pixels taken from
 // each side evenly so that way the center remains the same
-
+const float kEnemyHeight = (105.0f/kPixelsPerMeter);
+const float kEnemyWidth = 52.0f/kPixelsPerMeter;
 const float kTotalMeterWidth = 84.0f/kPixelsPerMeter;
 
 namespace mylibrary {

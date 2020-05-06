@@ -71,6 +71,15 @@ MyApp::MyApp() {
   AudioSetup();
 }
 
+/**
+ * Developer Note - this function is very long. All of the code in here is used
+ * the game layout. Since the entire level is loaded at once, and (while given
+ * separate labels) the different obstacles are dependent on each other (e.g.
+ * ground blocks that stretch across multiple obstacles, enemies that move
+ * between areas, etc.) Arbitrarily separating the level setup into multiple
+ * functions would be unnecessary and confusing, hence why this function is 100+
+ * lines long.
+ * */
 void MyApp::setup() {
   cinder::app::WindowRef windowRef = this->getWindow();
   windowRef->setFullScreen();
@@ -140,48 +149,48 @@ void MyApp::setup() {
   GroundInit(157, 257);
 
   // The Pit
- WallInit(164, 0, 2, 3, kGray);
- WallInit(166, 0, 2, 6, kGray);
- WallInit(168, 0, 2, 9, kGray);
- WallInit(170, 0, 8, 5, kGray);
- EnemyInit(171, 5.1f, true);
- EnemyInit(173, 5.1f, false);
- EnemyInit(175, 5.1f, true);
- EnemyInit(176.5f, 5.1f, false);
- WallInit(177.9f, 5, 0.1f, 0.4f, kGray);
- WallInit(179.4f, 2, 1.6f, 3, kGray);
- WallInit(179.4f, 5, 0.1f, 0.4f, kGray);
- EnemyInit(180, 5.1f, true);
- WallInit(181, 2, 2, 9, kGray);
+  WallInit(164, 0, 2, 3, kGray);
+  WallInit(166, 0, 2, 6, kGray);
+  WallInit(168, 0, 2, 9, kGray);
+  WallInit(170, 0, 8, 5, kGray);
+  EnemyInit(171, 5.1f, true);
+  EnemyInit(173, 5.1f, false);
+  EnemyInit(175, 5.1f, true);
+  EnemyInit(176.5f, 5.1f, false);
+  WallInit(177.9f, 5, 0.1f, 0.4f, kGray);
+  WallInit(179.4f, 2, 1.6f, 3, kGray);
+  WallInit(179.4f, 5, 0.1f, 0.4f, kGray);
+  EnemyInit(180, 5.1f, true);
+  WallInit(181, 2, 2, 9, kGray);
 
- // Flying Enemy Cage
- WallInit(188, 1.5, 2, 10.3f, kGold);
- WallInit(206, 0, 2, 9.2f, kGold);
- WallInit(204, 0, 2, 1.5f, kGold);
- WallInit(198, 3.2, 2, 1.2f, kGold);
- WallInit(192, 4.7, 2, 1, kGold);
- WallInit(198, 7.3f, 2, 1, kGold);
- WallInit(203, 9.2f, 5, 0.5f, kGold);
- WallInit(188, 11.8f, 20, 0.3f, kGold);
- FlyingEnemyInit(195, 1, true);
- FlyingEnemyInit(202, 0.5f, false);
- FlyingEnemyInit(192.5f, 6, false);
+  // Flying Enemy Cage
+  WallInit(188, 1.5, 2, 10.3f, kGold);
+  WallInit(206, 0, 2, 9.2f, kGold);
+  WallInit(204, 0, 2, 1.5f, kGold);
+  WallInit(198, 3.2, 2, 1.2f, kGold);
+  WallInit(192, 4.7, 2, 1, kGold);
+  WallInit(198, 7.3f, 2, 1, kGold);
+  WallInit(203, 9.2f, 5, 0.5f, kGold);
+  WallInit(188, 11.8f, 20, 0.3f, kGold);
+  FlyingEnemyInit(195, 1, true);
+  FlyingEnemyInit(202, 0.5f, false);
+  FlyingEnemyInit(192.5f, 6, false);
 
- // Pyramid
- WallInit(217, 1.5f, 1, 12, kDarkPink);
- WallInit(221, 0, 21, 2, kDarkPink);
- WallInit(224, 0, 15, 4, kDarkPink);
- WallInit(227, 0, 9, 6, kDarkPink);
- WallInit(230, 0, 3, 8, kDarkPink);
- WallInit(246, 1.5f, 1, 12, kDarkPink);
- WallInit(218, 11.8f, 28, 0.3f, kDarkPink);
- FlyingEnemyInit(220, 1, false);
- FlyingEnemyInit(226, 6, true);
- EnemyInit(228, 6.3f, true);
- FlyingEnemyInit(232, 8.5f, false);
- EnemyInit(235, 6.3f, false);
- FlyingEnemyInit(238, 4.5f, false);
- FlyingEnemyInit(244, 0.5f, true);
+  // Pyramid
+  WallInit(217, 1.5f, 1, 12, kDarkPink);
+  WallInit(221, 0, 21, 2, kDarkPink);
+  WallInit(224, 0, 15, 4, kDarkPink);
+  WallInit(227, 0, 9, 6, kDarkPink);
+  WallInit(230, 0, 3, 8, kDarkPink);
+  WallInit(246, 1.5f, 1, 12, kDarkPink);
+  WallInit(218, 11.8f, 28, 0.3f, kDarkPink);
+  FlyingEnemyInit(220, 1, false);
+  FlyingEnemyInit(226, 6, true);
+  EnemyInit(228, 6.3f, true);
+  FlyingEnemyInit(232, 8.5f, false);
+  EnemyInit(235, 6.3f, false);
+  FlyingEnemyInit(238, 4.5f, false);
+  FlyingEnemyInit(244, 0.5f, true);
 }
 
 void MyApp::AudioSetup() {
@@ -203,7 +212,7 @@ void MyApp::AudioSetup() {
   music_player_->getSamplePlayerNode()->setLoopEnabled();
 }
 
-// y_loc is the height of the enemy's feet
+// y_loc is the height of the enemy's feet. x_loc is the center of the enemy.
 void MyApp::EnemyInit(float x_loc, float y_loc, bool is_facing_right) {
   Enemy* enemy = new Enemy(world_, b2Vec2(x_loc, y_loc + kEnemyHeight), is_facing_right);
   std::pair<unsigned int, Enemy*> enemy_data(Entity::GetEntityID(), enemy);
@@ -265,7 +274,6 @@ void MyApp::update() {
 
   if (player_position.x > end_position_ - finish_width_) {
     won_game_ = true;
-    EndGame();
   }
 
   for (std::pair< unsigned int, FlyingEnemy*> data_pair : flying_enemies_) {
@@ -614,7 +622,6 @@ void MyApp::ContactListener::BeginContact(b2Contact* contact) {
 
   // The Next two are for when an enemy collides with a non-bullet
   // (which it can't be if it reached this point), non-player object
-
   if (fixture_A->GetUserData() != NULL) {
     Entity* entity =
         myApp_->entity_manager_.at((unsigned int) fixture_A->GetUserData());
@@ -642,10 +649,6 @@ void MyApp::ContactListener::EndContact(b2Contact* contact) {
       || (int)contact->GetFixtureB()->GetUserData() == kFootSensorID) {
       myApp_->sensor_contacts_--;
     }
-}
-
-void MyApp::EndGame() {
-  //TODO Delete if unused
 }
 
 void MyApp::Restart() {

@@ -35,7 +35,6 @@ class MyApp : public cinder::app::App {
 
  private:
   void DestroyEntity(unsigned int entity_ID);
-  void EndGame();
 
   /**
    * Deletes all data allocated on the heap
@@ -106,8 +105,18 @@ class MyApp : public cinder::app::App {
   bool developer_mode_;
   bool title_screen_;
 
-  //This is a declaration for the internal ContactListener Class
+  /**
+   * The Internal ContactListener class is a child of the b2ContactListener class
+   * This class manages all collisions between objects
+   * This allows us to define specific object behavior on collision
+   * */
   class ContactListener : public b2ContactListener {
+    /**
+     * These functions allow us to define object interaction at the beginning
+     * and end of a collision
+     * These are automatically called when objects collide (or stop colliding)
+     * during world_->step(), which is called in ci::update()
+     * */
     void BeginContact(b2Contact* contact);
     void EndContact(b2Contact* contact);
 
@@ -116,7 +125,7 @@ class MyApp : public cinder::app::App {
     MyApp* myApp_;
   };
 
-  //This is a private member variable of MyApp
+  //This is a private member variable of MyApp, type is the class just declared
   ContactListener contact_listener_;
 };
 

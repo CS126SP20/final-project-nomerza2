@@ -6,7 +6,7 @@
 #include <cinder/gl/Texture.h>
 #include "entity.h"
 
-// These sizes are in meters, using the pixel height divided by PPM
+// These sizes are in meters, using the pixel sizes in image divided by PPM
 const float kPlayerWidth = 90.0f/kPixelsPerMeter;
 const float kPlayerHeight = (105.0f/kPixelsPerMeter);
 
