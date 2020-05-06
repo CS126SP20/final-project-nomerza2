@@ -21,7 +21,7 @@ Player::Player(b2World* world){
   b2FixtureDef fixtureDef;
   fixtureDef.shape = &dynamicBox;
   fixtureDef.density = 2.0f;
-  fixtureDef.friction = 0.3f;
+  fixtureDef.friction = 0.0f;
   body_->CreateFixture(&fixtureDef);
 
   //Foot Sensor for jumping
