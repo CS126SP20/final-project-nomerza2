@@ -10,30 +10,29 @@ layout.
 
 ---
 **Requirements and Dependencies**
-<br>
 -Windows
 
-...This project was created for a windows computer. Functionality cannot be guaranteed on other operating systems.
-<br>
+This project was created for a windows computer. Functionality cannot be guaranteed on other operating systems.
+
 -[CMake](https://cmake.org/)
 
-...This a CMake project. CMake is used to build and link project files. CMake will be necessary to run this project.
-<br>
+This a CMake project. CMake is used to build and link project files. CMake will be necessary to run this project.
+
 -[Microsoft Visual Studio 2015](https://my.visualstudio.com/Downloads?q=visual%20studio%202015&wt.mc_id=o%7Emsft%7Evscom%7Eolder-downloads)
 
-...Visual Studio 2015 is necessary to run the Cinder library. Cinder was designed for Visual Studio 2015, so later versions
+Visual Studio 2015 is necessary to run the Cinder library. Cinder was designed for Visual Studio 2015, so later versions
 will not work. 
-<br>
+
 -[Cinder](https://libcinder.org/download)
 
-...In the \Cinder folder where Cinder was installed, create a folder called "my-projects".
+In the \Cinder folder where Cinder was installed, create a folder called "my-projects".
 This project should be placed inside that folder
 
-...A guide for installing Visual Studio and Cinder can be found [here,](https://courses.grainger.illinois.edu/cs126/sp2020/assignments/snake/)
+A guide for installing Visual Studio and Cinder can be found [here,](https://courses.grainger.illinois.edu/cs126/sp2020/assignments/snake/)
 under the "Setting Up Cinder + Snake" section (and the "Windows Users - READ THIS" dropdown). This guide explains, uses
 CLion as the development IDE, but this isn't necessary. If you aren't using CLion, follow your development environment's
 instructions for adding Visual Studio as the environment and Cinder as an external library.
-<br>
+
 -[Box2D](https://box2d.org/)
 ...Box2D is a two-dimensional physics engine used in this project. Box2D controls all object creation, movement, and collisions.
 Box2D is a CinderBlock that has been imported as part of the CMake files, so no additional installation is need for the user.
