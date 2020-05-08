@@ -45,6 +45,15 @@ void FlyingEnemy::Draw() {
 }
 
 void FlyingEnemy::Fly() {
+  // Don't allow them to fly off screen
+  if (body_->GetPosition().y * kPixelsPerMeter > ci::app::getWindowHeight() - (kEnemyHeight * kPixelsPerMeter)
+    && body_->GetLinearVelocity().y > 0) {
+
+    b2Vec2 lin_velocity(body_->GetLinearVelocity().x, 0);
+    body_->SetLinearVelocity(lin_velocity);
+    return;
+  }
+
   // Gives 2% chance
   if (rand() % 100 > 1 || body_->GetLinearVelocity().y > 0) {
     return;
