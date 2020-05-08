@@ -39,18 +39,18 @@ const ci::Color kGold = ci::Color(0.83f, 0.69f, 0.215f);
 const ci::Color kDarkPink = ci::Color(1, 0, 0.5f);
 const ci::Color kLightGreen = ci::Color(0.2f, 1, 0.2f);
 const ci::Color kDarkBlue = ci::Color(0, 0, 0.4f);
-const ci::Color kShallowRed = ci::Color(1, 0.24f, 0.24f);
+const ci::Color kShallowRed = ci::Color(1, 0.17f, 0.17f);
 
 const b2Vec2 kGravity = b2Vec2(0, -18);
 
 //The enemies will activate when they are within this many pixels of the screen
 const int kActivateRange = 160;
 
-const int kStartingLives = 7;
+const int kStartingLives = 5;
 const int kEnemyReloadTime = 80;
 const int kPlayerReloadTime = 25;
 const float kFinishWidth = 2.5f;
-const int kStartLevel = 1;
+const int kStartLevel = 0;
 const int kFinalLevel = 1;
 const int kWaitTime = 4;
 
@@ -347,7 +347,14 @@ void MyApp::draw() {
     const cinder::ivec2 size = {500, 500};
     const cinder::vec2 center = getWindowCenter();
 
-    PrintText("Level Complete", kGreen, size, ci::vec2(center.x + window_shift_, center.y), 100);
+    std::string to_print;
+    if (level_ == kFinalLevel) {
+      to_print = "YOU WIN!";
+    } else {
+      to_print = "Level Complete";
+    }
+
+    PrintText(to_print, kGreen, size, ci::vec2(center.x + window_shift_, center.y), 100);
 
     finish_image = finish_line_bot_win_;
 
