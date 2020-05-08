@@ -44,6 +44,7 @@ const int kActivateRange = 160;
 const int kStartingLives = 7;
 const int kEnemyReloadTime = 80;
 const int kPlayerReloadTime = 25;
+const float kFinishWidth = 2.5f;
 
 MyApp::MyApp() {
   world_ = new b2World(kGravity);
@@ -59,9 +60,6 @@ MyApp::MyApp() {
   enemy_shooting_timer_ = kEnemyReloadTime;
   window_shift_ = 0;
   sensor_contacts_ = 0;
-
-  end_position_ = 257.0f;
-  finish_width_ = 2.5f;
 
   won_game_ = false;
   developer_mode_ = false;
@@ -195,6 +193,8 @@ void MyApp::setup() {
   EnemyInit(235, 6.3f, false);
   FlyingEnemyInit(238, 4.5f, false);
   FlyingEnemyInit(244, 0.5f, true);
+
+  end_position_ = 257.0f;
 }
 
 void MyApp::AudioSetup() {
@@ -276,7 +276,7 @@ void MyApp::update() {
     lives_ = 0;
   }
 
-  if (player_position.x > end_position_ - finish_width_) {
+  if (player_position.x > end_position_ - kFinishWidth) {
     won_game_ = true;
   }
 
@@ -443,7 +443,7 @@ void MyApp::draw() {
   ci::Color reset(1,1,1);
   ci::gl::color(reset);
   // 346 = height of ground(18) + height of robot image(328)
-  ci::gl::draw(finish_image, ci::vec2((end_position_ - finish_width_) * kPixelsPerMeter, getWindowHeight() - 346));
+  ci::gl::draw(finish_image, ci::vec2((end_position_ - kFinishWidth) * kPixelsPerMeter, getWindowHeight() - 346));
 
   if (developer_mode_) {
     DrawDeveloperMode();

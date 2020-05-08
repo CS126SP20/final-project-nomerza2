@@ -100,7 +100,6 @@ class MyApp : public cinder::app::App {
   int window_shift_;
   int sensor_contacts_;
   float end_position_;
-  float finish_width_;
   bool won_game_;
   bool developer_mode_;
   bool title_screen_;
