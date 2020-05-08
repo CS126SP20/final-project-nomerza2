@@ -267,8 +267,8 @@ void MyApp::UpdateActiveEnemies() {
 
 void MyApp::ScrollWindow() {
   //Bounded at the right and left thirds of the screen
-  int right_bound = window_shift_ + (getWindowWidth() * 0.67);
-  int left_bound = window_shift_ + (getWindowWidth() * 0.33);
+  int right_bound = window_shift_ + (getWindowWidth() * 0.57);
+  int left_bound = window_shift_ + (getWindowWidth() * 0.23);
   int pixel_player_position = (int) (player_->getBody()->GetPosition().x * kPixelsPerMeter);
 
   if (pixel_player_position > right_bound
@@ -723,9 +723,9 @@ void MyApp::LevelOne() {
   EnemyInit(165, 0.3f, true);
   WallInit(166, 3, 3, 0.2f, kLightGreen);
   FlyingEnemyInit(171, 0.2f, true);
-  WallInit(172, 2, 3, 0.2f, kLightGreen);
+  WallInit(172, 1.6f, 3, 0.2f, kLightGreen);
   EnemyInit(173.5f, 2.2f, true);
-  WallInit(172, 4, 3, 0.2f, kLightGreen);
+  WallInit(172, 5.2f, 3, 0.2f, kLightGreen);
   FlyingEnemyInit(173.5f, 4.3f, true);
   WallInit(178, 0, 3, 3, kLightGreen);
 
