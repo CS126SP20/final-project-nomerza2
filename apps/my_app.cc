@@ -37,6 +37,9 @@ const ci::Color kDeepRed = ci::Color(0.6f,0,0);
 const ci::Color kGray = ci::Color(0.57f, 0.57f, 0.57f);
 const ci::Color kGold = ci::Color(0.83f, 0.69f, 0.215f);
 const ci::Color kDarkPink = ci::Color(1, 0, 0.5f);
+const ci::Color kLightGreen = ci::Color(0.2f, 1, 0.2f);
+const ci::Color kDarkBlue = ci::Color(0, 0, 0.4f);
+const ci::Color kShallowRed = ci::Color(1, 0.24f, 0.24f);
 
 const b2Vec2 kGravity = b2Vec2(0, -18);
 
@@ -689,14 +692,44 @@ void MyApp::LevelZero() {
 }
 
 void MyApp::LevelOne() {
-  PlayerWorldInit(182, 4);
-  window_shift_ = 181*kPixelsPerMeter;
-  left_window_bound_ = 181;
+  PlayerWorldInit(91, 4);
+  window_shift_ = 90*kPixelsPerMeter;
+  left_window_bound_ = 90;
   won_level_ = false;
 
-  WallInit(180.9f, 0, 0.1f, getWindowHeight()/kPixelsPerMeter, kYellow);
+  WallInit(89.9f, 0, 0.1f, getWindowHeight()/kPixelsPerMeter, kYellow);
+
+  // Intro to jetpacks
+  GroundInit(90, 119);
+  WallInit(95, 0, 1.5f, 3, kShallowRed);
+  FlyingEnemyInit(102, 0.5f, true);
+  FlyingEnemyInit(106.5f, 0.5f, true);
+  WallInit(110, 0, 3, 3, kShallowRed);
+  WallInit(113, 0, 3, 6, kShallowRed);
+  WallInit(116, 0, 3, 9, kShallowRed);
+
+  // Open Air jumps and jetpacks
+  WallInit(124, 4, 2, 0.2f, kDarkBlue);
+  WallInit(129, 6.5f, 2, 0.2f, kDarkBlue);
+  WallInit(136, 4, 2, 0.2f, kDarkBlue);
+  FlyingEnemyInit(137.6f, 4.2f, true);
+  WallInit(141, 7, 2, 0.2f, kDarkBlue);
+  WallInit(146, 10, 2, 0.2f, kDarkBlue);
+  FlyingEnemyInit(147.6f, 10.5f, true);
+  WallInit(153, 5, 2, 0.2f, kDarkBlue);
+
+  //Opening With Scaffolding
+  GroundInit(160, 257);
+  EnemyInit(165, 0.3f, true);
+  WallInit(166, 3, 3, 0.2f, kLightGreen);
+  FlyingEnemyInit(171, 0.2f, true);
+  WallInit(172, 2, 3, 0.2f, kLightGreen);
+  EnemyInit(173.5f, 2.2f, true);
+  WallInit(172, 4, 3, 0.2f, kLightGreen);
+  FlyingEnemyInit(173.5f, 4.3f, true);
+  WallInit(178, 0, 3, 3, kLightGreen);
+
   // Flying Enemy Cage
-  GroundInit(181, 257);
   WallInit(188, 1.5, 2, 10.3f, kGold);
   WallInit(206, 0, 2, 9.2f, kGold);
   WallInit(204, 0, 2, 1.5f, kGold);
