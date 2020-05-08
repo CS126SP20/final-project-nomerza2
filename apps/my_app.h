@@ -52,6 +52,8 @@ class MyApp : public cinder::app::App {
   void DrawTitleScreen();
 
   void AudioSetup();
+  void LevelZero();
+  void LevelOne();
 
   // These are helper functions to Update()
   void ActivateEnemies();
@@ -64,6 +66,7 @@ class MyApp : public cinder::app::App {
   void FlyingEnemyInit(float x_loc, float y_loc, bool is_facing_right);
   void WallInit(float x_loc, float y_loc, float width, float height, ci::Color color);
   void GroundInit(float start, float end);
+  void PlayerWorldInit(float x_loc, float y_loc);
 
   b2World* world_;
   mylibrary::Player* player_;
@@ -87,6 +90,7 @@ class MyApp : public cinder::app::App {
   ci::gl::Texture2dRef finish_line_bot_;
   ci::gl::Texture2dRef finish_line_bot_win_;
 
+  int level_;
   int lives_;
 
   //The player may still be able to get a large jump by holding down the up key
@@ -98,9 +102,10 @@ class MyApp : public cinder::app::App {
   int enemy_shooting_timer_;
 
   int window_shift_;
+  int left_window_bound_;
   int sensor_contacts_;
   float end_position_;
-  bool won_game_;
+  bool won_level_;
   bool developer_mode_;
   bool title_screen_;
 

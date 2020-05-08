@@ -18,7 +18,7 @@ namespace mylibrary {
 
 class Player {
  public:
-  Player(b2World* world);
+  Player(b2World* world, float x_loc, float y_loc);
   void Draw();
   void setFacingRight(bool facingRight);
   b2Body* getBody() const;

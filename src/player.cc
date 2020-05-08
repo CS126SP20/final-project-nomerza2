@@ -8,12 +8,12 @@
 
 namespace mylibrary {
 
-Player::Player(b2World* world){
+Player::Player(b2World* world, float x_loc, float y_loc){
   //Dynamic now
   b2BodyDef bodyDef;
   bodyDef.type = b2_dynamicBody;
   bodyDef.fixedRotation = true;
-  bodyDef.position.Set(1.0f, 4.0f);
+  bodyDef.position.Set(x_loc, y_loc);
   body_ = world->CreateBody(&bodyDef);
 
   b2PolygonShape dynamicBox;

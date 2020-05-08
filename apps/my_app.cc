@@ -8,6 +8,8 @@
 #include <cinder/Text.h>
 #include <cinder/Font.h>
 #include <cinder/app/Window.h>
+#include <thread>
+#include <chrono>
 
 using mylibrary::Player;
 using mylibrary::Bullet;
@@ -45,23 +47,18 @@ const int kStartingLives = 7;
 const int kEnemyReloadTime = 80;
 const int kPlayerReloadTime = 25;
 const float kFinishWidth = 2.5f;
+const int kStartLevel = 1;
+const int kFinalLevel = 1;
+const int kWaitTime = 4;
 
 MyApp::MyApp() {
-  world_ = new b2World(kGravity);
-
-  player_ = new Player(world_);
-
-  world_->SetContactListener(&contact_listener_);
-  contact_listener_.myApp_ = this;
-
   lives_ = kStartingLives;
+  level_ = kStartLevel;
   jump_timer_ = 0;
   shooting_timer_ = 0;
   enemy_shooting_timer_ = kEnemyReloadTime;
-  window_shift_ = 0;
   sensor_contacts_ = 0;
 
-  won_game_ = false;
   developer_mode_ = false;
   title_screen_ = true;
 
@@ -86,115 +83,12 @@ void MyApp::setup() {
   cinder::app::WindowRef windowRef = this->getWindow();
   windowRef->setFullScreen();
 
-  // Intro
-  GroundInit(0, 45);
-  WallInit(-0.1f, 0, 0.1f, getWindowHeight()/kPixelsPerMeter, kYellow);
-  WallInit(3.0f, 0, 3, 2, kYellow);
-  WallInit(11, 0, 3, 3.0f, kYellow);
-  WallInit(14, 0, 3, 6.0f, kRed);
-  WallInit(17, 0, 3, 9.0f, kGreen);
-  EnemyInit(21, 0.4f, true);
+  if (level_ == 0) {
+    LevelZero();
+  } else if (level_ == 1) {
+    LevelOne();
+  }
 
-  // Double With Bridge
-  WallInit(28, 0, 2, 3, kDarkGreen);
-  EnemyInit(30, 0.4f, true);
-  WallInit(34.5f, 4.5f, 2, 2, kDarkGreen);
-  EnemyInit(36, 0.4f, false);
-  WallInit(42, 0, 1.5f, 2, kDarkGreen);
-
-  // First Fall
-  WallInit(47, 3.5f, 2, 1, kLightBlue);
-  GroundInit(55.5f, 61);
-  EnemyInit(60, 0.4f, true);
-
-  // Separated Stairs
-  WallInit(66.1f, 1, 2, 2, kOrange);
-  WallInit(69.5f, 4.2f, 1.5f, 1.5f, kOrange);
-  WallInit(74.5f, 7.2f, 1.5f, 1.5f, kOrange);
-  WallInit(80.5f, 10, 8.5f, 0.5f, kOrange);
-  EnemyInit(88.5f, 11, true);
-
-  // Staircase of Enemies
-  GroundInit(96, 130);
-  EnemyInit(102, 0.4, true);
-  WallInit(105, 0, 4, 1.5f, kDarkPurple);
-  EnemyInit(107, 1.7f, false);
-  EnemyInit(108, 1.7f, true);
-  WallInit(109, 0, 4, 3.8f, kDarkPurple);
-  EnemyInit(110, 4, true);
-  EnemyInit(112, 4, false);
-  WallInit(113, 0, 4, 5.6f, kDarkPurple);
-  EnemyInit(113.2f, 5.8f, false);
-  EnemyInit(114.2f, 5.8f, true);
-  EnemyInit(115.2f, 5.8f, false);
-  EnemyInit(116.2f, 5.8f, true);
-  WallInit(117, 0, 4, 8.4f, kDarkPurple);
-  EnemyInit(120.5f, 8.6f, true);
-
-  // Split Path
-  WallInit(130, 3.2f, 3, 0.2f, kDeepRed);
-  // Bottom Section
-  WallInit(134, 0.5f, 0.6f, 0.2f,kDeepRed);
-  WallInit(142, 0.5f, 0.6f, 0.2f,kDeepRed);
-  WallInit(150, 0.5f, 0.6f, 0.2f,kDeepRed);
-  // Top Section
-  WallInit(134, 5.5f, 17, 0.2f, kDeepRed);
-  EnemyInit(137, 5.6f, false);
-  EnemyInit(139, 5.6f, true);
-  EnemyInit(141, 5.6f, false);
-  EnemyInit(143, 5.6f, true);
-  EnemyInit(145, 5.6f, false);
-  EnemyInit(147, 5.6f, true);
-  WallInit(151, 5.5, 0.1f,0.5f, kDeepRed);
-  //Recombined
-  WallInit(153, 2.5f, 3, 0.2f, kDeepRed);
-  GroundInit(157, 257);
-
-  // The Pit
-  WallInit(164, 0, 2, 3, kGray);
-  WallInit(166, 0, 2, 6, kGray);
-  WallInit(168, 0, 2, 9, kGray);
-  WallInit(170, 0, 8, 5, kGray);
-  EnemyInit(171, 5.1f, true);
-  EnemyInit(173, 5.1f, false);
-  EnemyInit(175, 5.1f, true);
-  EnemyInit(176.5f, 5.1f, false);
-  WallInit(177.9f, 5, 0.1f, 0.4f, kGray);
-  WallInit(179.4f, 2, 1.6f, 3, kGray);
-  WallInit(179.4f, 5, 0.1f, 0.4f, kGray);
-  EnemyInit(180, 5.1f, true);
-  WallInit(181, 2, 2, 9, kGray);
-
-  // Flying Enemy Cage
-  WallInit(188, 1.5, 2, 10.3f, kGold);
-  WallInit(206, 0, 2, 9.2f, kGold);
-  WallInit(204, 0, 2, 1.5f, kGold);
-  WallInit(198, 3.2, 2, 1.2f, kGold);
-  WallInit(192, 4.7, 2, 1, kGold);
-  WallInit(198, 7.3f, 2, 1, kGold);
-  WallInit(203, 9.2f, 5, 0.5f, kGold);
-  WallInit(188, 11.8f, 20, 0.3f, kGold);
-  FlyingEnemyInit(195, 1, true);
-  FlyingEnemyInit(202, 0.5f, false);
-  FlyingEnemyInit(192.5f, 6, false);
-
-  // Pyramid
-  WallInit(217, 1.5f, 1, 12, kDarkPink);
-  WallInit(221, 0, 21, 2, kDarkPink);
-  WallInit(224, 0, 15, 4, kDarkPink);
-  WallInit(227, 0, 9, 6, kDarkPink);
-  WallInit(230, 0, 3, 8, kDarkPink);
-  WallInit(246, 1.5f, 1, 12, kDarkPink);
-  WallInit(218, 11.8f, 28, 0.3f, kDarkPink);
-  FlyingEnemyInit(220, 1, false);
-  FlyingEnemyInit(226, 6, true);
-  EnemyInit(228, 6.3f, true);
-  FlyingEnemyInit(232, 8.5f, false);
-  EnemyInit(235, 6.3f, false);
-  FlyingEnemyInit(238, 4.5f, false);
-  FlyingEnemyInit(244, 0.5f, true);
-
-  end_position_ = 257.0f;
 }
 
 void MyApp::AudioSetup() {
@@ -238,11 +132,30 @@ void MyApp::WallInit(float x_loc, float y_loc, float width, float height, ci::Co
 }
 
 void MyApp::GroundInit(float start, float end) {
-  WallInit(start, 0, (end-start), 0.2f, ci::Color(0, 0, 1));
+  WallInit(start, 0, (end-start), 0.2f, kBlue);
+}
+
+// Needs to call restart if level is changing
+void MyApp::PlayerWorldInit(float x_loc, float y_loc) {
+  world_ = new b2World(kGravity);
+  player_ = new Player(world_, x_loc, y_loc);
+  world_->SetContactListener(&contact_listener_);
+  contact_listener_.myApp_ = this;
 }
 
 void MyApp::update() {
-  if (lives_ <= 0 || won_game_ || title_screen_) {
+  if (won_level_) {
+
+    if (level_ == kFinalLevel) {
+      return;
+    }
+
+    level_++;
+    std::this_thread::sleep_for(std::chrono::seconds(kWaitTime));
+    Restart(); //Calls setup on its own
+  }
+
+  if (lives_ <= 0 || title_screen_) {
     return;
   }
 
@@ -277,7 +190,7 @@ void MyApp::update() {
   }
 
   if (player_position.x > end_position_ - kFinishWidth) {
-    won_game_ = true;
+    won_level_ = true;
   }
 
   for (std::pair< unsigned int, FlyingEnemy*> data_pair : flying_enemies_) {
@@ -362,12 +275,12 @@ void MyApp::ScrollWindow() {
     // so the player never has to wait for the view to catch up to it.
     window_shift_ += pixel_player_position - right_bound;
 
-  } else if (pixel_player_position < left_bound && window_shift_ > 0) {
+  } else if (pixel_player_position < left_bound && window_shift_ > (left_window_bound_ * kPixelsPerMeter)) {
     window_shift_ -= left_bound - pixel_player_position;
+  }
 
-    if (window_shift_ < 0) {
-      window_shift_ = 0;
-    }
+  if (window_shift_ < left_window_bound_) {
+    window_shift_ = left_window_bound_;
   }
 }
 
@@ -427,11 +340,11 @@ void MyApp::draw() {
 
   ci::gl::Texture2dRef finish_image;
 
-  if (won_game_) {
+  if (won_level_) {
     const cinder::ivec2 size = {500, 500};
     const cinder::vec2 center = getWindowCenter();
 
-    PrintText("You Win", kGreen, size, ci::vec2(center.x + window_shift_, center.y), 100);
+    PrintText("Level Complete", kGreen, size, ci::vec2(center.x + window_shift_, center.y), 100);
 
     finish_image = finish_line_bot_win_;
 
@@ -657,15 +570,9 @@ void MyApp::ContactListener::EndContact(b2Contact* contact) {
 
 void MyApp::Restart() {
   delete world_;  // Also deletes every b2body in the world
-  world_ = new b2World(kGravity);
-
   delete player_;
-  player_ = new Player(world_);
 
   sensor_contacts_ = 0;
-  world_->SetContactListener(&contact_listener_);
-  contact_listener_.myApp_ = this;
-
   for (std::pair<unsigned int, Entity*> entity_data : entity_manager_) {
     delete entity_data.second;
   }
@@ -688,9 +595,137 @@ void MyApp::Restart() {
   enemy_shooting_timer_ = kEnemyReloadTime;
   window_shift_ = 0;
 
-  won_game_ = false;
+  won_level_ = false;
 
   setup();
+}
+
+void MyApp::LevelZero() {
+  PlayerWorldInit(1, 4);
+  window_shift_ = 0;
+  left_window_bound_ = window_shift_;
+  won_level_ = false;
+
+  // Intro
+  GroundInit(0, 45);
+  WallInit(-0.1f, 0, 0.1f, getWindowHeight()/kPixelsPerMeter, kYellow);
+  WallInit(3.0f, 0, 3, 2, kYellow);
+  WallInit(11, 0, 3, 3.0f, kYellow);
+  WallInit(14, 0, 3, 6.0f, kRed);
+  WallInit(17, 0, 3, 9.0f, kGreen);
+  EnemyInit(21, 0.4f, true);
+
+  // Double With Bridge
+  WallInit(28, 0, 2, 3, kDarkGreen);
+  EnemyInit(30, 0.4f, true);
+  WallInit(34.5f, 4.5f, 2, 2, kDarkGreen);
+  EnemyInit(36, 0.4f, false);
+  WallInit(42, 0, 1.5f, 2, kDarkGreen);
+
+  // First Fall
+  WallInit(47, 3.5f, 2, 1, kLightBlue);
+  GroundInit(55.5f, 61);
+  EnemyInit(60, 0.4f, true);
+
+  // Separated Stairs
+  WallInit(66.1f, 1, 2, 2, kOrange);
+  WallInit(69.5f, 4.2f, 1.5f, 1.5f, kOrange);
+  WallInit(74.5f, 7.2f, 1.5f, 1.5f, kOrange);
+  WallInit(80.5f, 10, 8.5f, 0.5f, kOrange);
+  EnemyInit(88.5f, 11, true);
+
+  // Staircase of Enemies
+  GroundInit(96, 130);
+  EnemyInit(102, 0.4, true);
+  WallInit(105, 0, 4, 1.5f, kDarkPurple);
+  EnemyInit(107, 1.7f, false);
+  EnemyInit(108, 1.7f, true);
+  WallInit(109, 0, 4, 3.8f, kDarkPurple);
+  EnemyInit(110, 4, true);
+  EnemyInit(112, 4, false);
+  WallInit(113, 0, 4, 5.6f, kDarkPurple);
+  EnemyInit(113.2f, 5.8f, false);
+  EnemyInit(114.2f, 5.8f, true);
+  EnemyInit(115.2f, 5.8f, false);
+  EnemyInit(116.2f, 5.8f, true);
+  WallInit(117, 0, 4, 8.4f, kDarkPurple);
+  EnemyInit(120.5f, 8.6f, true);
+
+  // Split Path
+  WallInit(130, 3.2f, 3, 0.2f, kDeepRed);
+  // Bottom Section
+  WallInit(134, 0.5f, 0.6f, 0.2f,kDeepRed);
+  WallInit(142, 0.5f, 0.6f, 0.2f,kDeepRed);
+  WallInit(150, 0.5f, 0.6f, 0.2f,kDeepRed);
+  // Top Section
+  WallInit(134, 5.5f, 17, 0.2f, kDeepRed);
+  EnemyInit(137, 5.6f, false);
+  EnemyInit(139, 5.6f, true);
+  EnemyInit(141, 5.6f, false);
+  EnemyInit(143, 5.6f, true);
+  EnemyInit(145, 5.6f, false);
+  EnemyInit(147, 5.6f, true);
+  WallInit(151, 5.5, 0.1f,0.5f, kDeepRed);
+  //Recombined
+  WallInit(153, 2.5f, 3, 0.2f, kDeepRed);
+  GroundInit(157, 188);
+
+  // The Pit
+  WallInit(164, 0, 2, 3, kGray);
+  WallInit(166, 0, 2, 6, kGray);
+  WallInit(168, 0, 2, 9, kGray);
+  WallInit(170, 0, 8, 5, kGray);
+  EnemyInit(171, 5.1f, true);
+  EnemyInit(173, 5.1f, false);
+  EnemyInit(175, 5.1f, true);
+  EnemyInit(176.5f, 5.1f, false);
+  WallInit(177.9f, 5, 0.1f, 0.4f, kGray);
+  WallInit(179.4f, 2, 1.6f, 3, kGray);
+  WallInit(179.4f, 5, 0.1f, 0.4f, kGray);
+  EnemyInit(180, 5.1f, true);
+  WallInit(181, 2, 2, 9, kGray);
+
+  end_position_ = 188;
+}
+
+void MyApp::LevelOne() {
+  PlayerWorldInit(182, 4);
+  window_shift_ = 181*kPixelsPerMeter;
+  left_window_bound_ = 181;
+  won_level_ = false;
+
+  WallInit(180.9f, 0, 0.1f, getWindowHeight()/kPixelsPerMeter, kYellow);
+  // Flying Enemy Cage
+  GroundInit(181, 257);
+  WallInit(188, 1.5, 2, 10.3f, kGold);
+  WallInit(206, 0, 2, 9.2f, kGold);
+  WallInit(204, 0, 2, 1.5f, kGold);
+  WallInit(198, 3.2, 2, 1.2f, kGold);
+  WallInit(192, 4.7, 2, 1, kGold);
+  WallInit(198, 7.3f, 2, 1, kGold);
+  WallInit(203, 9.2f, 5, 0.5f, kGold);
+  WallInit(188, 11.8f, 20, 0.3f, kGold);
+  FlyingEnemyInit(195, 1, true);
+  FlyingEnemyInit(202, 0.5f, false);
+  FlyingEnemyInit(192.5f, 6, false);
+
+  // Pyramid
+  WallInit(217, 1.5f, 1, 12, kDarkPink);
+  WallInit(221, 0, 21, 2, kDarkPink);
+  WallInit(224, 0, 15, 4, kDarkPink);
+  WallInit(227, 0, 9, 6, kDarkPink);
+  WallInit(230, 0, 3, 8, kDarkPink);
+  WallInit(246, 1.5f, 1, 12, kDarkPink);
+  WallInit(218, 11.8f, 28, 0.3f, kDarkPink);
+  FlyingEnemyInit(220, 1, false);
+  FlyingEnemyInit(226, 6, true);
+  EnemyInit(228, 6.3f, true);
+  FlyingEnemyInit(232, 8.5f, false);
+  EnemyInit(235, 6.3f, false);
+  FlyingEnemyInit(238, 4.5f, false);
+  FlyingEnemyInit(244, 0.5f, true);
+
+  end_position_ = 257.0f;
 }
 
 }  // namespace myapp
