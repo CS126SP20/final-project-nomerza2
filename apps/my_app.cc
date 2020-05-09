@@ -241,8 +241,6 @@ void MyApp::UpdateActiveEnemies() {
 
     for (std::pair<unsigned int, Enemy*> enemy_data : enemy_shooters_) {
       Enemy* enemy = enemy_data.second;
-      b2Vec2 spawn_location = enemy->Calculate_Bullet_Spawn();
-      b2Vec2 bullet_velocity;
 
       // Death by Falling for enemies
       // Handled here since enemies are already being iterated through.
@@ -252,14 +250,7 @@ void MyApp::UpdateActiveEnemies() {
         entities_to_destroy_.insert((unsigned int) enemy->getBody()->GetUserData());
       }
 
-      if (enemy->isFacingRight()) {
-        bullet_velocity = b2Vec2(6.0f, 0.0f);
-      } else {
-        bullet_velocity = b2Vec2(-6.0f, 0.0f);
-      }
-
-      Entity* bullet = new Bullet(world_, spawn_location, false);
-      bullet->getBody()->SetLinearVelocity(bullet_velocity);
+      Entity* bullet = enemy->Shoot(world_);
       entity_manager_.insert(std::pair<unsigned int, Entity*> (Entity::GetEntityID(), bullet));
     }
   }

@@ -8,6 +8,7 @@
 #include <mylibrary/entity.h>
 #include <Box2D/Box2D.h>
 #include <cinder/gl/Texture.h>
+#include <mylibrary/Bullet.h>
 
 // image is 84x105 pixels
 // for better interaction, Box2D box will be 52x105, with 16 pixels taken from
@@ -26,6 +27,8 @@ class Enemy : public Entity {
   // When the enemy shoots, this determines the location the bullet is created
   // To account for the location of enemy, direction it's facing, and height of gun
   b2Vec2 Calculate_Bullet_Spawn();
+
+  virtual Bullet* Shoot(b2World* world);
 
   // Changes facing_right_, and reverses the direction of movement
   void TurnAround();

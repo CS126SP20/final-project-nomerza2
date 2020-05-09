@@ -3,6 +3,7 @@
 //
 
 #include "mylibrary/enemy.h"
+
 #include <cinder/app/App.h>
 #include <cinder/gl/draw.h>
 #include <cinder/gl/gl.h>
@@ -82,6 +83,19 @@ b2Vec2 Enemy::Calculate_Bullet_Spawn() {
   }
 
   return b2Vec2(x, y);
+}
+
+Bullet* Enemy::Shoot(b2World* world) {
+  b2Vec2 bullet_velocity;
+  if (facing_right_) {
+    bullet_velocity = b2Vec2(6.0f, 0.0f);
+  } else {
+    bullet_velocity = b2Vec2(-6.0f, 0.0f);
+  }
+
+  Bullet* bullet = new Bullet(world, Calculate_Bullet_Spawn(), false);
+  bullet->getBody()->SetLinearVelocity(bullet_velocity);
+  return bullet;
 }
 
 void Enemy::TurnAround() {
