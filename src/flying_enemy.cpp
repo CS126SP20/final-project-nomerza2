@@ -9,8 +9,7 @@
 
 namespace mylibrary {
 
-FlyingEnemy::FlyingEnemy(b2World* world, b2Vec2 position, bool is_facing_right)
-  : Enemy(world, position, is_facing_right) {
+FlyingEnemy::FlyingEnemy(b2World* world, b2Vec2 position, bool is_facing_right) : Enemy(world, position, is_facing_right) {
 
   enemyType = flying_enemy;
 

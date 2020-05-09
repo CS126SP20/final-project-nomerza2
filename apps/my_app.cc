@@ -20,6 +20,7 @@ using mylibrary::EntityType;
 using mylibrary::EnemyType;
 using mylibrary::Wall;
 using mylibrary::FlyingEnemy;
+using mylibrary::Hunter;
 
 namespace myapp {
 
@@ -42,6 +43,7 @@ const ci::Color kDarkPink = ci::Color(1, 0, 0.5f);
 const ci::Color kLightGreen = ci::Color(0.2f, 1, 0.2f);
 const ci::Color kDarkBlue = ci::Color(0, 0, 0.4f);
 const ci::Color kShallowRed = ci::Color(1, 0.17f, 0.17f);
+const ci::Color kHunterGreen = ci::Color(0.1f, 0.285f, 0.16f);
 
 const b2Vec2 kGravity = b2Vec2(0, -18);
 
@@ -52,8 +54,8 @@ const int kStartingLives = 5;
 const int kEnemyReloadTime = 80;
 const int kPlayerReloadTime = 25;
 const float kFinishWidth = 2.5f;
-const int kStartLevel = 0;
-const int kFinalLevel = 1;
+const int kStartLevel = 2;
+const int kFinalLevel = 2;
 const int kWaitTime = 4;
 
 MyApp::MyApp() {
@@ -92,6 +94,8 @@ void MyApp::setup() {
     LevelZero();
   } else if (level_ == 1) {
     LevelOne();
+  } else if (level_ == 2) {
+    LevelTwo();
   }
 
 }
@@ -126,6 +130,13 @@ void MyApp::EnemyInit(float x_loc, float y_loc, bool is_facing_right) {
 void MyApp::FlyingEnemyInit(float x_loc, float y_loc, bool is_facing_right){
   FlyingEnemy* enemy = new FlyingEnemy(world_, b2Vec2(x_loc, y_loc + kEnemyHeight), is_facing_right);
   std::pair<unsigned int, Enemy*> enemy_data(Entity::GetEntityID(), enemy);
+  entity_manager_.insert(enemy_data);
+  asleep_enemies_.insert(enemy_data);
+}
+
+void MyApp::HunterInit(float x_loc, float y_loc) {
+  Hunter* hunter  = new Hunter(world_, b2Vec2(x_loc, y_loc + kEnemyHeight));
+  std::pair<unsigned int, Enemy*> enemy_data(Entity::GetEntityID(), hunter);
   entity_manager_.insert(enemy_data);
   asleep_enemies_.insert(enemy_data);
 }
@@ -492,7 +503,9 @@ void MyApp::BulletCollision(b2Fixture* bullet_fix, b2Fixture* other) {
 
   if (bullet_obj->isSuper()) {
     int bullet_hits = ((SuperBullet*) bullet_obj)->Rebound();
-    if (bullet_hits == 0) {
+
+    //Superbullet shouldn't bounce off of player
+    if (bullet_hits == 0 || other->GetBody() == player_->getBody()) {
       entities_to_destroy_.insert(bullet_ID);
     }
   } else {
@@ -768,6 +781,25 @@ void MyApp::LevelOne() {
   FlyingEnemyInit(244, 0.5f, true);
 
   end_position_ = 257.0f;
+}
+
+void MyApp::LevelTwo(){
+  PlayerWorldInit(1, 4);
+  window_shift_ = 0;
+  left_window_bound_ = 0;
+  won_level_ = false;
+
+  WallInit(-0.1f, 0, 0.1f, getWindowHeight()/kPixelsPerMeter, kYellow);
+
+  // First Hunter
+  GroundInit(0, 30);
+  WallInit(4, 1.8f, 1.5f, 9.5f, kHunterGreen);
+  WallInit(14, 0, 2, 11.3f, kHunterGreen);
+  WallInit(4, 11, 12, 0.3f, kHunterGreen);
+  WallInit(9, 5, 1, 1, kHunterGreen);
+  HunterInit(9.5f, 6.2f);
+
+  end_position_ = 30;
 }
 
 }  // namespace myapp

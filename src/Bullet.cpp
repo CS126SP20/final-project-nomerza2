@@ -26,8 +26,8 @@ Bullet::Bullet(b2World* world, b2Vec2 position, bool player_made, float bullet_r
   circleShape.m_radius = bullet_radius_;
   b2FixtureDef fixtureDef;
   fixtureDef.shape = &circleShape;
-  fixtureDef.density = 1.0f;
-  fixtureDef.friction = 1.0f;
+  fixtureDef.density = 0.1f;
+  fixtureDef.friction = 0.0f;
   b2Fixture* fixture = body_->CreateFixture(&fixtureDef);
 
   fixture->SetUserData((void*)++Entity::entity_ID_); //Used for collision callback

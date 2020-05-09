@@ -9,7 +9,8 @@
 
 namespace mylibrary {
 
-class Hunter : Enemy {
+class Hunter : public Enemy {
+ public:
   Hunter(b2World* world, b2Vec2 position);
   Bullet* Shoot(b2World* world, b2Vec2 player_pos);
 };

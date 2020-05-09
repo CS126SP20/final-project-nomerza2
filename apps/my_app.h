@@ -12,6 +12,7 @@
 #include <mylibrary/player.h>
 #include <mylibrary/enemy.h>
 #include <mylibrary/flying_enemy.h>
+#include <mylibrary/Hunter.h>
 #include <mylibrary/Wall.h>
 
 namespace myapp {
@@ -55,6 +56,7 @@ class MyApp : public cinder::app::App {
   void AudioSetup();
   void LevelZero();
   void LevelOne();
+  void LevelTwo();
 
   // These are helper functions to Update()
   void ActivateEnemies();
@@ -65,6 +67,7 @@ class MyApp : public cinder::app::App {
   // by only calling this function
   void EnemyInit(float x_loc, float y_loc, bool is_facing_right);
   void FlyingEnemyInit(float x_loc, float y_loc, bool is_facing_right);
+  void HunterInit(float x_loc, float y_loc);
   void WallInit(float x_loc, float y_loc, float width, float height, ci::Color color);
   void GroundInit(float start, float end);
   void PlayerWorldInit(float x_loc, float y_loc);
