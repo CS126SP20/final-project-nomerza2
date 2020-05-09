@@ -12,13 +12,16 @@ namespace mylibrary {
 
 class Bullet : public Entity {
  public:
-  Bullet(b2World* world, b2Vec2 position, bool player_made);
+  Bullet(b2World* world, b2Vec2 position, bool player_made, float bullet_radius = 0.05f);
   void Draw();
   bool isPlayerMade() const;
+  bool isSuper() const;
 
- private:
+ protected:
   //True if is a player's bullet, false if an enemy's
   bool player_made_;
+  bool super_;
+  float bullet_radius_;
 };
 }
 #endif  // FINALPROJECT_BULLET_H

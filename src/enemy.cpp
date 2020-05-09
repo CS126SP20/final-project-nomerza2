@@ -40,9 +40,9 @@ Enemy::Enemy(b2World* world, b2Vec2 position, bool is_facing_right) {
 
   b2Vec2 starting_velocity;
   if (facing_right_) {
-    starting_velocity = b2Vec2(1.0f, 0);
+    starting_velocity = b2Vec2(2.0f, 0);
   } else {
-    starting_velocity = b2Vec2(-1.0f, 0);
+    starting_velocity = b2Vec2(-2.0f, 0);
   }
   body_->SetLinearVelocity(starting_velocity);
 }
