@@ -16,6 +16,7 @@ using mylibrary::Bullet;
 using mylibrary::Entity;
 using mylibrary::Enemy;
 using mylibrary::EntityType;
+using mylibrary::EnemyType;
 using mylibrary::Wall;
 using mylibrary::FlyingEnemy;
 
@@ -50,7 +51,7 @@ const int kStartingLives = 5;
 const int kEnemyReloadTime = 80;
 const int kPlayerReloadTime = 25;
 const float kFinishWidth = 2.5f;
-const int kStartLevel = 0;
+const int kStartLevel = 1;
 const int kFinalLevel = 1;
 const int kWaitTime = 4;
 
@@ -220,7 +221,7 @@ void MyApp::ActivateEnemies() {
                          ((window_shift_ + getWindowWidth() + kActivateRange) / kPixelsPerMeter)))) {
       enemy_shooters_.insert(std::pair< unsigned int, Enemy*> (id, enemy));
 
-      if (enemy->isFlying()) {
+      if (enemy->getEnemyType() == EnemyType::flying_enemy) {
         flying_enemies_.insert(std::pair< unsigned int, FlyingEnemy*> (id, (FlyingEnemy*) enemy));
       }
 
@@ -470,7 +471,7 @@ void MyApp::DestroyEntity(unsigned int entity_ID){
     if (enemy->isActive()) {
       enemy_shooters_.erase(entity_ID);
 
-      if (enemy->isFlying()) {
+      if (enemy->getEnemyType() == EnemyType::flying_enemy) {
         flying_enemies_.erase(entity_ID);
       }
 

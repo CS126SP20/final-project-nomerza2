@@ -12,7 +12,7 @@ namespace mylibrary {
 FlyingEnemy::FlyingEnemy(b2World* world, b2Vec2 position, bool is_facing_right)
   : Enemy(world, position, is_facing_right) {
 
-  is_flying_ = true;
+  enemyType = flying_enemy;
 
   right_image_ = ci::gl::Texture2d::create(ci::loadImage(cinder::app::loadAsset("jetpackoffright.png")));
   left_image_ = ci::gl::Texture2d::create(ci::loadImage(cinder::app::loadAsset("jetpackoffleft.png")));

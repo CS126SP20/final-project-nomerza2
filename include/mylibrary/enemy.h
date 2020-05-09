@@ -19,6 +19,8 @@ const float kTotalMeterWidth = 84.0f/kPixelsPerMeter;
 
 namespace mylibrary {
 
+enum EnemyType{standard_enemy, flying_enemy, hunter};
+
 class Enemy : public Entity {
  public:
   Enemy(b2World* world, b2Vec2 position, bool is_facing_right);
@@ -39,14 +41,14 @@ class Enemy : public Entity {
   // bounds are in METERS, not pixels
   bool Activate(float left_bound, float right_bound);
 
+  EnemyType getEnemyType() const;
   bool isFacingRight() const;
   bool isActive() const;
-  bool isFlying() const;
 
  protected:
   bool is_active_;
   bool facing_right_;
-  bool is_flying_;
+  EnemyType enemyType;
   ci::gl::Texture2dRef right_image_;
   ci::gl::Texture2dRef left_image_;
 };
