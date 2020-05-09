@@ -13,6 +13,7 @@
 
 using mylibrary::Player;
 using mylibrary::Bullet;
+using mylibrary::SuperBullet;
 using mylibrary::Entity;
 using mylibrary::Enemy;
 using mylibrary::EntityType;
@@ -51,7 +52,7 @@ const int kStartingLives = 5;
 const int kEnemyReloadTime = 80;
 const int kPlayerReloadTime = 25;
 const float kFinishWidth = 2.5f;
-const int kStartLevel = 1;
+const int kStartLevel = 0;
 const int kFinalLevel = 1;
 const int kWaitTime = 4;
 
@@ -251,7 +252,7 @@ void MyApp::UpdateActiveEnemies() {
         entities_to_destroy_.insert((unsigned int) enemy->getBody()->GetUserData());
       }
 
-      Entity* bullet = enemy->Shoot(world_);
+      Entity* bullet = enemy->Shoot(world_, player_->getBody()->GetPosition());
       entity_manager_.insert(std::pair<unsigned int, Entity*> (Entity::GetEntityID(), bullet));
     }
   }
@@ -485,9 +486,18 @@ void MyApp::DestroyEntity(unsigned int entity_ID){
   delete(entity);
 }
 
-void MyApp::BulletCollision(b2Fixture* bullet, b2Fixture* other) {
-  unsigned int bullet_ID = (unsigned int) bullet->GetUserData();
-  entities_to_destroy_.insert(bullet_ID);
+void MyApp::BulletCollision(b2Fixture* bullet_fix, b2Fixture* other) {
+  unsigned int bullet_ID = (unsigned int) bullet_fix->GetUserData();
+  Bullet* bullet_obj = (Bullet*) entity_manager_.at(bullet_ID);
+
+  if (bullet_obj->isSuper()) {
+    int bullet_hits = ((SuperBullet*) bullet_obj)->Rebound();
+    if (bullet_hits == 0) {
+      entities_to_destroy_.insert(bullet_ID);
+    }
+  } else {
+    entities_to_destroy_.insert(bullet_ID);
+  }
 
   if (other->GetBody() == player_->getBody()) {
     lives_--;
@@ -545,8 +555,8 @@ void MyApp::ContactListener::BeginContact(b2Contact* contact) {
     Entity* entity =
         myApp_->entity_manager_.at((unsigned int) fixture_A->GetUserData());
 
-    if (entity->GetEntityType() == EntityType::type_enemy
-      && fixture_B->GetBody() != myApp_->player_->getBody()) {
+    if (entity->GetEntityType() == EntityType::type_enemy && fixture_B->GetBody() != myApp_->player_->getBody()
+            && ((Enemy*) entity)->getEnemyType() != EnemyType::hunter) {
       ((Enemy*) entity)->TurnAround();
     }
   }
@@ -555,8 +565,8 @@ void MyApp::ContactListener::BeginContact(b2Contact* contact) {
     Entity* entity =
         myApp_->entity_manager_.at((unsigned int) fixture_B->GetUserData());
 
-    if (entity->GetEntityType() == EntityType::type_enemy
-      && fixture_A->GetBody() != myApp_->player_->getBody()) {
+    if (entity->GetEntityType() == EntityType::type_enemy && fixture_A->GetBody() != myApp_->player_->getBody()
+            && ((Enemy*) entity)->getEnemyType() != EnemyType::hunter) {
       ((Enemy*) entity)->TurnAround();
     }
   }

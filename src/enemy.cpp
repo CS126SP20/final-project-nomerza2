@@ -38,14 +38,6 @@ Enemy::Enemy(b2World* world, b2Vec2 position, bool is_facing_right) {
 
   right_image_ = ci::gl::Texture2d::create(ci::loadImage(cinder::app::loadAsset("badRobotRight.png")));
   left_image_ = ci::gl::Texture2d::create(ci::loadImage(cinder::app::loadAsset("badRobotLeft.png")));
-
-  b2Vec2 starting_velocity;
-  if (facing_right_) {
-    starting_velocity = b2Vec2(2.0f, 0);
-  } else {
-    starting_velocity = b2Vec2(-2.0f, 0);
-  }
-  body_->SetLinearVelocity(starting_velocity);
 }
 
 void Enemy::Draw() {
@@ -85,7 +77,7 @@ b2Vec2 Enemy::Calculate_Bullet_Spawn() {
   return b2Vec2(x, y);
 }
 
-Bullet* Enemy::Shoot(b2World* world) {
+Bullet* Enemy::Shoot(b2World* world, b2Vec2 player_pos) {
   b2Vec2 bullet_velocity;
   if (facing_right_) {
     bullet_velocity = b2Vec2(6.0f, 0.0f);
@@ -118,6 +110,17 @@ bool Enemy::Activate(float left_bound, float right_bound) {
     body_->SetType(b2_dynamicBody);
     body_->SetAwake(true);
     is_active_ = true;
+
+    if (enemyType != hunter) {
+      b2Vec2 starting_velocity;
+      if (facing_right_) {
+        starting_velocity = b2Vec2(2.0f, 0);
+      } else {
+        starting_velocity = b2Vec2(-2.0f, 0);
+      }
+      body_->SetLinearVelocity(starting_velocity);
+    }
+
     return true;
   }
 

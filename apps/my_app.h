@@ -8,6 +8,7 @@
 #include <cinder/app/App.h>
 #include <cinder/audio/audio.h>
 #include <mylibrary/Bullet.h>
+#include <mylibrary/SuperBullet.h>
 #include <mylibrary/player.h>
 #include <mylibrary/enemy.h>
 #include <mylibrary/flying_enemy.h>

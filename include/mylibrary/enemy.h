@@ -30,7 +30,7 @@ class Enemy : public Entity {
   // To account for the location of enemy, direction it's facing, and height of gun
   b2Vec2 Calculate_Bullet_Spawn();
 
-  virtual Bullet* Shoot(b2World* world);
+  virtual Bullet* Shoot(b2World* world, b2Vec2 player_pos);
 
   // Changes facing_right_, and reverses the direction of movement
   void TurnAround();
