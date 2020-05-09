@@ -434,11 +434,11 @@ void MyApp::keyDown(KeyEvent event) {
       spawn_location = b2Vec2(player_position.x + (3*kPlayerWidth/4),
           player_position.y - (kPlayerHeight/5));
       // The kPlayerHeight/5 is to make it appear to spawn closer to the gun.
-      bullet_velocity = b2Vec2(6.7f, 0.0f);
+      bullet_velocity = b2Vec2(7.1f, 0.0f);
     } else {
       spawn_location = b2Vec2(player_position.x - (3*kPlayerWidth/4),
           player_position.y - (kPlayerHeight/5));
-      bullet_velocity = b2Vec2(-6.7f, 0.0f);
+      bullet_velocity = b2Vec2(-7.1f, 0.0f);
     }
 
     Entity* bullet = new Bullet(world_, spawn_location, true);
