@@ -44,13 +44,14 @@ const ci::Color kLightGreen = ci::Color(0.2f, 1, 0.2f);
 const ci::Color kDarkBlue = ci::Color(0, 0, 0.4f);
 const ci::Color kShallowRed = ci::Color(1, 0.17f, 0.17f);
 const ci::Color kHunterGreen = ci::Color(0.1f, 0.285f, 0.16f);
+const ci::Color kBlueGray = ci::Color(0.168f, .539f, .5f);
 
 const b2Vec2 kGravity = b2Vec2(0, -18);
 
 //The enemies will activate when they are within this many pixels of the screen
 const int kActivateRange = 160;
 
-const int kStartingLives = 5;
+const int kStartingLives = 35;
 const int kEnemyReloadTime = 80;
 const int kPlayerReloadTime = 25;
 const float kFinishWidth = 2.5f;
@@ -792,14 +793,38 @@ void MyApp::LevelTwo(){
   WallInit(-0.1f, 0, 0.1f, getWindowHeight()/kPixelsPerMeter, kYellow);
 
   // First Hunter
-  GroundInit(0, 30);
+  GroundInit(0, 38);
   WallInit(4, 1.8f, 1.5f, 9.5f, kHunterGreen);
-  WallInit(14, 0, 2, 11.3f, kHunterGreen);
-  WallInit(4, 11, 12, 0.3f, kHunterGreen);
+  WallInit(7, 11, 10, 0.3f, kHunterGreen);
+  WallInit(14, 2, 1, .5f, kHunterGreen);
+  WallInit(11.2f, 3.7f, 1, 0.5f, kHunterGreen);
   WallInit(9, 5, 1, 1, kHunterGreen);
   HunterInit(9.5f, 6.2f);
+  WallInit(6, 8.7f, 1, .5f, kHunterGreen);
+  WallInit(17, 0, 2, 11.3f, kHunterGreen);
 
-  end_position_ = 30;
+  // Triple combo stairs
+  WallInit(25, 2, 2, 1, kBlueGray);
+  FlyingEnemyInit(26, 3.3f, true);
+  WallInit(31, 2, 3, 1, kBlueGray);
+  WallInit(33, 4.5f, 3, 1, kBlueGray);
+  EnemyInit(34, 5, true);
+  WallInit(35, 7, 3, 1, kBlueGray);
+  HunterInit(35, 8.1f);
+  WallInit(36, 0, 1, 7, kBlueGray);
+
+  // Floating hunter zone
+  WallInit(42, 8.8f, 0.5f, 3.2f, kCyan); //Hunter shield
+  WallInit(40, 4, 2, 1, kCyan);
+  WallInit(44, 1.2f, 1.2f, 1, kCyan);
+  WallInit(46, 7.2f, 1.5f, 1, kCyan);
+  WallInit(50, 8.5f, 0.5f, 1, kCyan);
+  HunterInit(50.25f, 9.55f);
+  WallInit(49, 4.6f, 1.4f, 0.7f, kCyan);
+  WallInit(55.5f, 2.5f, 1.4f, 0.7f, kCyan);
+  WallInit(58.2f, 5.1f, 1.2f, 0.6f, kCyan);
+  GroundInit(62, 70);
+  end_position_ = 70;
 }
 
 }  // namespace myapp
