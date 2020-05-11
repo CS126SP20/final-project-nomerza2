@@ -51,11 +51,11 @@ const b2Vec2 kGravity = b2Vec2(0, -18);
 //The enemies will activate when they are within this many pixels of the screen
 const int kActivateRange = 160;
 
-const int kStartingLives = 35;
+const int kStartingLives = 12;
 const int kEnemyReloadTime = 80;
 const int kPlayerReloadTime = 25;
 const float kFinishWidth = 2.5f;
-const int kStartLevel = 2;
+const int kStartLevel = 0;
 const int kFinalLevel = 2;
 const int kWaitTime = 4;
 
@@ -342,7 +342,7 @@ void MyApp::draw() {
   }
 
   // Life Counter
-  const cinder::ivec2 size = {50, 50};
+  const cinder::ivec2 size = {100, 50};
   const cinder::vec2 center(50.0f + window_shift_, 50.0f); //Top-left Corner
   PrintText(std::to_string(lives_), kBlue, size, center,50);
 
@@ -793,7 +793,7 @@ void MyApp::LevelTwo(){
   WallInit(-0.1f, 0, 0.1f, getWindowHeight()/kPixelsPerMeter, kYellow);
 
   // First Hunter
-  GroundInit(0, 38);
+  GroundInit(0, 53);
   WallInit(4, 1.8f, 1.5f, 9.5f, kHunterGreen);
   WallInit(7, 11, 10, 0.3f, kHunterGreen);
   WallInit(14, 2, 1, .5f, kHunterGreen);
@@ -803,28 +803,55 @@ void MyApp::LevelTwo(){
   WallInit(6, 8.7f, 1, .5f, kHunterGreen);
   WallInit(17, 0, 2, 11.3f, kHunterGreen);
 
+  // First gap
+  int kGapOne = 15;
+  WallInit(19, 0, kGapOne, 5, kYellow);
+  EnemyInit(23, 5.2f, true);
+  WallInit(24, 1.8f, 2, 1, kYellow);
+  EnemyInit(27.5f, 5.2f, true);
+  WallInit(29, 5, 1, 2, kYellow);
+  FlyingEnemyInit(31, 5.2f, true);
+  WallInit(32, 5, 2, 3, kYellow);
+
   // Triple combo stairs
-  WallInit(25, 2, 2, 1, kBlueGray);
-  FlyingEnemyInit(26, 3.3f, true);
-  WallInit(31, 2, 3, 1, kBlueGray);
-  WallInit(33, 4.5f, 3, 1, kBlueGray);
-  EnemyInit(34, 5, true);
-  WallInit(35, 7, 3, 1, kBlueGray);
-  HunterInit(35, 8.1f);
-  WallInit(36, 0, 1, 7, kBlueGray);
+  WallInit(25+kGapOne, 2, 2, 1, kBlueGray);
+  FlyingEnemyInit(26+kGapOne, 3.3f, true);
+  EnemyInit(29+kGapOne, 2, true);
+  WallInit(31+kGapOne, 2, 3, 1, kBlueGray);
+  FlyingEnemyInit(31.5f + kGapOne, 3.1f, true);
+  WallInit(33+kGapOne, 4.5f, 3, 1, kBlueGray);
+  EnemyInit(34+kGapOne, 5, true);
+  WallInit(35+kGapOne, 7, 3, 1, kBlueGray);
+  HunterInit(35+kGapOne, 8.1f);
+  WallInit(36+kGapOne, 0, 1, 7, kBlueGray);
+
+  // SecondGap
+  int kGapTwo = 31 + kGapOne;
+  WallInit(37+kGapOne, 0, kGapTwo - kGapOne, 7, kGreen);
+  WallInit(40 + kGapOne, 7, 1, 2, kGreen);
+  EnemyInit(43+kGapOne, 7.1f, true);
+  FlyingEnemyInit(45+kGapOne, 7.1f, false);
+  EnemyInit(47+kGapOne, 7.1f, true);
+  WallInit(49+kGapOne, 7, 4, 2, kGreen);
+  FlyingEnemyInit(55+kGapOne, 7.1f, false);
+  WallInit(57+kGapOne, 9, 2, 1, kGreen);
+  EnemyInit(59+kGapOne, 7.1f, true);
+  FlyingEnemyInit(61+kGapOne, 7.1f, true);
+  WallInit(63+kGapOne, 7, 1, 4.3f, kGreen);
 
   // Floating hunter zone
-  WallInit(42, 8.8f, 0.5f, 3.2f, kCyan); //Hunter shield
-  WallInit(40, 4, 2, 1, kCyan);
-  WallInit(44, 1.2f, 1.2f, 1, kCyan);
-  WallInit(46, 7.2f, 1.5f, 1, kCyan);
-  WallInit(50, 8.5f, 0.5f, 1, kCyan);
-  HunterInit(50.25f, 9.55f);
-  WallInit(49, 4.6f, 1.4f, 0.7f, kCyan);
-  WallInit(55.5f, 2.5f, 1.4f, 0.7f, kCyan);
-  WallInit(58.2f, 5.1f, 1.2f, 0.6f, kCyan);
-  GroundInit(62, 70);
-  end_position_ = 70;
+  WallInit(42+kGapTwo, 8.8f, 0.5f, 3.2f, kCyan); //Hunter shield
+  WallInit(40+kGapTwo, 4, 2, 1, kCyan);
+  WallInit(44+kGapTwo, 1.2f, 1.2f, 1, kCyan);
+  WallInit(46+kGapTwo, 7.2f, 1.5f, 1, kCyan);
+  WallInit(50+kGapTwo, 8.5f, 0.5f, 1, kCyan);
+  HunterInit(50.25f+kGapTwo, 9.55f);
+  WallInit(49+kGapTwo, 4.6f, 1.4f, 0.7f, kCyan);
+  WallInit(55.5f+kGapTwo, 2.5f, 1.4f, 0.7f, kCyan);
+  WallInit(58.2f+kGapTwo, 5.1f, 1.2f, 0.6f, kCyan);
+  HunterInit(58.8f+kGapTwo, 6.4f);
+  GroundInit(62+kGapTwo, 70+kGapTwo);
+  end_position_ = 70+kGapTwo;
 }
 
 }  // namespace myapp
