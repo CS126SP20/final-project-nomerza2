@@ -21,6 +21,7 @@ using mylibrary::EnemyType;
 using mylibrary::Wall;
 using mylibrary::FlyingEnemy;
 using mylibrary::Hunter;
+using mylibrary::RepairKit;
 
 namespace myapp {
 
@@ -74,6 +75,8 @@ MyApp::MyApp() {
   ci::ImageSourceRef win_image= ci::loadImage(ci::app::loadAsset("greenflagbot.png"));
   finish_line_bot_ = ci::gl::Texture2d::create(finish_image);
   finish_line_bot_win_ = ci::gl::Texture2d::create(win_image);
+
+  repair_value_ = 2;
 
   AudioSetup();
 }
@@ -158,6 +161,13 @@ void MyApp::PlayerWorldInit(float x_loc, float y_loc) {
   player_ = new Player(world_, x_loc, y_loc);
   world_->SetContactListener(&contact_listener_);
   contact_listener_.myApp_ = this;
+}
+
+//Uses bottom left corner
+void MyApp::RepairInit(float x_loc, float y_loc) {
+  Entity* repair_kit = new RepairKit(world_, b2Vec2(x_loc + kEnemyWidth/2, y_loc + kEnemyHeight/2));
+  std::pair<unsigned int, Entity*> entity_data(Entity::GetEntityID(), repair_kit);
+  entity_manager_.insert(entity_data);
 }
 
 void MyApp::update() {
@@ -545,6 +555,11 @@ void MyApp::BulletCollision(b2Fixture* bullet_fix, b2Fixture* other) {
     unsigned int other_ID = (unsigned int) other_data;
     Entity* entity = entity_manager_.at(other_ID);
 
+    //Can't shoot Repair kits
+    if (entity->GetEntityType() == EntityType::type_repair) {
+      return;
+    }
+
     // If it is an enemy, it must be removed from the enemy_shooters_ map
     if (entity->GetEntityType() == EntityType::type_enemy) {
 
@@ -585,15 +600,25 @@ void MyApp::ContactListener::BeginContact(b2Contact* contact) {
     return;
   }
 
-  // The Next two are for when an enemy collides with a non-bullet
+  b2Body* player_body = myApp_->player_->getBody();
+
+  // The Next two determine if it is an entity. Each contains two parts:
+  // - for when an enemy collides with a non-bullet
   // (which it can't be if it reached this point), non-player object
+  // - when a player collides with a repair kit
   if (fixture_A->GetUserData() != NULL) {
     Entity* entity =
         myApp_->entity_manager_.at((unsigned int) fixture_A->GetUserData());
 
-    if (entity->GetEntityType() == EntityType::type_enemy && fixture_B->GetBody() != myApp_->player_->getBody()
+    if (entity->GetEntityType() == EntityType::type_enemy && fixture_B->GetBody() != player_body
             && ((Enemy*) entity)->getEnemyType() != EnemyType::hunter) {
       ((Enemy*) entity)->TurnAround();
+      return;
+    }
+
+    if (entity->GetEntityType() == EntityType::type_repair && fixture_B->GetBody() == player_body) {
+      myApp_->entities_to_destroy_.insert((unsigned int) fixture_A->GetUserData());
+      myApp_->lives_ += myApp_->repair_value_;
     }
   }
 
@@ -601,9 +626,14 @@ void MyApp::ContactListener::BeginContact(b2Contact* contact) {
     Entity* entity =
         myApp_->entity_manager_.at((unsigned int) fixture_B->GetUserData());
 
-    if (entity->GetEntityType() == EntityType::type_enemy && fixture_A->GetBody() != myApp_->player_->getBody()
+    if (entity->GetEntityType() == EntityType::type_enemy && fixture_A->GetBody() != player_body
             && ((Enemy*) entity)->getEnemyType() != EnemyType::hunter) {
       ((Enemy*) entity)->TurnAround();
+    }
+
+    if (entity->GetEntityType() == EntityType::type_repair && fixture_A->GetBody() == player_body) {
+      myApp_->entities_to_destroy_.insert((unsigned int) fixture_B->GetUserData());
+      myApp_->lives_ += myApp_->repair_value_;
     }
   }
 }
@@ -685,7 +715,8 @@ void MyApp::LevelZero() {
   WallInit(69.5f, 4.2f, 1.5f, 1.5f, kOrange);
   WallInit(74.5f, 7.2f, 1.5f, 1.5f, kOrange);
   WallInit(80.5f, 10, 8.5f, 0.5f, kOrange);
-  EnemyInit(88.5f, 11, true);
+  EnemyInit(87.2f, 11, true);
+  RepairInit(88.5f, 11);
 
   // Staircase of Enemies
   GroundInit(96, 130);
@@ -723,6 +754,7 @@ void MyApp::LevelZero() {
   //Recombined
   WallInit(153, 2.5f, 3, 0.2f, kDeepRed);
   GroundInit(157, 188);
+  RepairInit(160, 1);
 
   // The Pit
   WallInit(164, 0, 2, 3, kGray);

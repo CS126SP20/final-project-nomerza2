@@ -14,6 +14,7 @@
 #include <mylibrary/flying_enemy.h>
 #include <mylibrary/Hunter.h>
 #include <mylibrary/Wall.h>
+#include <mylibrary/RepairKit.h>
 
 namespace myapp {
 
@@ -72,6 +73,7 @@ class MyApp : public cinder::app::App {
   void WallInit(float x_loc, float y_loc, float width, float height, ci::Color color);
   void GroundInit(float start, float end);
   void PlayerWorldInit(float x_loc, float y_loc);
+  void RepairInit(float x_loc, float y_loc);
 
   b2World* world_;
   mylibrary::Player* player_;
@@ -95,6 +97,7 @@ class MyApp : public cinder::app::App {
   ci::gl::Texture2dRef finish_line_bot_;
   ci::gl::Texture2dRef finish_line_bot_win_;
 
+  int repair_value_;
   int level_;
   int lives_;
 
