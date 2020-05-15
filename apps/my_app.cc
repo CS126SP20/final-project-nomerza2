@@ -204,7 +204,10 @@ void MyApp::update() {
   //Death by falling
   if (player_position.y < 0) {
     lives_--;
-    RespawnPlayer();
+    if (lives_ > 0) {
+      std::this_thread::sleep_for(std::chrono::seconds(1));
+      RespawnPlayer();
+    }
   }
 
   if (player_position.x > end_position_ - kFinishWidth) {
