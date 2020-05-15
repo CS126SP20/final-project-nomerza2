@@ -62,6 +62,7 @@ class MyApp : public cinder::app::App {
   void ActivateEnemies();
   void UpdateActiveEnemies();
   void ScrollWindow();
+  void RespawnPlayer();
 
   // These functions simplify level design, so every element can be added
   // by only calling this function
@@ -96,6 +97,13 @@ class MyApp : public cinder::app::App {
 
   int level_;
   int lives_;
+
+  /**
+   * Coordinates of locations for player to respawn after death by falling
+   * At least one checkpoint must be given. Checkpoints must be ordered by
+   * increasing x value.
+   * */
+  std::vector<b2Vec2> checkpoints_;
 
   //The player may still be able to get a large jump by holding down the up key
   //when near the ground, so this prevents that by giving a cooldown.

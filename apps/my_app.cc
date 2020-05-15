@@ -51,7 +51,7 @@ const b2Vec2 kGravity = b2Vec2(0, -18);
 //The enemies will activate when they are within this many pixels of the screen
 const int kActivateRange = 160;
 
-const int kStartingLives = 12;
+const int kStartingLives = 5;
 const int kEnemyReloadTime = 80;
 const int kPlayerReloadTime = 25;
 const float kFinishWidth = 2.5f;
@@ -203,7 +203,8 @@ void MyApp::update() {
   b2Vec2 player_position = player_->getBody()->GetPosition();
   //Death by falling
   if (player_position.y < 0) {
-    lives_ = 0;
+    lives_--;
+    RespawnPlayer();
   }
 
   if (player_position.x > end_position_ - kFinishWidth) {
@@ -290,6 +291,24 @@ void MyApp::ScrollWindow() {
   if (window_shift_ < left_window_bound_) {
     window_shift_ = left_window_bound_;
   }
+}
+
+// Assumes checkpoints_ has been properly initialized with at least one location
+void MyApp::RespawnPlayer() {
+  b2Vec2 position = player_->getBody()->GetPosition();
+  world_->DestroyBody(player_->getBody());
+  delete player_;
+  b2Vec2 checkpoint = checkpoints_[0];
+
+  // checkpoint is set to the furthest to the right point the player has passed
+  for (b2Vec2 point : checkpoints_) {
+    if (point.x > position.x) {
+      break;
+    }
+    checkpoint = point;
+  }
+
+  player_ = new Player(world_, checkpoint.x, checkpoint.y);
 }
 
 // The following function was copied from the Snake assignment, with minor mods
@@ -623,6 +642,8 @@ void MyApp::Restart() {
 
   won_level_ = false;
 
+  checkpoints_.clear();
+
   setup();
 }
 
@@ -631,6 +652,8 @@ void MyApp::LevelZero() {
   window_shift_ = 0;
   left_window_bound_ = window_shift_;
   won_level_ = false;
+
+  checkpoints_.push_back(b2Vec2(1,4));
 
   // Intro
   GroundInit(0, 45);
@@ -649,6 +672,7 @@ void MyApp::LevelZero() {
   WallInit(42, 0, 1.5f, 2, kDarkGreen);
 
   // First Fall
+  checkpoints_.push_back(b2Vec2(43,4));
   WallInit(47, 3.5f, 2, 1, kLightBlue);
   GroundInit(55.5f, 61);
   EnemyInit(60, 0.4f, true);
@@ -677,6 +701,7 @@ void MyApp::LevelZero() {
   WallInit(117, 0, 4, 8.4f, kDarkPurple);
   EnemyInit(120.5f, 8.6f, true);
 
+  checkpoints_.push_back(b2Vec2(125,4));
   // Split Path
   WallInit(130, 3.2f, 3, 0.2f, kDeepRed);
   // Bottom Section
@@ -721,6 +746,7 @@ void MyApp::LevelOne() {
   won_level_ = false;
 
   WallInit(89.9f, 0, 0.1f, getWindowHeight()/kPixelsPerMeter, kYellow);
+  checkpoints_.push_back(b2Vec2(91,4));
 
   // Intro to jetpacks
   GroundInit(90, 119);
@@ -730,6 +756,7 @@ void MyApp::LevelOne() {
   WallInit(110, 0, 3, 3, kShallowRed);
   WallInit(113, 0, 3, 6, kShallowRed);
   WallInit(116, 0, 3, 9, kShallowRed);
+  checkpoints_.push_back(b2Vec2(117.5f,9.5f));
 
   // Open Air jumps and jetpacks
   WallInit(124, 4, 2, 0.2f, kDarkBlue);
@@ -791,6 +818,7 @@ void MyApp::LevelTwo(){
   won_level_ = false;
 
   WallInit(-0.1f, 0, 0.1f, getWindowHeight()/kPixelsPerMeter, kYellow);
+  checkpoints_.push_back(b2Vec2(1,4));
 
   // First Hunter
   GroundInit(0, 53);
@@ -838,6 +866,8 @@ void MyApp::LevelTwo(){
   EnemyInit(59+kGapOne, 7.1f, true);
   FlyingEnemyInit(61+kGapOne, 7.1f, true);
   WallInit(63+kGapOne, 7, 1, 4.3f, kGreen);
+
+  checkpoints_.push_back(b2Vec2(65+kGapOne,4.8f));
 
   // Floating hunter zone
   WallInit(42+kGapTwo, 8.8f, 0.5f, 3.2f, kCyan); //Hunter shield
