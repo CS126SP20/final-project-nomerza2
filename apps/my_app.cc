@@ -52,7 +52,7 @@ const b2Vec2 kGravity = b2Vec2(0, -18);
 //The enemies will activate when they are within this many pixels of the screen
 const int kActivateRange = 160;
 
-const int kStartingLives = 5;
+const int kStartingLives = 3;
 const int kEnemyReloadTime = 80;
 const int kPlayerReloadTime = 25;
 const float kFinishWidth = 2.5f;
@@ -493,6 +493,7 @@ void MyApp::keyDown(KeyEvent event) {
         (Entity::GetEntityID(), bullet));
 
   } else if (event.getCode() == KeyEvent::KEY_r) {
+    lives_ = kStartingLives;
     Restart();
   }
 }
@@ -667,7 +668,6 @@ void MyApp::Restart() {
 
   Entity::ResetID();
 
-  lives_ = kStartingLives;
   jump_timer_ = 0;
   shooting_timer_ = 0;
   enemy_shooting_timer_ = kEnemyReloadTime;
@@ -712,11 +712,11 @@ void MyApp::LevelZero() {
 
   // Separated Stairs
   WallInit(66.1f, 1, 2, 2, kOrange);
+  RepairInit(67, 3.2f);
   WallInit(69.5f, 4.2f, 1.5f, 1.5f, kOrange);
   WallInit(74.5f, 7.2f, 1.5f, 1.5f, kOrange);
   WallInit(80.5f, 10, 8.5f, 0.5f, kOrange);
-  EnemyInit(87.2f, 11, true);
-  RepairInit(88.5f, 11);
+  EnemyInit(88.5f, 11, true);
 
   // Staircase of Enemies
   GroundInit(96, 130);
@@ -736,6 +736,7 @@ void MyApp::LevelZero() {
   EnemyInit(120.5f, 8.6f, true);
 
   checkpoints_.push_back(b2Vec2(125,4));
+  RepairInit(125, 1);
   // Split Path
   WallInit(130, 3.2f, 3, 0.2f, kDeepRed);
   // Bottom Section
@@ -754,7 +755,6 @@ void MyApp::LevelZero() {
   //Recombined
   WallInit(153, 2.5f, 3, 0.2f, kDeepRed);
   GroundInit(157, 188);
-  RepairInit(160, 1);
 
   // The Pit
   WallInit(164, 0, 2, 3, kGray);
@@ -782,6 +782,7 @@ void MyApp::LevelOne() {
 
   WallInit(89.9f, 0, 0.1f, getWindowHeight()/kPixelsPerMeter, kYellow);
   checkpoints_.push_back(b2Vec2(91,4));
+  RepairInit(93, 2);
 
   // Intro to jetpacks
   GroundInit(90, 119);
@@ -813,6 +814,8 @@ void MyApp::LevelOne() {
   WallInit(172, 5.2f, 3, 0.2f, kLightGreen);
   FlyingEnemyInit(173.5f, 4.3f, true);
   WallInit(178, 0, 3, 3, kLightGreen);
+
+  RepairInit(184, 1);
 
   // Flying Enemy Cage
   WallInit(188, 1.5, 2, 10.3f, kGold);
@@ -854,6 +857,7 @@ void MyApp::LevelTwo(){
 
   WallInit(-0.1f, 0, 0.1f, getWindowHeight()/kPixelsPerMeter, kYellow);
   checkpoints_.push_back(b2Vec2(1,4));
+  RepairInit(3, 2);
 
   // First Hunter
   GroundInit(0, 53);
@@ -875,6 +879,7 @@ void MyApp::LevelTwo(){
   WallInit(29, 5, 1, 2, kYellow);
   FlyingEnemyInit(31, 5.2f, true);
   WallInit(32, 5, 2, 3, kYellow);
+  RepairInit(33, 9.8f);
 
   // Triple combo stairs
   WallInit(25+kGapOne, 2, 2, 1, kBlueGray);
@@ -896,6 +901,7 @@ void MyApp::LevelTwo(){
   FlyingEnemyInit(45+kGapOne, 7.1f, false);
   EnemyInit(47+kGapOne, 7.1f, true);
   WallInit(49+kGapOne, 7, 4, 2, kGreen);
+  RepairInit(51+kGapOne, 10.7f);
   FlyingEnemyInit(55+kGapOne, 7.1f, false);
   WallInit(57+kGapOne, 9, 2, 1, kGreen);
   EnemyInit(59+kGapOne, 7.1f, true);
