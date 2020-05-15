@@ -12,7 +12,7 @@ const int kPixelsPerMeter = 90;
 namespace mylibrary {
 
 //Originally called Player, Bullet, Enemy, caused name conflicts with class names
-enum EntityType{type_bullet, type_enemy};
+enum EntityType{type_bullet, type_enemy, type_repair};
 
 class Entity {
  public:
