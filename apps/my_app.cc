@@ -643,7 +643,6 @@ void MyApp::ContactListener::BeginContact(b2Contact* contact) {
     if (entity->GetEntityType() == EntityType::type_enemy && fixture_B->GetBody() != player_body
             && ((Enemy*) entity)->getEnemyType() != EnemyType::hunter) {
       ((Enemy*) entity)->TurnAround();
-      return;
     }
 
     if (entity->GetEntityType() == EntityType::type_repair && fixture_B->GetBody() == player_body) {
