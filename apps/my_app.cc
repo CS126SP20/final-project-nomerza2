@@ -76,7 +76,7 @@ MyApp::MyApp() {
   finish_line_bot_ = ci::gl::Texture2d::create(finish_image);
   finish_line_bot_win_ = ci::gl::Texture2d::create(win_image);
 
-  repair_value_ = 2;
+  repair_value_ = -1; // Used to signify no difficult has been chosen. Won't be able to start game if this is -1
 
   AudioSetup();
 }
@@ -426,9 +426,29 @@ void MyApp::DrawDeveloperMode() {
 
 void MyApp::DrawTitleScreen() {
   ci::ivec2 size(1500,1500);
-  PrintText("ROBOT REVOLT", kRed, size, getWindowCenter(), 300);
-  PrintText("Press Space to Begin", kGreen, size,
-      ci::ivec2(getWindowCenter().x, getWindowCenter().y + 250), 120);
+  float center_x = getWindowCenter().x;
+  float center_y = getWindowCenter().y;
+
+  PrintText("ROBOT REVOLT", kRed, size, ci::ivec2(center_x, center_y - 250), 300);
+
+  PrintText("Use 1, 2, or 3 to select difficulty", kBlue, size, getWindowCenter(), 120);
+
+  if (repair_value_ == 3) {
+    PrintText("EASY", kGreen, size, ci::ivec2(center_x, center_y + 150), 120);
+  }
+
+  if (repair_value_ == 2) {
+    PrintText("NORMAL", kYellow, size, ci::ivec2(center_x, center_y + 150), 120);
+  }
+
+  if (repair_value_ == 1) {
+    PrintText("HARD", kRed, size, ci::ivec2(center_x, center_y + 150), 120);
+  }
+
+  if (repair_value_ != -1) {
+    PrintText("Press Space to Begin", kGreen, size,
+              ci::ivec2(center_x, center_y + 350), 120);
+  }
 
   player_->Draw();
 
@@ -460,11 +480,20 @@ void MyApp::keyDown(KeyEvent event) {
       b2Vec2 velocity(-7.0f, body->GetLinearVelocity().y);
       body->SetLinearVelocity(velocity);
       player_->setFacingRight(false);
-
+  }
+  //These 3 are for choosing the game difficulty
+  else if (key == KeyEvent::KEY_1 && title_screen_) {
+    repair_value_ = 1;
+  } else if (key == KeyEvent::KEY_2 && title_screen_) {
+    repair_value_ = 2;
+  } else if (key == KeyEvent::KEY_3 && title_screen_) {
+    repair_value_ = 3;
   } else if (key == KeyEvent::KEY_SPACE && shooting_timer_ == 0) {
-    if (title_screen_) {
+    if (title_screen_ && repair_value_ != -1) {
       title_screen_ = false;
       music_player_->start();
+      return;
+    } else if (title_screen_) {
       return;
     }
 
