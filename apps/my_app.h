@@ -58,6 +58,7 @@ class MyApp : public cinder::app::App {
   void LevelZero();
   void LevelOne();
   void LevelTwo();
+  void LevelThree();
 
   // These are helper functions to Update()
   void ActivateEnemies();

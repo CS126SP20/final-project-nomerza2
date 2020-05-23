@@ -46,6 +46,7 @@ const ci::Color kDarkBlue = ci::Color(0, 0, 0.4f);
 const ci::Color kShallowRed = ci::Color(1, 0.17f, 0.17f);
 const ci::Color kHunterGreen = ci::Color(0.1f, 0.285f, 0.16f);
 const ci::Color kBlueGray = ci::Color(0.168f, .539f, .5f);
+const ci::Color kGoldGreen = ci::Color(0.5333f, 0.5922f, 0.235f);
 
 const b2Vec2 kGravity = b2Vec2(0, -18);
 
@@ -56,8 +57,8 @@ const int kStartingLives = 3;
 const int kEnemyReloadTime = 80;
 const int kPlayerReloadTime = 25;
 const float kFinishWidth = 2.5f;
-const int kStartLevel = 0;
-const int kFinalLevel = 2;
+const int kStartLevel = 3;
+const int kFinalLevel = 3;
 const int kWaitTime = 4;
 
 MyApp::MyApp() {
@@ -100,6 +101,8 @@ void MyApp::setup() {
     LevelOne();
   } else if (level_ == 2) {
     LevelTwo();
+  } else if (level_ == 3) {
+    LevelThree();
   }
 
 }
@@ -951,6 +954,37 @@ void MyApp::LevelTwo(){
   HunterInit(58.8f+kGapTwo, 6.4f);
   GroundInit(62+kGapTwo, 70+kGapTwo);
   end_position_ = 70+kGapTwo;
+}
+
+void MyApp::LevelThree() {
+  PlayerWorldInit(1, 4);
+  window_shift_ = 0;
+  left_window_bound_ = 0;
+  won_level_ = false;
+
+  WallInit(-0.1f, 0, 0.1f, getWindowHeight()/kPixelsPerMeter, kYellow);
+  checkpoints_.push_back(b2Vec2(1,4));
+  RepairInit(3, 2);
+
+  //Opening Diamond Cage
+  GroundInit(0, 50);
+  WallInit(5, 1.5f, 0.6f, 10, kGoldGreen);
+  WallInit(5, 11, 22, 0.5f, kGoldGreen);
+  WallInit(7, 0.2f, 0.4f, 1, kGoldGreen);
+  EnemyInit(9, 0.5f, false);
+  EnemyInit(16, 0.5f, true);
+  EnemyInit(23, 0.5f, true);
+  WallInit(10, 5.9f, 2, 0.5f, kGoldGreen);
+  FlyingEnemyInit(11, 6.6f, true);
+  WallInit(15, 2.7f, 2, 0.5f, kGoldGreen);
+  WallInit(15, 9.3f, 2, 0.5f, kGoldGreen);
+  FlyingEnemyInit(16, 9.8f, false);
+  WallInit(20,  5.9f, 2, 0.5f, kGoldGreen);
+  FlyingEnemyInit(21, 6.2f, true);
+  WallInit(24.2f, 0.2f, 0.4f, 1, kGoldGreen);
+  WallInit(26, 1.5f, 0.6f, 10, kGoldGreen);
+  end_position_ = 35;
+
 }
 
 }  // namespace myapp
