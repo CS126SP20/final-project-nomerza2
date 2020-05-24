@@ -57,7 +57,7 @@ const int kStartingLives = 3;
 const int kEnemyReloadTime = 80;
 const int kPlayerReloadTime = 25;
 const float kFinishWidth = 2.5f;
-const int kStartLevel = 3;
+const int kStartLevel = 0;
 const int kFinalLevel = 3;
 const int kWaitTime = 4;
 
@@ -981,9 +981,76 @@ void MyApp::LevelThree() {
   FlyingEnemyInit(16, 9.8f, false);
   WallInit(20,  5.9f, 2, 0.5f, kGoldGreen);
   FlyingEnemyInit(21, 6.2f, true);
-  WallInit(24.2f, 0.2f, 0.4f, 1, kGoldGreen);
-  WallInit(26, 1.5f, 0.6f, 10, kGoldGreen);
-  end_position_ = 35;
+  WallInit(24.6f, 0.2f, 0.4f, 1, kGoldGreen);
+  WallInit(26.4f, 1.5f, 0.6f, 10, kGoldGreen);
+  //Secret Repair Kit
+  RepairInit(15, 11.9f);
+
+  //Reverse Hunter Stairs
+  RepairInit(28, 2);
+  WallInit(27, 9.5f, 1.2f, 0.4f, kHunterGreen);
+  HunterInit(27.5f, 10);
+  WallInit(28.2f, 9.5f, 0.1f, 0.7f, kHunterGreen); //Hunter's safety railing
+  WallInit(33, 0, 5, 3, kHunterGreen);
+  EnemyInit(37.3f, 3.1f, false);
+  WallInit(38, 0, 5, 6, kHunterGreen);
+  FlyingEnemyInit(40, 6.2f, true);
+  EnemyInit(42.4f, 6.2f, false);
+  WallInit(35, 8.8f, 1, 0.2f, kHunterGreen);
+  WallInit(43, 0, 5, 9, kHunterGreen);
+  EnemyInit(47.2f, 9.1f, false);
+  WallInit(48, 0, 2, 11, kHunterGreen);
+
+  //Small Gap
+  checkpoints_.push_back(b2Vec2(49, 11.1f));
+  WallInit(57.2f, 6.7f, 2, 0.7f, kDarkBlue);
+  RepairInit(58.2f, 7.7f);
+  WallInit(65.3f, 2.4f, 1.3f, 0.7f, kDarkBlue);
+
+  //Hunter Fortress
+  int back_shift = 73 - 157; // This was copied from levelzero's "the pit," so it must be shifted. Uses the start of ground in this - start of ground in level 0
+  GroundInit(73, 260+back_shift);
+  WallInit(164+back_shift, 0, 2, 3, kGray);
+  WallInit(166+back_shift, 0, 2, 6, kGray);
+  WallInit(168+back_shift, 0, 2, 9, kGray);
+  WallInit(170+back_shift, 0, 8, 5, kGray);
+  HunterInit(171+back_shift, 5.1f);
+  EnemyInit(175+back_shift, 5.1f, true);
+  WallInit(177.9f+back_shift, 5, 0.1f, 0.4f, kGray);
+  WallInit(179.4f+back_shift, 2, 1.6f, 3, kGray);
+  WallInit(179.4f+back_shift, 5, 0.1f, 0.4f, kGray);
+  HunterInit(180+back_shift, 5.1f);
+  WallInit(181+back_shift, 2, 2, 9, kGray);
+
+  //Hunting range with jetpacks
+  WallInit(192+back_shift, 0, 1.5f, 2, kDeepRed);
+  FlyingEnemyInit(196+back_shift, 1, true);
+  FlyingEnemyInit(199+back_shift, 1, true);
+  FlyingEnemyInit(202+back_shift, 1, true);
+  FlyingEnemyInit(205+back_shift, 1, true);
+  WallInit(209+back_shift, 0, 1.5f, 3, kDeepRed);
+  HunterInit(209.7f+back_shift, 3.1f);
+
+  //Hunter's Pyramid
+  back_shift = 215+back_shift - 217;
+  RepairInit(214+back_shift, 2);
+  WallInit(217+back_shift, 1.5f, 1, 12, kOrange);
+  WallInit(221+back_shift, 0, 21, 2, kOrange);
+  WallInit(224+back_shift, 0, 15, 4, kOrange);
+  WallInit(227+back_shift, 0, 9, 6, kOrange);
+  WallInit(230+back_shift, 0, 3, 8, kOrange);
+  WallInit(246+back_shift, 1.5f, 1, 12, kOrange);
+  WallInit(218+back_shift, 11.8f, 28, 0.3f, kOrange);
+  FlyingEnemyInit(220+back_shift, 1, false);
+  FlyingEnemyInit(226+back_shift, 6, true);
+  EnemyInit(228+back_shift, 6.3f, true);
+  HunterInit(230.5f+back_shift, 8.5f);
+  HunterInit(232.5f+back_shift, 8.5f);
+  EnemyInit(235+back_shift, 6.3f, false);
+  FlyingEnemyInit(238+back_shift, 4.5f, false);
+  FlyingEnemyInit(244+back_shift, 0.5f, true);
+
+  end_position_ = 255+back_shift;
 
 }
 
