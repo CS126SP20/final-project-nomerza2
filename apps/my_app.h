@@ -18,6 +18,9 @@
 
 namespace myapp {
 
+const int kStandardWidth = 1920;
+const int kStandardHeight = 1080;
+
 class MyApp : public cinder::app::App {
 
  public:
@@ -53,6 +56,9 @@ class MyApp : public cinder::app::App {
    * */
   void DrawDeveloperMode();
   void DrawTitleScreen();
+
+  // Sets scale_ to a new value depending on the window's size.
+  void RescaleWindow();
 
   void AudioSetup();
   void LevelZero();
@@ -124,6 +130,7 @@ class MyApp : public cinder::app::App {
   bool won_level_;
   bool developer_mode_;
   bool title_screen_;
+  float scale_;
 
   /**
    * The Internal ContactListener class is a child of the b2ContactListener class

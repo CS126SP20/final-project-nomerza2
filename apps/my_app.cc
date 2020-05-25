@@ -66,6 +66,7 @@ MyApp::MyApp() {
   level_ = kStartLevel;
   jump_timer_ = 0;
   shooting_timer_ = 0;
+  scale_ = 1.0f;
   enemy_shooting_timer_ = kEnemyReloadTime;
   sensor_contacts_ = 0;
 
@@ -82,18 +83,9 @@ MyApp::MyApp() {
   AudioSetup();
 }
 
-/**
- * Developer Note - this function is very long. All of the code in here is used
- * the game layout. Since the entire level is loaded at once, and (while given
- * separate labels) the different obstacles are dependent on each other (e.g.
- * ground blocks that stretch across multiple obstacles, enemies that move
- * between areas, etc.) Arbitrarily separating the level setup into multiple
- * functions would be unnecessary and confusing, hence why this function is 100+
- * lines long.
- * */
 void MyApp::setup() {
   cinder::app::WindowRef windowRef = this->getWindow();
-  windowRef->setFullScreen();
+  //windowRef->setFullScreen();
 
   if (level_ == 0) {
     LevelZero();
@@ -124,6 +116,16 @@ void MyApp::AudioSetup() {
       ci::audio::load(ci::app::loadAsset("Spectral.mp3"));
   music_player_ = ci::audio::VoiceSamplePlayerNode::create(music_file);
   music_player_->getSamplePlayerNode()->setLoopEnabled();
+}
+
+void MyApp::RescaleWindow() {
+  float width_scale = (float) ci::app::getWindowWidth() / kStandardWidth;
+  float height_scale = (float) ci::app::getWindowHeight() / kStandardHeight;
+  if (width_scale < height_scale) {
+    scale_ = width_scale;
+  } else {
+    scale_ = height_scale;
+  }
 }
 
 // y_loc is the height of the enemy's feet. x_loc is the center of the enemy.
@@ -174,6 +176,8 @@ void MyApp::RepairInit(float x_loc, float y_loc) {
 }
 
 void MyApp::update() {
+  RescaleWindow();
+
   if (won_level_) {
 
     if (level_ == kFinalLevel) {
@@ -350,13 +354,15 @@ void PrintText(const std::string& text, const C& color, const cinder::ivec2& siz
 
 void MyApp::draw() {
   ci::gl::clear();
+  ci::gl::setMatricesWindow(getWindowSize());
+  RescaleWindow();
+  ci::gl::scale(scale_, scale_);
 
   if (title_screen_) {
     DrawTitleScreen();
     return;
   }
 
-  ci::gl::setMatricesWindow(getWindowSize());
   ci::gl::translate(-window_shift_, 0);
 
   player_->Draw();
