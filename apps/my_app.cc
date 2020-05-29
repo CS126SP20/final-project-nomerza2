@@ -392,7 +392,7 @@ void MyApp::draw() {
 
   // Life Counter
   const cinder::ivec2 size = {100, 50};
-  const cinder::vec2 center(50.0f + window_shift_, 50.0f); //Top-left Corner
+  const cinder::vec2 center(50.0f + window_shift_, EffectiveDimensions::GetEffectiveHeight() - (kStandardHeight - 50.0f)); //Top-left Corner
   PrintText(std::to_string(lives_), kBlue, size, center,50);
 
   ci::gl::Texture2dRef finish_image;
