@@ -443,12 +443,15 @@ void MyApp::DrawDeveloperMode() {
 
 void MyApp::DrawTitleScreen() {
   ci::ivec2 size(1500,1500);
-  float center_x = getWindowCenter().x;
-  float center_y = getWindowCenter().y;
+  //May seem a bit redundant to define these, but this is written to be hardcoded
+  // to the standard dimensions, and then lets the scale and transform functions do the rest
+  float center_x = kStandardWidth / 2;
+  float center_y = kStandardHeight / 2;
+
 
   PrintText("ROBOT REVOLT", kRed, size, ci::ivec2(center_x, center_y - 250), 300);
 
-  PrintText("Use 1, 2, or 3 to select difficulty", kBlue, size, getWindowCenter(), 120);
+  PrintText("Use 1, 2, or 3 to select difficulty", kBlue, size, ci::ivec2(center_x, center_y), 120);
 
   if (repair_value_ == 3) {
     PrintText("EASY", kGreen, size, ci::ivec2(center_x, center_y + 150), 120);
@@ -470,10 +473,10 @@ void MyApp::DrawTitleScreen() {
   player_->Draw();
 
   PrintText("Created by Nathan Omerza", kBlue, ci::ivec2(250,250),
-      ci::ivec2(getWindowWidth() - 250, getWindowHeight() - 230), 30);
+      ci::ivec2(kStandardWidth - 250, kStandardHeight - 230), 30);
 
   PrintText("Music: \"Spectral\" by Kyle Adomaitis", kBlue, ci::ivec2(250,250),
-      ci::ivec2(getWindowWidth() - 250, getWindowHeight() - 150), 30);
+      ci::ivec2(kStandardWidth - 250, kStandardHeight - 150), 30);
 }
 
 void MyApp::keyDown(KeyEvent event) {
