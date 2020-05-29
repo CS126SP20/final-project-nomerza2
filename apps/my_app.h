@@ -130,7 +130,11 @@ class MyApp : public cinder::app::App {
   bool won_level_;
   bool developer_mode_;
   bool title_screen_;
+
+  //The factor that the game is scaled by to fit the view window
   float scale_;
+  //True if the horizontal has a smaller current size / standard size ratio than the vertical
+  bool is_x_limiting_;
 
   /**
    * The Internal ContactListener class is a child of the b2ContactListener class

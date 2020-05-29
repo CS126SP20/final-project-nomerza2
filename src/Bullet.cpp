@@ -6,6 +6,9 @@
 #include <cinder/app/App.h>
 #include <cinder/gl/draw.h>
 #include <cinder/gl/gl.h>
+#include <mylibrary/EffectiveDimensions.h>
+
+using mylibrary::EffectiveDimensions;
 
 namespace mylibrary {
 
@@ -51,7 +54,7 @@ void Bullet::Draw() {
   ci::gl::color(color);
   b2Vec2 box2d_position = body_->GetPosition();
   ci::vec2 cinder_position(box2d_position.x * kPixelsPerMeter,
-      ci::app::getWindowHeight() - (box2d_position.y * kPixelsPerMeter));
+      EffectiveDimensions::GetEffectiveHeight() - (box2d_position.y * kPixelsPerMeter));
   ci::gl::drawSolidCircle(cinder_position, bullet_radius_*kPixelsPerMeter);
 }
 

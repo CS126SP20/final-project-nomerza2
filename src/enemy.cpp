@@ -7,6 +7,9 @@
 #include <cinder/app/App.h>
 #include <cinder/gl/draw.h>
 #include <cinder/gl/gl.h>
+#include <mylibrary/EffectiveDimensions.h>
+
+using mylibrary::EffectiveDimensions;
 
 namespace mylibrary {
 
@@ -44,7 +47,7 @@ void Enemy::Draw() {
   b2Vec2 position = body_->GetPosition();
 
   int pixel_x = position.x*kPixelsPerMeter - kEnemyWidth*kPixelsPerMeter/2;
-  int pixel_y = ci::app::getWindowHeight() - (position.y*kPixelsPerMeter + kEnemyHeight*kPixelsPerMeter/2);
+  int pixel_y = EffectiveDimensions::GetEffectiveHeight() - (position.y*kPixelsPerMeter + kEnemyHeight*kPixelsPerMeter/2);
 
   ci::gl::Texture2dRef image_ref;
   if(facing_right_) {

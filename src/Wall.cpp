@@ -4,6 +4,9 @@
 
 #include "mylibrary/Wall.h"
 #include <cinder/app/App.h>
+#include <mylibrary/EffectiveDimensions.h>
+
+using mylibrary::EffectiveDimensions;
 
 namespace mylibrary {
 
@@ -23,11 +26,12 @@ Wall::Wall(b2World* world, float x_loc, float y_loc, float half_width, float hal
 
 void Wall::Draw() {
   b2Vec2 position = body_->GetPosition();
+
   ci::Rectf rect(
       (position.x - half_width_)*kPixelsPerMeter,
-      ci::app::getWindowHeight() - ((position.y - half_height_) * kPixelsPerMeter),
+      EffectiveDimensions::GetEffectiveHeight() - ((position.y - half_height_) * kPixelsPerMeter),
       (position.x + half_width_) * kPixelsPerMeter,
-      ci::app::getWindowHeight() - ((position.y + half_height_) * kPixelsPerMeter));
+      EffectiveDimensions::GetEffectiveHeight() - ((position.y + half_height_) * kPixelsPerMeter));
 
   ci::gl::color(color_);
   ci::gl::drawSolidRect(rect);

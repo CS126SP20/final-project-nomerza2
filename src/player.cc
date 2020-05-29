@@ -5,6 +5,9 @@
 #include <cinder/gl/draw.h>
 #include <cinder/gl/gl.h>
 #include <mylibrary/player.h>
+#include <mylibrary/EffectiveDimensions.h>
+
+using mylibrary::EffectiveDimensions;
 
 namespace mylibrary {
 
@@ -54,7 +57,7 @@ void Player::Draw() {
   b2Vec2 position = body_->GetPosition();
 
   int pixel_x = position.x*kPixelsPerMeter - kPlayerWidth*kPixelsPerMeter/2;
-  int pixel_y =ci::app::getWindowHeight()
+  int pixel_y = EffectiveDimensions::GetEffectiveHeight()
       - (position.y*kPixelsPerMeter + kPlayerHeight*kPixelsPerMeter/2);
 
   ci::gl::Texture2dRef image_ref;

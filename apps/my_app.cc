@@ -10,6 +10,7 @@
 #include <cinder/app/Window.h>
 #include <thread>
 #include <chrono>
+#include <mylibrary/EffectiveDimensions.h>
 
 using mylibrary::Player;
 using mylibrary::Bullet;
@@ -22,6 +23,7 @@ using mylibrary::Wall;
 using mylibrary::FlyingEnemy;
 using mylibrary::Hunter;
 using mylibrary::RepairKit;
+using mylibrary::EffectiveDimensions;
 
 namespace myapp {
 
@@ -119,13 +121,20 @@ void MyApp::AudioSetup() {
 }
 
 void MyApp::RescaleWindow() {
-  float width_scale = (float) ci::app::getWindowWidth() / kStandardWidth;
-  float height_scale = (float) ci::app::getWindowHeight() / kStandardHeight;
+  float width_scale = (float) getWindowWidth() / kStandardWidth;
+  float height_scale = (float) getWindowHeight() / kStandardHeight;
+
   if (width_scale < height_scale) {
     scale_ = width_scale;
+    is_x_limiting_ = true;
+
   } else {
     scale_ = height_scale;
+    is_x_limiting_ = false;
   }
+
+  EffectiveDimensions::SetEffectiveWidth(kStandardWidth * scale_);
+  EffectiveDimensions::SetEffectiveHeight(kStandardHeight * scale_);
 }
 
 // y_loc is the height of the enemy's feet. x_loc is the center of the enemy.
@@ -176,8 +185,6 @@ void MyApp::RepairInit(float x_loc, float y_loc) {
 }
 
 void MyApp::update() {
-  RescaleWindow();
-
   if (won_level_) {
 
     if (level_ == kFinalLevel) {
@@ -251,7 +258,7 @@ void MyApp::ActivateEnemies() {
     unsigned int id = it->first;
     Enemy* enemy = it->second;
 
-    if ((enemy->Activate(((window_shift_ - kActivateRange)/ kPixelsPerMeter),
+    if ((enemy->Activate(((window_shift_ - kActivateRange)/ kPixelsPerMeter), // TODO figure out how this works with window scaling
                          ((window_shift_ + getWindowWidth() + kActivateRange) / kPixelsPerMeter)))) {
       enemy_shooters_.insert(std::pair< unsigned int, Enemy*> (id, enemy));
 
@@ -363,7 +370,8 @@ void MyApp::draw() {
     return;
   }
 
-  ci::gl::translate(-window_shift_, 0);
+  //the y shift prevents stuff from being cut off at the top when scaling.
+  ci::gl::translate(-window_shift_, (((float) (1.0f - scale_)) * EffectiveDimensions::GetEffectiveHeight()) / scale_);
 
   player_->Draw();
 
@@ -412,7 +420,7 @@ void MyApp::draw() {
   ci::Color reset(1,1,1);
   ci::gl::color(reset);
   // 346 = height of ground(18) + height of robot image(328)
-  ci::gl::draw(finish_image, ci::vec2((end_position_ - kFinishWidth) * kPixelsPerMeter, getWindowHeight() - 346));
+  ci::gl::draw(finish_image, ci::vec2((end_position_ - kFinishWidth) * kPixelsPerMeter, EffectiveDimensions::GetEffectiveHeight() - 346)); //TODO see if this needs refactoring?
 
   if (developer_mode_) {
     DrawDeveloperMode();
