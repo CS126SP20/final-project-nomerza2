@@ -257,9 +257,12 @@ void MyApp::ActivateEnemies() {
   {
     unsigned int id = it->first;
     Enemy* enemy = it->second;
+    // TODO figure out how this works with window scaling
+    float left_bound = (window_shift_ - kActivateRange)/ kPixelsPerMeter;
+    float right_bound = (window_shift_ + kStandardWidth + kActivateRange) / kPixelsPerMeter;
+    //kStandard called, since this should use standard dimensions, since box2D doesn't account for scale, and kPPM refers to standard dimensions
 
-    if ((enemy->Activate(((window_shift_ - kActivateRange)/ kPixelsPerMeter), // TODO figure out how this works with window scaling
-                         ((window_shift_ + getWindowWidth() + kActivateRange) / kPixelsPerMeter)))) {
+    if ((enemy->Activate(left_bound, right_bound))) {
       enemy_shooters_.insert(std::pair< unsigned int, Enemy*> (id, enemy));
 
       if (enemy->getEnemyType() == EnemyType::flying_enemy) {
