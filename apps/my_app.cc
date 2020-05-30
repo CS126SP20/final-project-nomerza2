@@ -49,6 +49,7 @@ const ci::Color kShallowRed = ci::Color(1, 0.17f, 0.17f);
 const ci::Color kHunterGreen = ci::Color(0.1f, 0.285f, 0.16f);
 const ci::Color kBlueGray = ci::Color(0.168f, .539f, .5f);
 const ci::Color kGoldGreen = ci::Color(0.5333f, 0.5922f, 0.235f);
+const ci::Color kBlack = ci::Color(0, 0, 0);
 
 const b2Vec2 kGravity = b2Vec2(0, -18);
 
@@ -388,7 +389,7 @@ void MyApp::draw() {
 
   if (lives_ <= 0) {
     const cinder::ivec2 size = {500, 500};
-    const cinder::vec2 center = getWindowCenter();
+    const cinder::vec2 center = ci::ivec2(kStandardWidth/2, kStandardHeight/2);
 
     PrintText("U DED", kRed, size, ci::vec2(center.x + window_shift_, center.y), 100);
   }
@@ -402,7 +403,7 @@ void MyApp::draw() {
 
   if (won_level_) {
     const cinder::ivec2 size = {500, 500};
-    const cinder::vec2 center = getWindowCenter();
+    const cinder::vec2 center = ci::ivec2(kStandardWidth/2, kStandardHeight/2);
 
     std::string to_print;
     if (level_ == kFinalLevel) {
@@ -424,6 +425,12 @@ void MyApp::draw() {
   ci::gl::color(reset);
   // 346 = height of ground(18) + height of robot image(328)
   ci::gl::draw(finish_image, ci::vec2((end_position_ - kFinishWidth) * kPixelsPerMeter, EffectiveDimensions::GetEffectiveHeight() - 346)); //TODO see if this needs refactoring?
+
+  //Draws "curtain," the area outside of the effective width
+  ci::gl::setMatricesWindow(getWindowSize());
+  ci::Rectf curtain (EffectiveDimensions::GetEffectiveWidth(), 0, getWindowWidth(), getWindowHeight());
+  ci::gl::color(kBlack);
+  ci::gl::drawSolidRect(curtain);
 
   if (developer_mode_) {
     DrawDeveloperMode();
