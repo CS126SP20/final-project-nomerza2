@@ -83,6 +83,7 @@ MyApp::MyApp() {
 
   repair_value_ = -1; // Used to signify no difficult has been chosen. Won't be able to start game if this is -1
 
+  setFullScreen(true);
   AudioSetup();
 }
 
@@ -554,6 +555,10 @@ void MyApp::keyDown(KeyEvent event) {
   } else if (event.getCode() == KeyEvent::KEY_r) {
     lives_ = kStartingLives;
     Restart();
+
+  } else if (event.getCode() == KeyEvent::KEY_f) {
+    // Toggles fullscreen
+    setFullScreen(!isFullScreen());
   }
 }
 
