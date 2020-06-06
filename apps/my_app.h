@@ -14,6 +14,7 @@
 #include <mylibrary/flying_enemy.h>
 #include <mylibrary/Hunter.h>
 #include <mylibrary/Wall.h>
+#include <mylibrary/MovingWall.h>
 #include <mylibrary/RepairKit.h>
 
 namespace myapp {
@@ -65,6 +66,7 @@ class MyApp : public cinder::app::App {
   void LevelOne();
   void LevelTwo();
   void LevelThree();
+  void LevelFour();
 
   // These are helper functions to Update()
   void ActivateEnemies();
@@ -81,6 +83,11 @@ class MyApp : public cinder::app::App {
   void GroundInit(float start, float end);
   void PlayerWorldInit(float x_loc, float y_loc);
   void RepairInit(float x_loc, float y_loc);
+  void MovingWallInit(float start_x, float start_y, float width, float height,
+      ci::Color color, bool moves_vertically, float lower_limit, float upper_limit, float velocity);
+
+  // takes a b2fixture, returns true if it is an entity (meaning its user data is a positive value)
+  static bool isEntityFixture(b2Fixture*);
 
   b2World* world_;
   mylibrary::Player* player_;
@@ -90,6 +97,7 @@ class MyApp : public cinder::app::App {
   std::map<unsigned int, mylibrary::FlyingEnemy*> flying_enemies_;
 
   std::vector<mylibrary::Wall*> walls_;
+  std::vector<mylibrary::MovingWall*> moving_walls_;
 
   // Bodies can't be destroyed in callback, so must be tracked here to be destroyed later.
   // Uses a set, since a body can collide with two things within the same step,

@@ -24,6 +24,7 @@ using mylibrary::FlyingEnemy;
 using mylibrary::Hunter;
 using mylibrary::RepairKit;
 using mylibrary::EffectiveDimensions;
+using mylibrary::MovingWall;
 
 namespace myapp {
 
@@ -60,8 +61,8 @@ const int kStartingLives = 3;
 const int kEnemyReloadTime = 80;
 const int kPlayerReloadTime = 25;
 const float kFinishWidth = 2.5f;
-const int kStartLevel = 0;
-const int kFinalLevel = 3;
+const int kStartLevel = 4;
+const int kFinalLevel = 4;
 const int kWaitTime = 4;
 
 MyApp::MyApp() {
@@ -99,6 +100,8 @@ void MyApp::setup() {
     LevelTwo();
   } else if (level_ == 3) {
     LevelThree();
+  } else if (level_ == 4) {
+    LevelFour();
   }
 
 }
@@ -186,6 +189,16 @@ void MyApp::RepairInit(float x_loc, float y_loc) {
   entity_manager_.insert(entity_data);
 }
 
+//Bottom left corner for start
+void MyApp::MovingWallInit(float start_x, float start_y, float width,
+                           float height, ci::Color color, bool moves_vertically,
+                           float lower_limit, float upper_limit,
+                           float velocity) {
+  MovingWall* wall = new MovingWall(world_, start_x + width/2, start_y + height/2,
+      width/2, height/2, lower_limit, upper_limit, velocity, moves_vertically, color);
+  moving_walls_.push_back(wall);
+}
+
 void MyApp::update() {
   if (won_level_) {
 
@@ -242,6 +255,10 @@ void MyApp::update() {
 
   for (std::pair< unsigned int, FlyingEnemy*> data_pair : flying_enemies_) {
     data_pair.second->Fly();
+  }
+
+  for (MovingWall* movingWall : moving_walls_) {
+    movingWall->VelocityUpdate();
   }
 
   UpdateActiveEnemies();
@@ -382,6 +399,10 @@ void MyApp::draw() {
 
   for (Wall* wall : walls_) {
     wall->Draw();
+  }
+
+  for (MovingWall* movingWall : moving_walls_) {
+    movingWall->Draw();
   }
 
   for (std::pair<unsigned int, Entity*> entity_data : entity_manager_) {
@@ -615,9 +636,8 @@ void MyApp::BulletCollision(b2Fixture* bullet_fix, b2Fixture* other) {
     damage_sound_->start();
   }
 
-  void* other_data = other->GetUserData();
-  if (other_data != NULL) { //Therefore, other must be an entity
-    unsigned int other_ID = (unsigned int) other_data;
+  if (isEntityFixture(other)) { //Therefore, other must be an entity
+    unsigned int other_ID = (unsigned int) other->GetUserData();
     Entity* entity = entity_manager_.at(other_ID);
 
     //Can't shoot Repair kits
@@ -637,7 +657,7 @@ void MyApp::BulletCollision(b2Fixture* bullet_fix, b2Fixture* other) {
       boom_sound_->start();
     }
 
-    entities_to_destroy_.insert((unsigned int) other_data);
+    entities_to_destroy_.insert(other_ID);
   }
 }
 
@@ -671,7 +691,7 @@ void MyApp::ContactListener::BeginContact(b2Contact* contact) {
   // - for when an enemy collides with a non-bullet
   // (which it can't be if it reached this point), non-player object
   // - when a player collides with a repair kit
-  if (fixture_A->GetUserData() != NULL) {
+  if (isEntityFixture(fixture_A)) {
     Entity* entity =
         myApp_->entity_manager_.at((unsigned int) fixture_A->GetUserData());
 
@@ -686,7 +706,7 @@ void MyApp::ContactListener::BeginContact(b2Contact* contact) {
     }
   }
 
-  if (fixture_B->GetUserData() != NULL) {
+  if (isEntityFixture(fixture_B)) {
     Entity* entity =
         myApp_->entity_manager_.at((unsigned int) fixture_B->GetUserData());
 
@@ -719,10 +739,17 @@ void MyApp::Restart() {
     delete entity_data.second;
   }
   entity_manager_.clear();
+
   for (Wall* wall : walls_) {
     delete wall;
   }
   walls_.clear();
+
+  for (MovingWall* movingWall : moving_walls_) {
+    delete movingWall;
+  }
+  moving_walls_.clear();
+
   // Members deleted in entity_manager_
   enemy_shooters_.clear();
   asleep_enemies_.clear();
@@ -1086,4 +1113,19 @@ void MyApp::LevelThree() {
 
 }
 
+void MyApp::LevelFour() {
+  PlayerWorldInit(1, 4);
+  window_shift_ = 0;
+  left_window_bound_ = 0;
+  won_level_ = false;
+
+  GroundInit(0, 30);
+  MovingWallInit(5, 1, 5, 2, kRed, false, 3, 12, 2);
+  MovingWallInit(16, 2, 1, 3, kGreen, true, 1.4f, 9, 5);
+  end_position_ = 30;
+}
+
+bool MyApp::isEntityFixture(b2Fixture* b2Fixture) {
+  return b2Fixture->GetUserData() != NULL && (int) b2Fixture->GetUserData() > 0;
+}
 }  // namespace myapp

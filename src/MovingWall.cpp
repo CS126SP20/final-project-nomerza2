@@ -18,7 +18,7 @@ MovingWall::MovingWall(b2World* world, float x_loc, float y_loc, float half_widt
                        float half_height, float lower_limit, float upper_limit,
                        float velocity, bool moves_vertically, ci::Color color) {
   b2BodyDef bodyDef;
-  bodyDef.type = b2_dynamicBody;
+  bodyDef.type = b2_kinematicBody;
   bodyDef.position.Set(x_loc, y_loc);
   body_ = world->CreateBody(&bodyDef);
   b2PolygonShape box;
@@ -106,8 +106,8 @@ void MovingWall::Draw() {
 
   //Spikes now
   if (moves_vertically_) {
-    int num_spikes = floor(half_width_ * 2 / kSpikeSize);
-    float spike_shift = fmod((half_width_ * 2), kSpikeSize);
+    int num_spikes = floor(half_width_ * 2 / kSpikeSize) - 1;
+    float spike_shift = fmod((half_width_ * 2), kSpikeSize) / 2;
 
     for (size_t i = 0; i < num_spikes; i++) {
       //top side
@@ -129,8 +129,8 @@ void MovingWall::Draw() {
            kStandardHeight - ((position.y - half_height_ - kSpikeSize) * kPixelsPerMeter)));
     }
   } else { // moves horizontally
-    int num_spikes = floor(half_height_ * 2 / kSpikeSize);
-    float spike_shift = fmod((half_height_ * 2), kSpikeSize);
+    int num_spikes = floor(half_height_ * 2 / kSpikeSize) - 1;
+    float spike_shift = fmod((half_height_ * 2), kSpikeSize) / 2;
 
     for (size_t i = 0; i < num_spikes; i++) {
       //right side
