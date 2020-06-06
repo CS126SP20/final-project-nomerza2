@@ -56,8 +56,10 @@ include(FetchContent)
 
 # FetchContent_MakeAvailable was not added until CMake 3.14
 if(${CMAKE_VERSION} VERSION_LESS 3.14)
-    include(cmake/add_FetchContent_MakeAvailable.cmake)
+include(cmake/add_FetchContent_MakeAvailable.cmake)
 endif()
+
+set(SRCLIST value)
 
 # The library code is here.
 add_subdirectory(src)
@@ -67,6 +69,12 @@ add_subdirectory(apps)
 
 # The tests are here.
 add_subdirectory(tests)
+
+#add_executable(RobotRevolt apps/my_app.cc apps/run.cc)
+set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+add_executable(FinalProject WIN32 ${SRCLIST})
+#target_sources(FinalProject PUBLIC "${SOURCE_LIST}")
+#set(CMAKE_EXE_LINKER_FLAGS -static)#deploy as executable theory delete if necessary
 
 ############## Third-party Libraries #####################
 

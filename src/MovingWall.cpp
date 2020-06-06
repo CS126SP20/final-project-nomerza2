@@ -1,0 +1,158 @@
+//
+// Created by natha on 6/5/2020.
+//
+
+#include "mylibrary/MovingWall.h"
+#include <mylibrary/entity.h>
+#include <mylibrary/EffectiveDimensions.h>
+#include <cmath>
+
+using ci::vec2;
+
+const int kStandardWidth = 1920; //TODO, redefinition from my_app.h, fix this maybe?
+const int kStandardHeight = 1080;
+
+namespace mylibrary {
+
+MovingWall::MovingWall(b2World* world, float x_loc, float y_loc, float half_width,
+                       float half_height, float lower_limit, float upper_limit,
+                       float velocity, bool moves_vertically, ci::Color color) {
+  b2BodyDef bodyDef;
+  bodyDef.type = b2_dynamicBody;
+  bodyDef.position.Set(x_loc, y_loc);
+  body_ = world->CreateBody(&bodyDef);
+  b2PolygonShape box;
+  box.SetAsBox(half_width, half_height);
+  body_->CreateFixture(&box, 0);
+
+  b2PolygonShape left_spikebox_shape;
+  if (moves_vertically) {
+    left_spikebox_shape.SetAsBox((kSpikeSize / 2), half_height, b2Vec2(0, -1 * half_height - (kSpikeSize / 2)), 0);
+  } else {
+    left_spikebox_shape.SetAsBox((kSpikeSize / 2), half_height, b2Vec2(-1 * half_width - (kSpikeSize / 2), 0), 0);
+  }
+  b2FixtureDef left_spikebox_def;
+  left_spikebox_def.shape = &left_spikebox_shape;
+  b2Fixture* left_spikebox = body_->CreateFixture(&left_spikebox_def);
+  left_spikebox->SetUserData((void*)kSpikeID);
+
+  b2PolygonShape right_spikebox_shape;
+  if (moves_vertically) {
+    right_spikebox_shape.SetAsBox((kSpikeSize / 2), half_height, b2Vec2(0, half_height + (kSpikeSize / 2)), 0);
+  } else {
+    right_spikebox_shape.SetAsBox((kSpikeSize / 2), half_height, b2Vec2(half_width + (kSpikeSize / 2), 0), 0);
+  }
+  b2FixtureDef right_spikebox_def;
+  right_spikebox_def.shape = &right_spikebox_shape;
+  b2Fixture* right_spikebox = body_->CreateFixture(&right_spikebox_def);
+  right_spikebox->SetUserData((void*)kSpikeID);
+
+  if (moves_vertically) {
+    body_->SetLinearVelocity(b2Vec2(0, velocity));
+  } else {
+    body_->SetLinearVelocity(b2Vec2(velocity, 0));
+  }
+
+  half_width_ = half_width;
+  half_height_ = half_height;
+  lower_limit_ = lower_limit;
+  upper_limit_ = upper_limit;
+  moves_vertically_ = moves_vertically;
+  color_ = color;
+}
+
+void MovingWall::VelocityUpdate() {
+  b2Vec2 velocity = body_->GetLinearVelocity();
+
+  if (moves_vertically_) {
+    if (velocity.y > 0) {
+      if (body_->GetPosition().y + half_height_ + kSpikeSize >= upper_limit_) {
+        body_->SetLinearVelocity(-1 * velocity);
+      }
+
+    } else { // velocity < 0, moves_vertically = true;
+      if (body_->GetPosition().y - half_height_ - kSpikeSize <= lower_limit_) {
+        body_->SetLinearVelocity(-1 * velocity);
+      }
+    }
+
+  } else { //moves horizontally
+    if (velocity.x > 0) {
+      if (body_->GetPosition().x + half_width_ + kSpikeSize >= upper_limit_) {
+        body_->SetLinearVelocity(-1 * velocity);
+      }
+
+    } else { // velocity < 0, moves horizontally
+      if (body_->GetPosition().x - half_width_ - kSpikeSize <= lower_limit_) {
+        body_->SetLinearVelocity(-1 * velocity);
+      }
+    }
+  }
+}
+
+void MovingWall::Draw() {
+  b2Vec2 position = body_->GetPosition();
+
+  ci::Rectf rect(
+      (position.x - half_width_)*kPixelsPerMeter,
+      EffectiveDimensions::GetEffectiveHeight() - ((position.y - half_height_) * kPixelsPerMeter),
+      (position.x + half_width_) * kPixelsPerMeter,
+      EffectiveDimensions::GetEffectiveHeight() - ((position.y + half_height_) * kPixelsPerMeter));
+
+  ci::gl::color(color_);
+  ci::gl::drawSolidRect(rect);
+
+  ci::gl::color(kSpikeColor);
+
+  //Spikes now
+  if (moves_vertically_) {
+    int num_spikes = floor(half_width_ * 2 / kSpikeSize);
+    float spike_shift = fmod((half_width_ * 2), kSpikeSize);
+
+    for (size_t i = 0; i < num_spikes; i++) {
+      //top side
+      ci::gl::drawSolidTriangle(
+          vec2((position.x - half_width_ + spike_shift + i*kSpikeSize) * kPixelsPerMeter, //Bottom left point
+              kStandardHeight - ((position.y + half_height_) * kPixelsPerMeter)),
+          vec2((position.x - half_width_ + spike_shift + (i+1)*kSpikeSize) * kPixelsPerMeter, //Bottom right point
+               kStandardHeight - ((position.y + half_height_) * kPixelsPerMeter)),
+          vec2((position.x - half_width_ + spike_shift + ((float) i+0.5f)*kSpikeSize) * kPixelsPerMeter, //Top Middle point
+               kStandardHeight - ((position.y + half_height_ + kSpikeSize) * kPixelsPerMeter)));
+
+      //bottom side
+      ci::gl::drawSolidTriangle(
+          vec2((position.x - half_width_ + spike_shift + i*kSpikeSize) * kPixelsPerMeter, //Bottom left point
+               kStandardHeight - ((position.y - half_height_) * kPixelsPerMeter)),
+          vec2((position.x - half_width_ + spike_shift + (i+1)*kSpikeSize) * kPixelsPerMeter, //Bottom right point
+               kStandardHeight - ((position.y - half_height_) * kPixelsPerMeter)),
+      vec2((position.x - half_width_ + spike_shift + ((float) i+0.5f)*kSpikeSize) * kPixelsPerMeter, //Top Middle point
+           kStandardHeight - ((position.y - half_height_ - kSpikeSize) * kPixelsPerMeter)));
+    }
+  } else { // moves horizontally
+    int num_spikes = floor(half_height_ * 2 / kSpikeSize);
+    float spike_shift = fmod((half_height_ * 2), kSpikeSize);
+
+    for (size_t i = 0; i < num_spikes; i++) {
+      //right side
+      ci::gl::drawSolidTriangle(
+          vec2((position.x + half_width_) * kPixelsPerMeter, //Bottom left point
+               kStandardHeight - ((position.y - half_height_ + i*kSpikeSize + spike_shift) * kPixelsPerMeter)),
+          vec2((position.x + half_width_) * kPixelsPerMeter, //Top Left point
+               kStandardHeight - ((position.y - half_height_ + (i+1)*kSpikeSize + spike_shift) * kPixelsPerMeter)),
+      vec2((position.x + half_width_ + kSpikeSize) * kPixelsPerMeter, //Middle Right point
+           kStandardHeight - ((position.y - half_height_ + ((float) i+0.5f)*kSpikeSize + spike_shift) * kPixelsPerMeter)));
+
+      //left side
+      ci::gl::drawSolidTriangle(
+          vec2((position.x - half_width_) * kPixelsPerMeter, //Bottom left point
+               kStandardHeight - ((position.y - half_height_ + i*kSpikeSize + spike_shift) * kPixelsPerMeter)),
+          vec2((position.x - half_width_) * kPixelsPerMeter, //Top Left point
+               kStandardHeight - ((position.y - half_height_ + (i+1)*kSpikeSize + spike_shift) * kPixelsPerMeter)),
+      vec2((position.x - half_width_ - kSpikeSize) * kPixelsPerMeter, //Middle Right point
+           kStandardHeight - ((position.y - half_height_ + ((float) i+0.5f)*kSpikeSize + spike_shift) * kPixelsPerMeter)));
+    }
+  }
+
+}
+
+}
