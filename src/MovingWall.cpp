@@ -23,7 +23,11 @@ MovingWall::MovingWall(b2World* world, float x_loc, float y_loc, float half_widt
   body_ = world->CreateBody(&bodyDef);
   b2PolygonShape box;
   box.SetAsBox(half_width, half_height);
-  body_->CreateFixture(&box, 0);
+  b2FixtureDef fixtureDef;
+  fixtureDef.shape = &box;
+  fixtureDef.friction = 0.5f;
+  b2Fixture* main_body = body_->CreateFixture(&fixtureDef);
+  main_body->SetUserData((void*)kMovingWallID);
 
   b2PolygonShape left_spikebox_shape;
   if (moves_vertically) {

@@ -131,9 +131,11 @@ class MyApp : public cinder::app::App {
   int shooting_timer_;
   int enemy_shooting_timer_;
 
+  int sensor_contacts_;
+  b2Body* moving_player_contact_; // If the player is resting on a moving wall, its velocity will need to be updated accordingly
+
   int window_shift_;
   int left_window_bound_;
-  int sensor_contacts_;
   float end_position_;
   bool won_level_;
   bool developer_mode_;

@@ -73,6 +73,7 @@ MyApp::MyApp() {
   scale_ = 1.0f;
   enemy_shooting_timer_ = kEnemyReloadTime;
   sensor_contacts_ = 0;
+  moving_player_contact_ = nullptr;
 
   developer_mode_ = false;
   title_screen_ = true;
@@ -260,6 +261,11 @@ void MyApp::update() {
   for (MovingWall* movingWall : moving_walls_) {
     movingWall->VelocityUpdate();
   }
+  // This is the magic handling that causes the player to move in sync with a moving wall it is standing on
+  /*
+  if (moving_player_contact_ != nullptr) {
+    player_->getBody()->SetLinearVelocity(player_->getBody()->GetLinearVelocity() + moving_player_contact_->GetLinearVelocity());
+  }*/
 
   UpdateActiveEnemies();
   ScrollWindow();
@@ -667,12 +673,20 @@ void MyApp::BulletCollision(b2Fixture* bullet_fix, b2Fixture* other) {
 void MyApp::ContactListener::BeginContact(b2Contact* contact) {
   b2Fixture* fixture_A = contact->GetFixtureA();
   b2Fixture* fixture_B = contact->GetFixtureB();
+
   //check if either fixture is the foot sensor
-
   if (fixture_A->IsSensor() || fixture_B->IsSensor()) {
-
     myApp_->sensor_contacts_++;
-      return;
+
+    // if the other (non-sensor) object is a moving wall, the players velocity must be updated so the player moves relative to the moving wall
+    /*if (fixture_A->GetUserData() != NULL && (int) fixture_A->GetUserData() == mylibrary::kMovingWallID) {
+      myApp_->moving_player_contact_ = fixture_A->GetBody();
+    }
+    if (fixture_B->GetUserData() != NULL && (int) fixture_B->GetUserData() == mylibrary::kMovingWallID) {
+      myApp_->moving_player_contact_ = fixture_B->GetBody();
+    }*/
+
+    return;
   }
 
   if (fixture_A->GetBody()->IsBullet()) {
@@ -723,9 +737,18 @@ void MyApp::ContactListener::BeginContact(b2Contact* contact) {
 }
 
 void MyApp::ContactListener::EndContact(b2Contact* contact) {
+  b2Fixture* fixture_A = contact->GetFixtureA();
+  b2Fixture* fixture_B = contact->GetFixtureB();
     //check if either fixture is the foot sensor
-    if ((int)contact->GetFixtureA()->GetUserData() == kFootSensorID
-      || (int)contact->GetFixtureB()->GetUserData() == kFootSensorID) {
+    if ((int)fixture_A->GetUserData() == kFootSensorID
+      || (int)fixture_B->GetUserData() == kFootSensorID) {
+
+      // if the other (non-sensor) object is a moving wall, the players velocity must be updated so the player moves relative to the moving wall
+      /*if ((fixture_A->GetUserData() != NULL && (int) fixture_A->GetUserData() == mylibrary::kMovingWallID)
+      || (fixture_B->GetUserData() != NULL && (int) fixture_B->GetUserData() == mylibrary::kMovingWallID)) {
+        myApp_->moving_player_contact_ = nullptr;
+      }*/
+
       myApp_->sensor_contacts_--;
     }
 }
@@ -735,6 +758,8 @@ void MyApp::Restart() {
   delete player_;
 
   sensor_contacts_ = 0;
+  moving_player_contact_ = nullptr;
+
   for (std::pair<unsigned int, Entity*> entity_data : entity_manager_) {
     delete entity_data.second;
   }
@@ -1120,8 +1145,8 @@ void MyApp::LevelFour() {
   won_level_ = false;
 
   GroundInit(0, 30);
-  MovingWallInit(5, 1, 5, 2, kRed, false, 3, 12, 2);
-  MovingWallInit(16, 2, 1, 3, kGreen, true, 1.4f, 9, 5);
+  MovingWallInit(5, 1, 12, 2, kRed, false, 3, 25, 2);
+  MovingWallInit(26, 2, 1, 3, kGreen, true, 1.4f, 9, 5);
   end_position_ = 30;
 }
 

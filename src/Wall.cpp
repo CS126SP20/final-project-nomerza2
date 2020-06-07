@@ -16,8 +16,11 @@ Wall::Wall(b2World* world, float x_loc, float y_loc, float half_width, float hal
   bodyDef.position.Set(x_loc, y_loc);
   body_ = world->CreateBody(&bodyDef);
   b2PolygonShape box;
+  b2FixtureDef fixtureDef;
+  fixtureDef.shape = &box;
+  fixtureDef.friction = 0;
   box.SetAsBox(half_width, half_height);
-  body_->CreateFixture(&box, 0);
+  body_->CreateFixture(&fixtureDef);
 
   half_width_ = half_width;
   half_height_ = half_height;
