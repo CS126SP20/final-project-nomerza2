@@ -61,7 +61,7 @@ const int kStartingLives = 3;
 const int kEnemyReloadTime = 80;
 const int kPlayerReloadTime = 25;
 const float kFinishWidth = 2.5f;
-const int kStartLevel = 4;
+const int kStartLevel = 0;
 const int kFinalLevel = 4;
 const int kWaitTime = 4;
 
@@ -73,6 +73,7 @@ MyApp::MyApp() {
   scale_ = 1.0f;
   enemy_shooting_timer_ = kEnemyReloadTime;
   sensor_contacts_ = 0;
+  can_press_up = true;
 
   developer_mode_ = false;
   title_screen_ = true;
@@ -516,12 +517,29 @@ void MyApp::keyDown(KeyEvent event) {
   b2Body* body = player_->getBody();
   int key = event.getCode();
 
-  if (key == KeyEvent::KEY_UP && sensor_contacts_ >= 1 &&
-      jump_timer_ == 0) {  // only jump if in contact with ground
+  if (key == KeyEvent::KEY_UP && sensor_contacts_ >= 1 && can_press_up &&
+      (jump_timer_ == 0 || (jump_timer_ > 5 && jump_timer_ <= 28 && body->GetLinearVelocity().y == 0))) {
 
       b2Vec2 impulse_vector(0.0f, 27.0f); // Allows for ~3m jump
       body->ApplyLinearImpulse(impulse_vector, body->GetPosition());
-      jump_timer_ = 10; // NOTE this was arbitrarily chosen, change if necessary.
+      jump_timer_ = 38;
+      can_press_up = false;
+      /* Sensor contacts -> only jump if in contact with ground
+       * can_press_up -> simply holding up won't allow for a super jump, so pulling one off would need near perfect timing
+       * Timers explanation:
+       * Using current player size/density values, jump impulse, and gravity values,
+      it would take 9/14 seconds to reach the peak of the jump. at 60 updates
+      per second, 38.57 updates to reach the peach, in which the player should
+      not be able to jump. The exception would be if the player hits their head on a ceiling
+      and falls to the ground faster than expected. This is handled by the or statement,
+      which checks if the y velocity is zero, so as to see if the player is on the ground.
+      The problem with just that is it would allow the player to jump again exactly at the peak
+      of their jump, so the two jump_timer_ ranges next to it will make sure it can only use
+      the 0-y velocity rule can only be used if the player has not made a full jump,
+      so the ceiling event must have occurred. The only edge case for this is if the
+      head-on-ceiling scenario occurs while the player is on a vertically-moving platform,
+      but since all moving walls have spikes on them at the moment, this won't occur.
+       */
 
   } else if (key == KeyEvent::KEY_RIGHT) {
       player_->setRelativeVelocity(7);
@@ -587,6 +605,10 @@ void MyApp::keyUp(cinder::app::KeyEvent event) {
     || event.getCode() == KeyEvent::KEY_RIGHT) {
 
       player_->setRelativeVelocity(0);
+  }
+
+  if (event.getCode() == KeyEvent::KEY_UP) {
+    can_press_up = true;
   }
 }
 
@@ -748,6 +770,7 @@ void MyApp::Restart() {
   delete player_;
 
   sensor_contacts_ = 0;
+  can_press_up = true;
 
   for (std::pair<unsigned int, Entity*> entity_data : entity_manager_) {
     delete entity_data.second;

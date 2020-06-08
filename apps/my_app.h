@@ -132,6 +132,7 @@ class MyApp : public cinder::app::App {
   int enemy_shooting_timer_;
 
   int sensor_contacts_;
+  bool can_press_up; // ensures the player cannot jump, unless they have unpressed and repressed up first.
 
   int window_shift_;
   int left_window_bound_;

@@ -33,6 +33,7 @@ Player::Player(b2World* world, float x_loc, float y_loc){
       kPlayerWidth/2 - 0.1f, 0.2f, b2Vec2(0, -1), 0);
   //x is almost same as player, smaller to prevent jumping when leaning against wall.
   // y is much smaller center in y must equal the negative half-height of the player
+  // !! 0.2f is the smallest hy that the player could still be able to jump normally.
 
   b2FixtureDef sensor_fixture_def;
   sensor_fixture_def.shape = &sensor_box;
