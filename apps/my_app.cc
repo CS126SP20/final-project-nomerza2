@@ -734,10 +734,10 @@ void MyApp::ContactListener::EndContact(b2Contact* contact) {
       || (int)fixture_B->GetUserData() == kFootSensorID) {
 
       // if the other (non-sensor) object is a moving wall, the players velocity must be updated so the player moves relative to the moving wall
-      /*if ((fixture_A->GetUserData() != NULL && (int) fixture_A->GetUserData() == mylibrary::kMovingWallID)
+      if ((fixture_A->GetUserData() != NULL && (int) fixture_A->GetUserData() == mylibrary::kMovingWallID)
       || (fixture_B->GetUserData() != NULL && (int) fixture_B->GetUserData() == mylibrary::kMovingWallID)) {
-        myApp_->moving_player_contact_ = nullptr;
-      }*/
+        myApp_->player_->setMovingWallContact(nullptr);
+      }
 
       myApp_->sensor_contacts_--;
     }
