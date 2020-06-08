@@ -61,7 +61,7 @@ const int kStartingLives = 3;
 const int kEnemyReloadTime = 80;
 const int kPlayerReloadTime = 25;
 const float kFinishWidth = 2.5f;
-const int kStartLevel = 0;
+const int kStartLevel = 4;
 const int kFinalLevel = 4;
 const int kWaitTime = 4;
 

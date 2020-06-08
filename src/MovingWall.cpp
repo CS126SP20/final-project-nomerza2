@@ -96,12 +96,13 @@ void MovingWall::VelocityUpdate() {
 
 void MovingWall::Draw() {
   b2Vec2 position = body_->GetPosition();
+  int w_height = EffectiveDimensions::GetEffectiveHeight();
 
   ci::Rectf rect(
       (position.x - half_width_)*kPixelsPerMeter,
-      EffectiveDimensions::GetEffectiveHeight() - ((position.y - half_height_) * kPixelsPerMeter),
+      w_height - ((position.y - half_height_) * kPixelsPerMeter),
       (position.x + half_width_) * kPixelsPerMeter,
-      EffectiveDimensions::GetEffectiveHeight() - ((position.y + half_height_) * kPixelsPerMeter));
+      w_height - ((position.y + half_height_) * kPixelsPerMeter));
 
   ci::gl::color(color_);
   ci::gl::drawSolidRect(rect);
@@ -117,20 +118,20 @@ void MovingWall::Draw() {
       //top side
       ci::gl::drawSolidTriangle(
           vec2((position.x - half_width_ + spike_shift + i*kSpikeSize) * kPixelsPerMeter, //Bottom left point
-              kStandardHeight - ((position.y + half_height_) * kPixelsPerMeter)),
+               w_height - ((position.y + half_height_) * kPixelsPerMeter)),
           vec2((position.x - half_width_ + spike_shift + (i+1)*kSpikeSize) * kPixelsPerMeter, //Bottom right point
-               kStandardHeight - ((position.y + half_height_) * kPixelsPerMeter)),
+               w_height - ((position.y + half_height_) * kPixelsPerMeter)),
           vec2((position.x - half_width_ + spike_shift + ((float) i+0.5f)*kSpikeSize) * kPixelsPerMeter, //Top Middle point
-               kStandardHeight - ((position.y + half_height_ + kSpikeSize) * kPixelsPerMeter)));
+               w_height - ((position.y + half_height_ + kSpikeSize) * kPixelsPerMeter)));
 
       //bottom side
       ci::gl::drawSolidTriangle(
           vec2((position.x - half_width_ + spike_shift + i*kSpikeSize) * kPixelsPerMeter, //Bottom left point
-               kStandardHeight - ((position.y - half_height_) * kPixelsPerMeter)),
+               w_height - ((position.y - half_height_) * kPixelsPerMeter)),
           vec2((position.x - half_width_ + spike_shift + (i+1)*kSpikeSize) * kPixelsPerMeter, //Bottom right point
-               kStandardHeight - ((position.y - half_height_) * kPixelsPerMeter)),
+               w_height - ((position.y - half_height_) * kPixelsPerMeter)),
       vec2((position.x - half_width_ + spike_shift + ((float) i+0.5f)*kSpikeSize) * kPixelsPerMeter, //Top Middle point
-           kStandardHeight - ((position.y - half_height_ - kSpikeSize) * kPixelsPerMeter)));
+           w_height - ((position.y - half_height_ - kSpikeSize) * kPixelsPerMeter)));
     }
   } else { // moves horizontally
     int num_spikes = floor(half_height_ * 2 / kSpikeSize) - 1;
@@ -140,20 +141,20 @@ void MovingWall::Draw() {
       //right side
       ci::gl::drawSolidTriangle(
           vec2((position.x + half_width_) * kPixelsPerMeter, //Bottom left point
-               kStandardHeight - ((position.y - half_height_ + i*kSpikeSize + spike_shift) * kPixelsPerMeter)),
+               w_height - ((position.y - half_height_ + i*kSpikeSize + spike_shift) * kPixelsPerMeter)),
           vec2((position.x + half_width_) * kPixelsPerMeter, //Top Left point
-               kStandardHeight - ((position.y - half_height_ + (i+1)*kSpikeSize + spike_shift) * kPixelsPerMeter)),
+               w_height - ((position.y - half_height_ + (i+1)*kSpikeSize + spike_shift) * kPixelsPerMeter)),
       vec2((position.x + half_width_ + kSpikeSize) * kPixelsPerMeter, //Middle Right point
-           kStandardHeight - ((position.y - half_height_ + ((float) i+0.5f)*kSpikeSize + spike_shift) * kPixelsPerMeter)));
+           w_height - ((position.y - half_height_ + ((float) i+0.5f)*kSpikeSize + spike_shift) * kPixelsPerMeter)));
 
       //left side
       ci::gl::drawSolidTriangle(
           vec2((position.x - half_width_) * kPixelsPerMeter, //Bottom left point
-               kStandardHeight - ((position.y - half_height_ + i*kSpikeSize + spike_shift) * kPixelsPerMeter)),
+               w_height - ((position.y - half_height_ + i*kSpikeSize + spike_shift) * kPixelsPerMeter)),
           vec2((position.x - half_width_) * kPixelsPerMeter, //Top Left point
-               kStandardHeight - ((position.y - half_height_ + (i+1)*kSpikeSize + spike_shift) * kPixelsPerMeter)),
+               w_height - ((position.y - half_height_ + (i+1)*kSpikeSize + spike_shift) * kPixelsPerMeter)),
       vec2((position.x - half_width_ - kSpikeSize) * kPixelsPerMeter, //Middle Right point
-           kStandardHeight - ((position.y - half_height_ + ((float) i+0.5f)*kSpikeSize + spike_shift) * kPixelsPerMeter)));
+           w_height - ((position.y - half_height_ + ((float) i+0.5f)*kSpikeSize + spike_shift) * kPixelsPerMeter)));
     }
   }
 
