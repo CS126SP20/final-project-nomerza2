@@ -20,6 +20,9 @@ class Player {
  public:
   Player(b2World* world, float x_loc, float y_loc);
   void Draw();
+  void UpdateVelocity();
+  void setMovingWallContact(b2Body* movingWallContact);
+  void setRelativeVelocity(float relativeVelocity);
   void setFacingRight(bool facingRight);
   b2Body* getBody() const;
   bool isFacingRight() const;
@@ -29,7 +32,8 @@ class Player {
   bool facing_right_;
   ci::gl::Texture2dRef right_image_;
   ci::gl::Texture2dRef left_image_;
-
+  float relative_velocity_; //velocity, ignoring moving objects it could be on
+  b2Body* moving_wall_contact_;
 };
 
 }  // namespace mylibrary

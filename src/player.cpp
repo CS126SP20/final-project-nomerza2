@@ -24,7 +24,7 @@ Player::Player(b2World* world, float x_loc, float y_loc){
   b2FixtureDef fixtureDef;
   fixtureDef.shape = &dynamicBox;
   fixtureDef.density = 2.0f;
-  fixtureDef.friction = 0.4f;
+  fixtureDef.friction = 0.0f;
   body_->CreateFixture(&fixtureDef);
 
   //Foot Sensor for jumping
@@ -51,6 +51,9 @@ Player::Player(b2World* world, float x_loc, float y_loc){
 
   right_image_ = ci::gl::Texture2d::create(right_image_source);
   left_image_ = ci::gl::Texture2d::create(left_image_source);
+
+  moving_wall_contact_ = nullptr;
+  relative_velocity_ = 0;
 }
 
 void Player::Draw() {
@@ -73,7 +76,23 @@ void Player::Draw() {
   ci::gl::draw(image_ref, ci::vec2(pixel_x, pixel_y));
 }
 
+void Player::UpdateVelocity() {
+  //Adds the set velocity from keypress to the velocity of the object it is on for x
+  //y velocity should remain the same
+  if (moving_wall_contact_ != nullptr) {
+    body_->SetLinearVelocity(b2Vec2((relative_velocity_ + moving_wall_contact_->GetLinearVelocity().x), body_->GetLinearVelocity().y));
+  } else {
+    body_->SetLinearVelocity(b2Vec2(relative_velocity_, body_->GetLinearVelocity().y));
+  }
+}
+
 void Player::setFacingRight(bool facingRight) { facing_right_ = facingRight; }
 bool Player::isFacingRight() const { return facing_right_; }
 b2Body* Player::getBody() const { return body_; }
+void Player::setMovingWallContact(b2Body* movingWallContact) {
+  moving_wall_contact_ = movingWallContact;
+}
+void Player::setRelativeVelocity(float relativeVelocity) {
+  relative_velocity_ = relativeVelocity;
+}
 }  // namespace mylibrary

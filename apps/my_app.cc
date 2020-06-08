@@ -73,7 +73,6 @@ MyApp::MyApp() {
   scale_ = 1.0f;
   enemy_shooting_timer_ = kEnemyReloadTime;
   sensor_contacts_ = 0;
-  moving_player_contact_ = nullptr;
 
   developer_mode_ = false;
   title_screen_ = true;
@@ -261,12 +260,8 @@ void MyApp::update() {
   for (MovingWall* movingWall : moving_walls_) {
     movingWall->VelocityUpdate();
   }
-  // This is the magic handling that causes the player to move in sync with a moving wall it is standing on
-  /*
-  if (moving_player_contact_ != nullptr) {
-    player_->getBody()->SetLinearVelocity(player_->getBody()->GetLinearVelocity() + moving_player_contact_->GetLinearVelocity());
-  }*/
 
+  player_->UpdateVelocity();
   UpdateActiveEnemies();
   ScrollWindow();
 }
@@ -529,14 +524,10 @@ void MyApp::keyDown(KeyEvent event) {
       jump_timer_ = 10; // NOTE this was arbitrarily chosen, change if necessary.
 
   } else if (key == KeyEvent::KEY_RIGHT) {
-      b2Vec2 velocity(7.0f, body->GetLinearVelocity().y);
-      // Need to use previous y velocity, or trying to move side to side mid-air will cause player to suddenly fall
-      body->SetLinearVelocity(velocity);
+      player_->setRelativeVelocity(7);
       player_->setFacingRight(true);
-
   } else if (key == KeyEvent::KEY_LEFT) {
-      b2Vec2 velocity(-7.0f, body->GetLinearVelocity().y);
-      body->SetLinearVelocity(velocity);
+      player_->setRelativeVelocity(-7);
       player_->setFacingRight(false);
   }
   //These 3 are for choosing the game difficulty
@@ -595,8 +586,7 @@ void MyApp::keyUp(cinder::app::KeyEvent event) {
   if (event.getCode() == KeyEvent::KEY_LEFT
     || event.getCode() == KeyEvent::KEY_RIGHT) {
 
-      b2Vec2 velocity(0.0f, body->GetLinearVelocity().y);
-      body->SetLinearVelocity(velocity);
+      player_->setRelativeVelocity(0);
   }
 }
 
@@ -679,12 +669,12 @@ void MyApp::ContactListener::BeginContact(b2Contact* contact) {
     myApp_->sensor_contacts_++;
 
     // if the other (non-sensor) object is a moving wall, the players velocity must be updated so the player moves relative to the moving wall
-    /*if (fixture_A->GetUserData() != NULL && (int) fixture_A->GetUserData() == mylibrary::kMovingWallID) {
-      myApp_->moving_player_contact_ = fixture_A->GetBody();
+    if (fixture_A->GetUserData() != NULL && (int) fixture_A->GetUserData() == mylibrary::kMovingWallID) {
+      myApp_->player_->setMovingWallContact(fixture_A->GetBody());
     }
     if (fixture_B->GetUserData() != NULL && (int) fixture_B->GetUserData() == mylibrary::kMovingWallID) {
-      myApp_->moving_player_contact_ = fixture_B->GetBody();
-    }*/
+      myApp_->player_->setMovingWallContact(fixture_B->GetBody());
+    }
 
     return;
   }
@@ -758,7 +748,6 @@ void MyApp::Restart() {
   delete player_;
 
   sensor_contacts_ = 0;
-  moving_player_contact_ = nullptr;
 
   for (std::pair<unsigned int, Entity*> entity_data : entity_manager_) {
     delete entity_data.second;
