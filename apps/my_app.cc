@@ -61,7 +61,7 @@ const int kStartingLives = 3;
 const int kEnemyReloadTime = 80;
 const int kPlayerReloadTime = 25;
 const float kFinishWidth = 2.5f;
-const int kStartLevel = 4;
+const int kStartLevel = 0;
 const int kFinalLevel = 4;
 const int kWaitTime = 4;
 
@@ -300,26 +300,30 @@ void MyApp::ActivateEnemies() {
 }
 
 void MyApp::UpdateActiveEnemies() {
-  if (enemy_shooting_timer_ > 0) {
-    enemy_shooting_timer_--;
-  } else {
-    enemy_shooting_timer_ = kEnemyReloadTime;
+  for (std::pair<unsigned int, Enemy*> enemy_data : enemy_shooters_) {
+    Enemy* enemy = enemy_data.second;
+    enemy->UpdateVelocity(); // Update Velocity must be called every time
 
-    for (std::pair<unsigned int, Enemy*> enemy_data : enemy_shooters_) {
-      Enemy* enemy = enemy_data.second;
-
-      // Death by Falling for enemies
-      // Handled here since enemies are already being iterated through.
-      // Also better to do it where it isn't being iterated on every game step,
-      // since that is unnecessary. This is simply clean-up.
-      if (enemy->getBody()->GetPosition().y < 0) {
-        entities_to_destroy_.insert((unsigned int) enemy->getBody()->GetUserData());
-      }
-
-      Entity* bullet = enemy->Shoot(world_, player_->getBody()->GetPosition());
-      entity_manager_.insert(std::pair<unsigned int, Entity*> (Entity::GetEntityID(), bullet));
+    if (enemy_shooting_timer_ > 0) {
+      continue;
     }
+
+    // Death by Falling for enemies
+    // Handled here since enemies are already being iterated through.
+    // Also better to do it where it isn't being iterated on every game step,
+    // since that is unnecessary. This is simply clean-up.
+    if (enemy->getBody()->GetPosition().y < 0) {
+      entities_to_destroy_.insert((unsigned int) enemy->getBody()->GetUserData());
+    }
+
+    Entity* bullet = enemy->Shoot(world_, player_->getBody()->GetPosition());
+    entity_manager_.insert(std::pair<unsigned int, Entity*> (Entity::GetEntityID(), bullet));
   }
+
+  if (enemy_shooting_timer_ == 0) {
+    enemy_shooting_timer_ = kEnemyReloadTime;
+  }
+  enemy_shooting_timer_--;
 }
 
 void MyApp::ScrollWindow() {
@@ -721,9 +725,16 @@ void MyApp::ContactListener::BeginContact(b2Contact* contact) {
     Entity* entity =
         myApp_->entity_manager_.at((unsigned int) fixture_A->GetUserData());
 
-    if (entity->GetEntityType() == EntityType::type_enemy && fixture_B->GetBody() != player_body
-            && ((Enemy*) entity)->getEnemyType() != EnemyType::hunter) {
-      ((Enemy*) entity)->TurnAround();
+    if (entity->GetEntityType() == EntityType::type_enemy) {
+
+      if (((Enemy*) entity)->getEnemyType() != EnemyType::hunter && fixture_B->GetBody() != player_body) {
+        ((Enemy*) entity)->TurnAround();
+      }
+
+      //Enemy on moving wall:
+      if (fixture_B->GetUserData() != NULL && (int) fixture_B->GetUserData() == mylibrary::kMovingWallID) {
+        ((Enemy*) entity)->setMovingWallContact(fixture_B->GetBody());
+      }
     }
 
     if (entity->GetEntityType() == EntityType::type_repair && fixture_B->GetBody() == player_body) {
@@ -736,9 +747,16 @@ void MyApp::ContactListener::BeginContact(b2Contact* contact) {
     Entity* entity =
         myApp_->entity_manager_.at((unsigned int) fixture_B->GetUserData());
 
-    if (entity->GetEntityType() == EntityType::type_enemy && fixture_A->GetBody() != player_body
-            && ((Enemy*) entity)->getEnemyType() != EnemyType::hunter) {
-      ((Enemy*) entity)->TurnAround();
+    if (entity->GetEntityType() == EntityType::type_enemy) {
+
+      if (((Enemy*) entity)->getEnemyType() != EnemyType::hunter && fixture_A->GetBody() != player_body) {
+        ((Enemy*) entity)->TurnAround();
+      }
+
+      //Enemy on moving wall:
+      if (fixture_A->GetUserData() != NULL && (int) fixture_A->GetUserData() == mylibrary::kMovingWallID) {
+        ((Enemy*) entity)->setMovingWallContact(fixture_A->GetBody());
+      }
     }
 
     if (entity->GetEntityType() == EntityType::type_repair && fixture_A->GetBody() == player_body) {
@@ -763,6 +781,32 @@ void MyApp::ContactListener::EndContact(b2Contact* contact) {
 
       myApp_->sensor_contacts_--;
     }
+
+    //Check for enemies leaving moving walls:
+
+  if (isEntityFixture(fixture_A)) {
+    Entity* entity =
+        myApp_->entity_manager_.at((unsigned int) fixture_A->GetUserData());
+
+    if (entity->GetEntityType() == EntityType::type_enemy
+        && fixture_B->GetUserData() != NULL
+        && (int) fixture_B->GetUserData() == mylibrary::kMovingWallID) {
+
+      ((Enemy*) entity)->setMovingWallContact(nullptr);
+    }
+  }
+
+  if (isEntityFixture(fixture_B)) {
+    Entity* entity =
+        myApp_->entity_manager_.at((unsigned int) fixture_B->GetUserData());
+
+    if (entity->GetEntityType() == EntityType::type_enemy
+        && fixture_A->GetUserData() != NULL
+        && (int) fixture_A->GetUserData() == mylibrary::kMovingWallID) {
+
+      ((Enemy*) entity)->setMovingWallContact(nullptr);
+    }
+  }
 }
 
 void MyApp::Restart() {
@@ -1157,7 +1201,9 @@ void MyApp::LevelFour() {
   won_level_ = false;
 
   GroundInit(0, 30);
-  MovingWallInit(5, 1, 12, 2, kRed, false, 3, 25, 2);
+  MovingWallInit(5, 1, 12, 2, kRed, false, 3, 25, 1);
+  EnemyInit(15, 3.2f, true);
+  HunterInit(17, 3.2f);
   MovingWallInit(26, 2, 1, 3, kGreen, true, 1.4f, 9, 5);
   end_position_ = 30;
 }

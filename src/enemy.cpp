@@ -41,6 +41,8 @@ Enemy::Enemy(b2World* world, b2Vec2 position, bool is_facing_right) {
 
   right_image_ = ci::gl::Texture2d::create(ci::loadImage(cinder::app::loadAsset("badRobotRight.png")));
   left_image_ = ci::gl::Texture2d::create(ci::loadImage(cinder::app::loadAsset("badRobotLeft.png")));
+  moving_wall_contact_ = nullptr;
+  relative_velocity_ = 0;
 }
 
 void Enemy::Draw() {
@@ -93,17 +95,26 @@ Bullet* Enemy::Shoot(b2World* world, b2Vec2 player_pos) {
   return bullet;
 }
 
+void Enemy::UpdateVelocity() {
+  //Adds the set velocity from keypress to the velocity of the object it is on for x
+  //y velocity should remain the same
+  if (moving_wall_contact_ != nullptr) {
+    body_->SetLinearVelocity(b2Vec2((relative_velocity_ + moving_wall_contact_->GetLinearVelocity().x), body_->GetLinearVelocity().y));
+  } else {
+    body_->SetLinearVelocity(b2Vec2(relative_velocity_, body_->GetLinearVelocity().y));
+  }
+}
+
 void Enemy::TurnAround() {
   facing_right_ = !facing_right_;
-  b2Vec2 linear_velocity;
 
   if (facing_right_) {
-    linear_velocity = b2Vec2(2.0f, body_->GetLinearVelocity().y);
+    relative_velocity_ = 2;
   } else {
-    linear_velocity = b2Vec2(-2.0f, body_->GetLinearVelocity().y);
+    relative_velocity_ = -2;
   }
 
-  body_->SetLinearVelocity(linear_velocity);
+  UpdateVelocity();
 }
 
 bool Enemy::Activate(float left_bound, float right_bound) {
@@ -115,15 +126,14 @@ bool Enemy::Activate(float left_bound, float right_bound) {
     is_active_ = true;
 
     if (enemyType != hunter) {
-      b2Vec2 starting_velocity;
       if (facing_right_) {
-        starting_velocity = b2Vec2(2.0f, 0);
+        relative_velocity_ = 2;
       } else {
-        starting_velocity = b2Vec2(-2.0f, 0);
+        relative_velocity_ = -2;
       }
-      body_->SetLinearVelocity(starting_velocity);
     }
 
+    UpdateVelocity();
     return true;
   }
 
@@ -133,4 +143,7 @@ bool Enemy::Activate(float left_bound, float right_bound) {
 bool Enemy::isFacingRight() const { return facing_right_; }
 bool Enemy::isActive() const { return is_active_; }
 EnemyType Enemy::getEnemyType() const { return enemyType; }
+void Enemy::setMovingWallContact(b2Body* movingWallContact) {
+  moving_wall_contact_ = movingWallContact;
+}
 }

@@ -32,6 +32,9 @@ class Enemy : public Entity {
 
   virtual Bullet* Shoot(b2World* world, b2Vec2 player_pos);
 
+  // Does the actual changing of linear velocity when turning around or touching moving walls.
+  void UpdateVelocity();
+
   // Changes facing_right_, and reverses the direction of movement
   void TurnAround();
 
@@ -44,11 +47,14 @@ class Enemy : public Entity {
   EnemyType getEnemyType() const;
   bool isFacingRight() const;
   bool isActive() const;
+  void setMovingWallContact(b2Body* movingWallContact);
 
  protected:
   bool is_active_;
   bool facing_right_;
   EnemyType enemyType;
+  float relative_velocity_;
+  b2Body* moving_wall_contact_;
   ci::gl::Texture2dRef right_image_;
   ci::gl::Texture2dRef left_image_;
 };
