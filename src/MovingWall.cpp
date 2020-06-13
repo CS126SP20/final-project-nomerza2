@@ -11,6 +11,7 @@ using ci::vec2;
 
 const int kStandardWidth = 1920; //TODO, redefinition from my_app.h, fix this maybe?
 const int kStandardHeight = 1080;
+const int kHitboxRatio = 8; // Ratio of (half-height of) hitbox around spikes to kSpikeSize
 
 namespace mylibrary {
 
@@ -31,9 +32,9 @@ MovingWall::MovingWall(b2World* world, float x_loc, float y_loc, float half_widt
 
   b2PolygonShape left_spikebox_shape;
   if (moves_vertically) {
-    left_spikebox_shape.SetAsBox((kSpikeSize / 2), half_height, b2Vec2(0, -1 * half_height - (kSpikeSize / 2)), 0);
+    left_spikebox_shape.SetAsBox(half_width * 0.9f, (kSpikeSize / kHitboxRatio), b2Vec2(0, -1 * half_height - (kSpikeSize / 2)), 0);
   } else {
-    left_spikebox_shape.SetAsBox((kSpikeSize / 2), half_height, b2Vec2(-1 * half_width - (kSpikeSize / 2), 0), 0);
+    left_spikebox_shape.SetAsBox((kSpikeSize / kHitboxRatio), half_height * 0.9f, b2Vec2(-1 * half_width - (kSpikeSize / 2), 0), 0);
   }
   b2FixtureDef left_spikebox_def;
   left_spikebox_def.shape = &left_spikebox_shape;
@@ -42,9 +43,9 @@ MovingWall::MovingWall(b2World* world, float x_loc, float y_loc, float half_widt
 
   b2PolygonShape right_spikebox_shape;
   if (moves_vertically) {
-    right_spikebox_shape.SetAsBox((kSpikeSize / 2), half_height, b2Vec2(0, half_height + (kSpikeSize / 2)), 0);
+    right_spikebox_shape.SetAsBox(half_width * 0.9f, (kSpikeSize / kHitboxRatio), b2Vec2(0, half_height + (kSpikeSize / 2)), 0);
   } else {
-    right_spikebox_shape.SetAsBox((kSpikeSize / 2), half_height, b2Vec2(half_width + (kSpikeSize / 2), 0), 0);
+    right_spikebox_shape.SetAsBox((kSpikeSize / kHitboxRatio), half_height * 0.9f, b2Vec2(half_width + (kSpikeSize / 2), 0), 0);
   }
   b2FixtureDef right_spikebox_def;
   right_spikebox_def.shape = &right_spikebox_shape;

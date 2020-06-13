@@ -140,6 +140,7 @@ class MyApp : public cinder::app::App {
   bool won_level_;
   bool developer_mode_;
   bool title_screen_;
+  bool spike_death_; // limited use variable to label the player as dying from spikes, but not doing anything until update()
 
   //The factor that the game is scaled by to fit the view window
   float scale_;

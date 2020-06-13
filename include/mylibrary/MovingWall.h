@@ -12,7 +12,7 @@ namespace mylibrary {
 
 const int kMovingWallID = -87123; // ID Values doesn't matter as long as unique, and negative to provide conflicts with entity IDs
 const int kSpikeID = -98765;
-const float kSpikeSize = 0.1f;
+const float kSpikeSize = 0.2f;
 const ci::Color kSpikeColor = ci::Color(0.87f, 0.87f, 0.87f);
 
 class MovingWall {

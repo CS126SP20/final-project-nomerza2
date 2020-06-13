@@ -61,7 +61,7 @@ const int kStartingLives = 3;
 const int kEnemyReloadTime = 80;
 const int kPlayerReloadTime = 25;
 const float kFinishWidth = 2.5f;
-const int kStartLevel = 0;
+const int kStartLevel = 4;
 const int kFinalLevel = 4;
 const int kWaitTime = 4;
 
@@ -77,6 +77,7 @@ MyApp::MyApp() {
 
   developer_mode_ = false;
   title_screen_ = true;
+  spike_death_ = false;
 
   ci::ImageSourceRef finish_image = ci::loadImage(ci::app::loadAsset("redflagbot.png"));
   ci::ImageSourceRef win_image= ci::loadImage(ci::app::loadAsset("greenflagbot.png"));
@@ -241,8 +242,9 @@ void MyApp::update() {
   }
 
   b2Vec2 player_position = player_->getBody()->GetPosition();
-  //Death by falling
-  if (player_position.y < 0) {
+  //Death by falling Or Spikes
+  if (player_position.y < 0 || spike_death_) {
+    spike_death_ = false;
     lives_--;
     if (lives_ > 0) {
       std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -717,6 +719,11 @@ void MyApp::ContactListener::BeginContact(b2Contact* contact) {
 
   b2Body* player_body = myApp_->player_->getBody();
 
+  if ((fixture_A->GetUserData() != NULL && (unsigned int) fixture_A->GetUserData() == mylibrary::kSpikeID && fixture_B->GetBody() == player_body)
+        || (fixture_B->GetUserData() != NULL && (unsigned int) fixture_B->GetUserData() == mylibrary::kSpikeID && fixture_A->GetBody() == player_body)) {
+    myApp_->spike_death_ = true;
+  }
+
   // The Next two determine if it is an entity. Each contains two parts:
   // - for when an enemy collides with a non-bullet
   // (which it can't be if it reached this point), non-player object
@@ -845,6 +852,7 @@ void MyApp::Restart() {
   window_shift_ = 0;
 
   won_level_ = false;
+  spike_death_ = false;
 
   checkpoints_.clear();
 
@@ -1196,6 +1204,7 @@ void MyApp::LevelThree() {
 
 void MyApp::LevelFour() {
   PlayerWorldInit(1, 4);
+  checkpoints_.push_back(b2Vec2(1,4));
   window_shift_ = 0;
   left_window_bound_ = 0;
   won_level_ = false;
