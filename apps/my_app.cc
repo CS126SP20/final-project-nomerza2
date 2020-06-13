@@ -1209,12 +1209,25 @@ void MyApp::LevelFour() {
   left_window_bound_ = 0;
   won_level_ = false;
 
-  GroundInit(0, 30);
-  MovingWallInit(5, 1, 12, 2, kRed, false, 3, 25, 1);
-  EnemyInit(15, 3.2f, true);
-  HunterInit(17, 3.2f);
-  MovingWallInit(26, 2, 1, 3, kGreen, true, 1.4f, 9, 5);
-  end_position_ = 30;
+  //Intro to moving walls
+  GroundInit(0, 10);
+  RepairInit(6, 2);
+  MovingWallInit(10, 2, 2, 1, kRed, false, 10, 17, 4);
+  MovingWallInit(22, 5, 2, 1, kRed, false, 17, 24, 4);
+  WallInit(25, 0, 2, 9.5f, kRed);
+  GroundInit(25, 70);
+
+  // Falling walls and gunfire
+  checkpoints_.push_back(b2Vec2(27.7f, 2.3f));
+  MovingWallInit(37, 4, 2, 6, kGreen, true, 0.2f, 11, 5);
+  MovingWallInit(42, 1, 2, 6, kGreen, true, 0.2f, 11, 5);
+  EnemyInit(45, 0.4f, true);
+  MovingWallInit(47, 5, 2, 6, kGreen, true, 0.2f, 11, 5);
+  MovingWallInit(52, 2, 2, 6, kGreen, true, 0.2f, 11, 5);
+  EnemyInit(56, 0.5f, true);
+  WallInit(57, 0, 1, 1, kGreen);
+
+  end_position_ = 62;
 }
 
 bool MyApp::isEntityFixture(b2Fixture* b2Fixture) {
