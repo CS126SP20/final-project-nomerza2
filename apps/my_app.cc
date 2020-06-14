@@ -62,8 +62,8 @@ const int kStartingLives = 3;
 const int kEnemyReloadTime = 80;
 const int kPlayerReloadTime = 25;
 const float kFinishWidth = 2.5f;
-const int kStartLevel = 0;
-const int kFinalLevel = 4;
+const int kStartLevel = 5;
+const int kFinalLevel = 5;
 const int kWaitTime = 4;
 
 MyApp::MyApp() {
@@ -105,6 +105,8 @@ void MyApp::setup() {
     LevelThree();
   } else if (level_ == 4) {
     LevelFour();
+  } else if (level_ == 5) {
+    LevelFive();
   }
 
 }
@@ -1209,6 +1211,7 @@ void MyApp::LevelFour() {
   window_shift_ = 0;
   left_window_bound_ = 0;
   won_level_ = false;
+  WallInit(-0.2, 0, 0.2, 12, kBlack);
 
   //Intro to moving walls
   GroundInit(0, 10);
@@ -1265,8 +1268,42 @@ void MyApp::LevelFour() {
   FlyingEnemyInit(192.5f+shift, 6, false);
   FlyingEnemyInit(205+shift, 10, true);
 
-
   end_position_ = 220+shift;
+}
+
+void MyApp::LevelFive() {
+  PlayerWorldInit(1, 4);
+  checkpoints_.push_back(b2Vec2(1,4));
+  window_shift_ = 0;
+  left_window_bound_ = 0;
+  won_level_ = false;
+  WallInit(-0.2, 0, 0.2, 12, kBlack);
+
+  //Moving Hunter
+  GroundInit(0, 26);
+  MovingWallInit(4, 9, 1, 1, kHunterGreen, false, 4, 18, 3);
+  WallInit(20.5, 8, 1, 3, kHunterGreen);
+  HunterInit(4.5, 9.1);
+  RepairInit(3.4, 3);
+  WallInit(19, 3, 2, 0.5, kHunterGreen);
+  WallInit(17, 5, 0.7, 2, kHunterGreen);
+  WallInit(13, 0.2, 1.3, 2.6, kHunterGreen);
+  WallInit(6, 11.6, 16, 0.3, kHunterGreen);
+  WallInit(0, 11.6, 1.4, 4, kHunterGreen);
+  RepairInit(1, 11);
+
+  // Moving ladder space
+  checkpoints_.push_back(b2Vec2(23,1));
+  MovingWallInit(26, -0.5, 3, 1, kOrange, false, 26, 37, 3);
+  MovingWallInit(34, 2, 2, 0.7, kOrange, false, 32, 43.5, 4);
+  MovingWallInit(23, 4, 2.4, 1, kOrange, false, 27, 35, 4.5);
+  MovingWallInit(32, 7, 1.9, 0.5, kOrange, false, 22, 29, 2.8);
+  MovingWallInit(29, 9.2, 1.5, .7, kOrange, false, 29, 36, 3.4);
+  MovingWallInit(35, 10.5, 2.3, 0.6, kOrange, false, 35, 43, 3.6);
+  WallInit(44, 0, 2, 11.6, kOrange);
+  GroundInit(46, 70);
+
+  end_position_ = 60;
 }
 
 bool MyApp::isEntityFixture(b2Fixture* b2Fixture) {
