@@ -51,6 +51,7 @@ const ci::Color kHunterGreen = ci::Color(0.1f, 0.285f, 0.16f);
 const ci::Color kBlueGray = ci::Color(0.168f, .539f, .5f);
 const ci::Color kGoldGreen = ci::Color(0.5333f, 0.5922f, 0.235f);
 const ci::Color kBlack = ci::Color(0, 0, 0);
+const ci::Color kMiddleBlue = ci::Color(0.2f, 0.6f, 1);
 
 const b2Vec2 kGravity = b2Vec2(0, -18);
 
@@ -61,7 +62,7 @@ const int kStartingLives = 3;
 const int kEnemyReloadTime = 80;
 const int kPlayerReloadTime = 25;
 const float kFinishWidth = 2.5f;
-const int kStartLevel = 4;
+const int kStartLevel = 0;
 const int kFinalLevel = 4;
 const int kWaitTime = 4;
 
@@ -1215,7 +1216,7 @@ void MyApp::LevelFour() {
   MovingWallInit(10, 2, 2, 1, kRed, false, 10, 17, 4);
   MovingWallInit(22, 5, 2, 1, kRed, false, 17, 24, 4);
   WallInit(25, 0, 2, 9.5f, kRed);
-  GroundInit(25, 70);
+  GroundInit(25, 59);
 
   // Falling walls and gunfire
   checkpoints_.push_back(b2Vec2(27.7f, 2.3f));
@@ -1225,9 +1226,47 @@ void MyApp::LevelFour() {
   MovingWallInit(47, 5, 2, 6, kGreen, true, 0.2f, 11, 5);
   MovingWallInit(52, 2, 2, 6, kGreen, true, 0.2f, 11, 5);
   EnemyInit(56, 0.5f, true);
-  WallInit(57, 0, 1, 1, kGreen);
+  WallInit(57, 0, 2, 3, kGreen);
 
-  end_position_ = 62;
+  //Falling walls on moving platforms
+  checkpoints_.push_back(b2Vec2(60, 6.5f));
+  WallInit(59, 0, 2, 6, kDarkBlue);
+  MovingWallInit(61, 5, 5, 1, kDarkBlue, false, 61, 75.5f, 2);
+  MovingWallInit(66, 10, 2, 4, kDeepRed, true, 6, 14, 4);
+  MovingWallInit(71, 6, 2, 4, kDeepRed, true, 6, 14, 4);
+  MovingWallInit(78, 10, 2, 4, kDeepRed, true, 6, 14, 4);
+  MovingWallInit(83, 6, 2, 4, kDeepRed, true, 6, 14, 4);
+  MovingWallInit(85, 5, 5, 1, kDarkBlue, false, 75.5f, 90, 2);
+  WallInit(90, 0, 2, 9, kDarkBlue);
+
+  // Floating Repair kit
+  checkpoints_.push_back(b2Vec2(91, 10));
+  GroundInit(90, 220);
+  MovingWallInit(92, 8, 2, 1, kGold, false, 92, 101, 4);
+  RepairInit(100.5f, 11.3f);
+  EnemyInit(95, 0.5f, true);
+  EnemyInit(104, 0.3f, true);
+  WallInit(107, 0, 1, 3, kGold);
+
+  // Flying Enemy Cage, with moving walls
+  checkpoints_.push_back(b2Vec2(107.5f, 4));
+  int shift = -74;
+  WallInit(188+shift, 1.5, 2, 10.3f, kMiddleBlue); //left
+  WallInit(206+shift, 0, 2, 9.2f, kMiddleBlue); //right
+
+  MovingWallInit(204+shift, 1, 2, 1, kMiddleBlue, false, 190+shift, 206+shift, 2);
+  MovingWallInit(192+shift, 4.2, 2, 1, kMiddleBlue, false, 190+shift, 206+shift, 4.2);
+  MovingWallInit(198+shift, 7.3f, 2, 1, kMiddleBlue, false, 190+shift, 206+shift, 3.3);
+
+  WallInit(203+shift, 9.2f, 5, 0.5f, kMiddleBlue);
+  WallInit(188+shift, 11.8f, 20, 0.3f, kMiddleBlue);//ceiling
+  FlyingEnemyInit(195+shift, 1, true);
+  FlyingEnemyInit(202+shift, 0.5f, false);
+  FlyingEnemyInit(192.5f+shift, 6, false);
+  FlyingEnemyInit(205+shift, 10, true);
+
+
+  end_position_ = 220+shift;
 }
 
 bool MyApp::isEntityFixture(b2Fixture* b2Fixture) {
