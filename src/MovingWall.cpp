@@ -52,22 +52,43 @@ MovingWall::MovingWall(b2World* world, float x_loc, float y_loc, float half_widt
   b2Fixture* right_spikebox = body_->CreateFixture(&right_spikebox_def);
   right_spikebox->SetUserData((void*)kSpikeID);
 
-  if (moves_vertically) {
-    body_->SetLinearVelocity(b2Vec2(0, velocity));
-  } else {
-    body_->SetLinearVelocity(b2Vec2(velocity, 0));
-  }
-
   half_width_ = half_width;
   half_height_ = half_height;
   lower_limit_ = lower_limit;
   upper_limit_ = upper_limit;
   moves_vertically_ = moves_vertically;
   color_ = color;
+  activator_ = nullptr;
+  initial_velocity_ = velocity;
 }
 
+MovingWall::MovingWall(b2World* world, float x_loc, float y_loc, float half_width,
+float half_height, float lower_limit, float upper_limit, float velocity,
+bool moves_vertically, ci::Color color, Enemy* activator)
+: MovingWall(world, x_loc, y_loc, half_width, half_height, lower_limit, upper_limit, velocity, moves_vertically, color) {
+
+  activator_ = activator;
+};
+
 void MovingWall::VelocityUpdate() {
+  if (activator_ != nullptr && !(activator_->isActive())) {
+    body_->SetLinearVelocity(b2Vec2_zero);
+    return;
+  }
+
   b2Vec2 velocity = body_->GetLinearVelocity();
+
+  //Initialize velocity
+  if (velocity == b2Vec2_zero && (activator_ == nullptr || activator_->isActive())) {
+    if (moves_vertically_) {
+      body_->SetLinearVelocity(b2Vec2(0, initial_velocity_));
+    } else {
+      body_->SetLinearVelocity(b2Vec2(initial_velocity_, 0));
+    }
+
+    return;
+  }
+
 
   if (moves_vertically_) {
     if (velocity.y > 0) {

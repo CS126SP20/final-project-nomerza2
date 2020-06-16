@@ -79,13 +79,16 @@ class MyApp : public cinder::app::App {
   // by only calling this function
   void EnemyInit(float x_loc, float y_loc, bool is_facing_right);
   void FlyingEnemyInit(float x_loc, float y_loc, bool is_facing_right);
-  void HunterInit(float x_loc, float y_loc);
+  mylibrary::Hunter* HunterInit(float x_loc, float y_loc);
   void WallInit(float x_loc, float y_loc, float width, float height, ci::Color color);
   void GroundInit(float start, float end);
   void PlayerWorldInit(float x_loc, float y_loc);
   void RepairInit(float x_loc, float y_loc);
   void MovingWallInit(float start_x, float start_y, float width, float height,
       ci::Color color, bool moves_vertically, float lower_limit, float upper_limit, float velocity);
+  void InactiveMovingWallInit(float start_x, float start_y, float width, float height,
+                              ci::Color color, bool moves_vertically, float lower_limit,
+                              float upper_limit, float velocity, mylibrary::Enemy* activator);
 
   // takes a b2fixture, returns true if it is an entity (meaning its user data is a positive value)
   static bool isEntityFixture(b2Fixture*);

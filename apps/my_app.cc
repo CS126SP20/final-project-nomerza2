@@ -162,11 +162,12 @@ void MyApp::FlyingEnemyInit(float x_loc, float y_loc, bool is_facing_right){
   asleep_enemies_.insert(enemy_data);
 }
 
-void MyApp::HunterInit(float x_loc, float y_loc) {
+Hunter* MyApp::HunterInit(float x_loc, float y_loc) {
   Hunter* hunter  = new Hunter(world_, b2Vec2(x_loc, y_loc + kEnemyHeight));
   std::pair<unsigned int, Enemy*> enemy_data(Entity::GetEntityID(), hunter);
   entity_manager_.insert(enemy_data);
   asleep_enemies_.insert(enemy_data);
+  return hunter;
 }
 
 // x and y _loc are the bottom left corner
@@ -201,6 +202,18 @@ void MyApp::MovingWallInit(float start_x, float start_y, float width,
                            float velocity) {
   MovingWall* wall = new MovingWall(world_, start_x + width/2, start_y + height/2,
       width/2, height/2, lower_limit, upper_limit, velocity, moves_vertically, color);
+  moving_walls_.push_back(wall);
+}
+
+//Bottom left corner for start
+//This version needs a pointer for an enemy to rely on activation for.
+void MyApp::InactiveMovingWallInit(float start_x, float start_y, float width,
+                           float height, ci::Color color, bool moves_vertically,
+                           float lower_limit, float upper_limit,
+                           float velocity, Enemy* activator) {
+  MovingWall* wall = new MovingWall(world_, start_x + width/2, start_y + height/2,
+                                    width/2, height/2, lower_limit,
+                                    upper_limit, velocity, moves_vertically, color, activator);
   moving_walls_.push_back(wall);
 }
 
@@ -1281,9 +1294,9 @@ void MyApp::LevelFive() {
 
   //Moving Hunter
   GroundInit(0, 26);
-  MovingWallInit(4, 9, 1, 1, kHunterGreen, false, 4, 18, 3);
+  Hunter* first_hunter = HunterInit(4.5, 9.1);
+  InactiveMovingWallInit(4, 9, 1, 1, kHunterGreen, false, 4, 18, 3, first_hunter);
   WallInit(20.5, 8, 1, 3, kHunterGreen);
-  HunterInit(4.5, 9.1);
   RepairInit(3.4, 3);
   WallInit(19, 3, 2, 0.5, kHunterGreen);
   WallInit(17, 5, 0.7, 2, kHunterGreen);
@@ -1301,9 +1314,24 @@ void MyApp::LevelFive() {
   MovingWallInit(29, 9.2, 1.5, .7, kOrange, false, 29, 36, 3.4);
   MovingWallInit(35, 10.5, 2.3, 0.6, kOrange, false, 35, 43, 3.6);
   WallInit(44, 0, 2, 11.6, kOrange);
-  GroundInit(46, 70);
 
-  end_position_ = 60;
+  //Descent
+  checkpoints_.push_back(b2Vec2(44.5, 12.2));
+  WallInit(51, 8, 2, 1, kPurple);
+  RepairInit(60, 9);
+  WallInit(60, 5, 2, 1, kPurple);
+  GroundInit(68, 95);
+
+  //Low flying hunter
+  checkpoints_.push_back(b2Vec2(69, 1));
+  EnemyInit(75, 0.5, true);
+  EnemyInit(78, 0.5, false);
+  EnemyInit(81, 0.5, true);
+  WallInit(84, 0, 1, 3, kGoldGreen);
+  Hunter* low_hunter = HunterInit(76.5, 2.5);
+  InactiveMovingWallInit(76, 1.5, 1, 1, kGoldGreen, false, 76, 84, 2.2, low_hunter);
+
+  end_position_ = 95;
 }
 
 bool MyApp::isEntityFixture(b2Fixture* b2Fixture) {

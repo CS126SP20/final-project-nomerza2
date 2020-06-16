@@ -13,6 +13,7 @@ Hunter::Hunter(b2World* world, b2Vec2 position) : Enemy(world, position, false) 
 
   right_image_ = ci::gl::Texture2d::create(ci::loadImage(cinder::app::loadAsset("HunterRight.png")));
   left_image_ = ci::gl::Texture2d::create(ci::loadImage(cinder::app::loadAsset("HunterLeft.png")));
+
 }
 
 Bullet* Hunter::Shoot(b2World* world, b2Vec2 player_pos) {

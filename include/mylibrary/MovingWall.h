@@ -7,6 +7,7 @@
 
 #include <Box2D/Box2D.h>
 #include <cinder/gl/gl.h>
+#include <mylibrary/enemy.h>
 
 namespace mylibrary {
 
@@ -25,7 +26,12 @@ class MovingWall {
   float half_height, float lower_limit, float upper_limit, float velocity,
   bool moves_vertically, ci::Color color);
 
-  // Called to check if wall as hit limit, reverses velocity if it has
+  //Overloaded constructor, to allow activator to be set
+  MovingWall(b2World* world, float x_loc, float y_loc, float half_width,
+             float half_height, float lower_limit, float upper_limit, float velocity,
+             bool moves_vertically, ci::Color color, Enemy* activator);
+
+  // Called to check if wall has hit limit, reverses velocity if it has
   void VelocityUpdate();
   void Draw();
 
@@ -34,9 +40,12 @@ class MovingWall {
   float half_height_;
   float lower_limit_;
   float upper_limit_;
+  float initial_velocity_;
   bool moves_vertically_;
   b2Body* body_;
   ci::Color color_;
+
+  Enemy* activator_; //If an activator is set, the wall will not move until this enemy is activated
 
 };
 
