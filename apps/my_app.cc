@@ -62,7 +62,7 @@ const int kStartingLives = 3;
 const int kEnemyReloadTime = 80;
 const int kPlayerReloadTime = 25;
 const float kFinishWidth = 2.5f;
-const int kStartLevel = 5;
+const int kStartLevel = 0;
 const int kFinalLevel = 5;
 const int kWaitTime = 4;
 
@@ -149,21 +149,21 @@ void MyApp::RescaleWindow() {
 
 // y_loc is the height of the enemy's feet. x_loc is the center of the enemy.
 void MyApp::EnemyInit(float x_loc, float y_loc, bool is_facing_right) {
-  Enemy* enemy = new Enemy(world_, b2Vec2(x_loc, y_loc + kEnemyHeight), is_facing_right);
+  Enemy* enemy = new Enemy(world_, b2Vec2(x_loc, y_loc + (kEnemyHeight / 2)), is_facing_right);
   std::pair<unsigned int, Enemy*> enemy_data(Entity::GetEntityID(), enemy);
   entity_manager_.insert(enemy_data);
   asleep_enemies_.insert(enemy_data);
 }
 
 void MyApp::FlyingEnemyInit(float x_loc, float y_loc, bool is_facing_right){
-  FlyingEnemy* enemy = new FlyingEnemy(world_, b2Vec2(x_loc, y_loc + kEnemyHeight), is_facing_right);
+  FlyingEnemy* enemy = new FlyingEnemy(world_, b2Vec2(x_loc, y_loc + (kEnemyHeight / 2)), is_facing_right);
   std::pair<unsigned int, Enemy*> enemy_data(Entity::GetEntityID(), enemy);
   entity_manager_.insert(enemy_data);
   asleep_enemies_.insert(enemy_data);
 }
 
 Hunter* MyApp::HunterInit(float x_loc, float y_loc) {
-  Hunter* hunter  = new Hunter(world_, b2Vec2(x_loc, y_loc + kEnemyHeight));
+  Hunter* hunter  = new Hunter(world_, b2Vec2(x_loc, y_loc + (kEnemyHeight / 2)));
   std::pair<unsigned int, Enemy*> enemy_data(Entity::GetEntityID(), hunter);
   entity_manager_.insert(enemy_data);
   asleep_enemies_.insert(enemy_data);
@@ -1294,7 +1294,7 @@ void MyApp::LevelFive() {
 
   //Moving Hunter
   GroundInit(0, 26);
-  Hunter* first_hunter = HunterInit(4.5, 9.1);
+  Hunter* first_hunter = HunterInit(4.5, 10);
   InactiveMovingWallInit(4, 9, 1, 1, kHunterGreen, false, 4, 18, 3, first_hunter);
   WallInit(20.5, 8, 1, 3, kHunterGreen);
   RepairInit(3.4, 3);
@@ -1325,11 +1325,13 @@ void MyApp::LevelFive() {
   //Low flying hunter
   checkpoints_.push_back(b2Vec2(69, 1));
   EnemyInit(75, 0.5, true);
-  EnemyInit(78, 0.5, false);
+  EnemyInit(77, 0.2, false);
+  EnemyInit(78.5, 0.5, false);
+  EnemyInit(79.8, 0.2, false);
   EnemyInit(81, 0.5, true);
   WallInit(84, 0, 1, 3, kGoldGreen);
   Hunter* low_hunter = HunterInit(76.5, 2.5);
-  InactiveMovingWallInit(76, 1.5, 1, 1, kGoldGreen, false, 76, 84, 2.2, low_hunter);
+  InactiveMovingWallInit(76, 1.5, 1, 1, kGoldGreen, false, 72, 84, 3.6, low_hunter);
 
   end_position_ = 95;
 }
