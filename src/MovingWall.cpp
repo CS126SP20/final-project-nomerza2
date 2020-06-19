@@ -134,7 +134,7 @@ void MovingWall::Draw() {
   //Spikes now
   if (moves_vertically_) {
     int num_spikes = floor(half_width_ * 2 / kSpikeSize) - 1;
-    float spike_shift = fmod((half_width_ * 2), kSpikeSize) / 2;
+    float spike_shift = ((half_width_ * 2) - (kSpikeSize * num_spikes)) / 2;
 
     for (size_t i = 0; i < num_spikes; i++) {
       //top side
@@ -157,7 +157,7 @@ void MovingWall::Draw() {
     }
   } else { // moves horizontally
     int num_spikes = floor(half_height_ * 2 / kSpikeSize) - 1;
-    float spike_shift = fmod((half_height_ * 2), kSpikeSize) / 2;
+    float spike_shift = ((half_height_ * 2) - (kSpikeSize * num_spikes)) / 2;
 
     for (size_t i = 0; i < num_spikes; i++) {
       //right side
