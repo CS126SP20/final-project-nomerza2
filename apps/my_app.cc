@@ -52,6 +52,7 @@ const ci::Color kBlueGray = ci::Color(0.168f, .539f, .5f);
 const ci::Color kGoldGreen = ci::Color(0.5333f, 0.5922f, 0.235f);
 const ci::Color kBlack = ci::Color(0, 0, 0);
 const ci::Color kMiddleBlue = ci::Color(0.2f, 0.6f, 1);
+const ci::Color kLightGray = ci::Color(0.85, 0.85, 0.85);
 
 const b2Vec2 kGravity = b2Vec2(0, -18);
 
@@ -1320,7 +1321,7 @@ void MyApp::LevelFive() {
   WallInit(51, 8, 2, 1, kPurple);
   RepairInit(60, 9);
   WallInit(60, 5, 2, 1, kPurple);
-  GroundInit(68, 95);
+  GroundInit(68, 91);
 
   //Low flying hunter
   checkpoints_.push_back(b2Vec2(69, 1));
@@ -1333,7 +1334,47 @@ void MyApp::LevelFive() {
   Hunter* low_hunter = HunterInit(76.5, 2.5);
   InactiveMovingWallInit(76, 1.5, 1, 1, kGoldGreen, false, 72, 84, 3.6, low_hunter);
 
-  end_position_ = 95;
+  //Separated Stairs, with falling spikes
+  checkpoints_.push_back(b2Vec2(88, 1));
+  WallInit(96.1f, 1, 2, 2, kOrange);
+  MovingWallInit(96.1, 5, 2, 4, kOrange, true, 3, 12, 4);
+  WallInit(99.5f, 4.2f, 1.5f, 1.5f, kOrange);
+  WallInit(104.5f, 7.2f, 1.5f, 1.5f, kOrange);
+  MovingWallInit(104.5, 10.2, 1.5, 2, kOrange, true, 8.7, 14.5, 3);
+  WallInit(110.5f, 10, 8.5f, 0.5f, kOrange);
+  EnemyInit(112.5f, 11, true);
+  EnemyInit(114.5f, 11, true);
+  EnemyInit(116.5f, 11, true);
+  EnemyInit(118.5f, 11, true);
+
+  // Spiked fall
+  checkpoints_.push_back(b2Vec2(118, 11));
+  WallInit(118, 0, 0.5, 10, kGray);
+  WallInit(128, 6, 1, 8, kGray);
+  MovingWallInit(118.5, 8, 4.5, 0.5, kGray, true, 118.5, 124, 0);
+  MovingWallInit(125.2, 8, 2.8, 0.5, kGray, true, 125, 128, 0);
+  MovingWallInit(120, 3.5, 2.6, 1, kGray, false, 118.3, 132, 3.2);
+  RepairInit(118.5, 5);
+  GroundInit(137, 169);
+
+  // Falling Walls - Hunter Cage
+  checkpoints_.push_back(b2Vec2(137, 2));
+  WallInit(138.2, 2.8, .5, .5, kHunterGreen);
+  RepairInit(138.2, 8);
+  WallInit(141, 1.8, .5, 9.4, kHunterGreen);
+  WallInit(144, 10.7, 19, 0.5, kHunterGreen);
+  MovingWallInit(148.5, 2, 1, 4, kHunterGreen, true, 0, 8.7, 3);
+  MovingWallInit(156, 1, 1, 2.5, kHunterGreen, true, 0, 5.6, 3);
+  WallInit(162.5, 0, .5, 11.2, kHunterGreen);
+  Hunter* hunter_left = HunterInit(145.2, 9);
+  InactiveMovingWallInit(144.25, 8.7, 1.5, .5, kHunterGreen, false, 141.5, 162.5, 3.2, hunter_left);
+  Hunter* hunter_center = HunterInit(152.75, 6.1);
+  InactiveMovingWallInit(152, 5.6, 1.5, .5, kHunterGreen, false, 149.5, 162.5, 3.7, hunter_center);
+  Hunter* hunter_right = HunterInit(158.1, 3.3);
+  InactiveMovingWallInit(157.5, 2.8, 1.2, .5, kHunterGreen, false, 157, 162.5, 2.8, hunter_right);
+
+
+  end_position_ = 169;
 }
 
 bool MyApp::isEntityFixture(b2Fixture* b2Fixture) {
