@@ -31,6 +31,8 @@ Ufo::Ufo(b2World* world) {
   fixtureDef.friction = 0.0f;
   b2Fixture* fixture = body_->CreateFixture(&fixtureDef);
 
+  fixture->SetUserData((void*)kUfoID);
+
   image_ = ci::gl::Texture2d::create(ci::loadImage(cinder::app::loadAsset("UFO.png")));
   body_->SetLinearVelocity(b2Vec2(3, 0));
 
@@ -81,4 +83,9 @@ void Ufo::Draw() {
   const auto surface = box.render();
   const auto texture = cinder::gl::Texture::create(surface);
   cinder::gl::draw(texture, locp);
+}
+
+int Ufo::Shot() {
+  lives_--;
+  return lives_;
 }

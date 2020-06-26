@@ -15,6 +15,7 @@ using mylibrary::Entity;
 
 const int kUfoHeight = 180/kPixelsPerMeter;
 const int kUfoWidth = 230/kPixelsPerMeter; // effective width for hitbox -- actual image is 268
+const int kUfoID = -128745; //Value unimportant, must be unique from other IDs (and therefore negative)
 
 class Ufo {
  public:
@@ -24,6 +25,7 @@ class Ufo {
   // Each pair is the Entity Data that will be used for entity manager or asleep enemies, as needed
   vector<pair<unsigned int, Entity*>> Attack();
   void Draw();
+  int Shot();
 
  private:
   b2World* world_;

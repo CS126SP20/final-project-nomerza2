@@ -63,8 +63,8 @@ const int kStartingLives = 3;
 const int kEnemyReloadTime = 80;
 const int kPlayerReloadTime = 25;
 const float kFinishWidth = 2.5f;
-const int kStartLevel = 0;
-const int kFinalLevel = 5;
+const int kStartLevel = 6;
+const int kFinalLevel = 6;
 const int kWaitTime = 4;
 
 MyApp::MyApp() {
@@ -80,6 +80,8 @@ MyApp::MyApp() {
   developer_mode_ = false;
   title_screen_ = true;
   spike_death_ = false;
+
+  ufo_ = nullptr;
 
   ci::ImageSourceRef finish_image = ci::loadImage(ci::app::loadAsset("redflagbot.png"));
   ci::ImageSourceRef win_image= ci::loadImage(ci::app::loadAsset("greenflagbot.png"));
@@ -108,6 +110,8 @@ void MyApp::setup() {
     LevelFour();
   } else if (level_ == 5) {
     LevelFive();
+  } else if (level_ == 6) {
+    LevelSix();
   }
 
 }
@@ -343,9 +347,18 @@ void MyApp::UpdateActiveEnemies() {
     enemy_shooting_timer_ = kEnemyReloadTime;
   }
   enemy_shooting_timer_--;
+
+  if (ufo_ != nullptr) {
+    ufo_->VelocityUpdate();
+  }
 }
 
 void MyApp::ScrollWindow() {
+  //Boss level is single-screen
+  if (ufo_ != nullptr) {
+    return;
+  }
+
   //Bounded at the right and left thirds of the screen
   int right_bound = window_shift_ + (getWindowWidth() * 0.57);
   int left_bound = window_shift_ + (getWindowWidth() * 0.23);
@@ -432,6 +445,10 @@ void MyApp::draw() {
 
   for (std::pair<unsigned int, Entity*> entity_data : entity_manager_) {
     entity_data.second->Draw();
+  }
+
+  if (ufo_ != nullptr) {
+    ufo_->Draw();
   }
 
   if (lives_ <= 0) {
@@ -677,6 +694,14 @@ void MyApp::BulletCollision(b2Fixture* bullet_fix, b2Fixture* other) {
     damage_sound_->start();
   }
 
+  //Shooting Ufo, no friendly fire
+  if ((int) other->GetUserData() == kUfoID && (((Bullet*) entity_manager_.at(bullet_ID))->isPlayerMade())) {
+    int ufo_lives = ufo_->Shot();
+    if (ufo_lives == 0) {
+      won_level_ = true;
+    }
+  }
+
   if (isEntityFixture(other)) { //Therefore, other must be an entity
     unsigned int other_ID = (unsigned int) other->GetUserData();
     Entity* entity = entity_manager_.at(other_ID);
@@ -854,6 +879,8 @@ void MyApp::Restart() {
     delete movingWall;
   }
   moving_walls_.clear();
+
+  ufo_ = nullptr;
 
   // Members deleted in entity_manager_
   enemy_shooters_.clear();
@@ -1375,6 +1402,25 @@ void MyApp::LevelFive() {
 
 
   end_position_ = 169;
+}
+
+void MyApp::LevelSix() {
+  PlayerWorldInit(1, 4);
+  checkpoints_.push_back(b2Vec2(1,4));
+  window_shift_ = 0;
+  left_window_bound_ = 0;
+  won_level_ = false;
+  WallInit(-0.2, 0, 0.2, 12, kBlack);
+
+  GroundInit(0, 50);
+  ufo_ = new Ufo(world_);
+
+  WallInit(4, 2.2, 1, 1, kRed);
+  WallInit(6, 5.4, 1, 1, kRed);
+  WallInit(8, 7.8, 1, 1, kRed);
+
+  WallInit(((kStandardWidth / kPixelsPerMeter) + 0.2), 0, 0.2, 12, kBlack);
+  end_position_ = 100; // Intentionally unreachable, victory will come from ufo instead
 }
 
 bool MyApp::isEntityFixture(b2Fixture* b2Fixture) {

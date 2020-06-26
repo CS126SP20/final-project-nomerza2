@@ -16,6 +16,7 @@
 #include <mylibrary/Wall.h>
 #include <mylibrary/MovingWall.h>
 #include <mylibrary/RepairKit.h>
+#include <mylibrary/Ufo.h>
 
 namespace myapp {
 
@@ -68,6 +69,7 @@ class MyApp : public cinder::app::App {
   void LevelThree();
   void LevelFour();
   void LevelFive();
+  void LevelSix();
 
   // These are helper functions to Update()
   void ActivateEnemies();
@@ -102,6 +104,8 @@ class MyApp : public cinder::app::App {
 
   std::vector<mylibrary::Wall*> walls_;
   std::vector<mylibrary::MovingWall*> moving_walls_;
+
+  Ufo* ufo_;
 
   // Bodies can't be destroyed in callback, so must be tracked here to be destroyed later.
   // Uses a set, since a body can collide with two things within the same step,
