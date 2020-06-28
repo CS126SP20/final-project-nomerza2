@@ -45,10 +45,12 @@ Ufo::Ufo(b2World* world, b2Body* player_body) {
   image_ = ci::gl::Texture2d::create(ci::loadImage(cinder::app::loadAsset("UFO.png")));
   body_->SetLinearVelocity(b2Vec2(3, 0));
 
-  lives_ = 5;
+  lives_ = 7;
   player_ = player_body;
+  invincible_count = 0;
 }
 
+//TODO also increments invincible count down. Should prob make that a separate function
 void Ufo::VelocityUpdate() {
   //Acts like a moving wall, with lower limit being always 0 and upper limit being kStandardWidth/kPPM
   if ((body_->GetPosition().x + (kUfoWidth / 2) >= kStandardWidth / kPixelsPerMeter)
@@ -56,6 +58,10 @@ void Ufo::VelocityUpdate() {
 
       body_->SetLinearVelocity(-1 * body_->GetLinearVelocity());
     }
+
+  if (invincible_count > 0) {
+    invincible_count--;
+  }
 }
 
 vector<pair<unsigned int, Entity*>> Ufo::Attack() {
@@ -168,9 +174,14 @@ void Ufo::Draw() {
   int pixel_x = position.x*kPixelsPerMeter - kUfoWidth*kPixelsPerMeter/2;
   int pixel_y = EffectiveDimensions::GetEffectiveHeight() - (position.y*kPixelsPerMeter + kUfoHeight*kPixelsPerMeter/2);
 
-  // Necessary or the image will be tinted the color of the last drawn object.
-  ci::Color reset(1,1,1);
-  ci::gl::color(reset);
+  // If the UFO is invincible, tint it red
+  if (invincible_count == 0) {
+    ci::Color reset(1,1,1);
+    ci::gl::color(reset);
+  } else {
+    ci::gl::color(ci::Color(1, 0, 0));
+  }
+
   ci::gl::draw(image_, ci::vec2(pixel_x, pixel_y));
 
 
@@ -200,6 +211,11 @@ void Ufo::Draw() {
 }
 
 int Ufo::Shot() {
+  if (invincible_count > 0) {
+    return lives_;
+  }
+
+  invincible_count = 80; //Matches enemy reload time, effectively ensuring the ufo gets a new shot in first
   lives_--;
   return lives_;
 }

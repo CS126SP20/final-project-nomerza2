@@ -37,6 +37,7 @@ class Ufo {
   b2Body* player_;
   ci::gl::Texture2dRef image_;
   int lives_;
+  int invincible_count;
 
 };
 

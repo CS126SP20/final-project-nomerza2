@@ -1416,8 +1416,8 @@ void MyApp::LevelFive() {
 }
 
 void MyApp::LevelSix() {
-  PlayerWorldInit(1, 4);
-  checkpoints_.push_back(b2Vec2(1,4));
+  PlayerWorldInit(1, .5);
+  checkpoints_.push_back(b2Vec2(1,.5));
   window_shift_ = 0;
   left_window_bound_ = 0;
   won_level_ = false;
@@ -1426,12 +1426,14 @@ void MyApp::LevelSix() {
   GroundInit(0, 50);
   ufo_ = new Ufo(world_, player_->getBody());
 
-  MovingWallInit(18, 2.2, 1.7, 1, kRed, false, 0, (kStandardWidth / kPixelsPerMeter), 2.7);
-  MovingWallInit(8, 4.8, 1.7, 1, kRed, false, 0, (kStandardWidth / kPixelsPerMeter), 3.5);
+  MovingWallInit(18, 2.2, 1.7, 1, kRed, false, 0, (kStandardWidth / kPixelsPerMeter), 3.5);
+  MovingWallInit(8, 4.8, 1.7, 1, kRed, false, 0, (kStandardWidth / kPixelsPerMeter), 2.7);
   MovingWallInit(2, 7.8, 1.7, 1, kRed, false, 0, (kStandardWidth / kPixelsPerMeter), 4.8);
   RepairInit(2, 0.2);
-  RepairInit(19, 1);
-  RepairInit(12, 6.5);
+  RepairInit(14, 1);
+  RepairInit(5, 3.4);
+  RepairInit(7, 6.5);
+  RepairInit(18, 5.9);
 
   WallInit(((kStandardWidth / kPixelsPerMeter) + 0.2), 0, 0.2, 12, kBlack);
   end_position_ = 100; // Intentionally unreachable, victory will come from ufo instead
