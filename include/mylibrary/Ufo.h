@@ -19,7 +19,7 @@ const int kUfoID = -128745; //Value unimportant, must be unique from other IDs (
 
 class Ufo {
  public:
-  Ufo(b2World* world);
+  Ufo(b2World* world, b2Body* player_body);
   void VelocityUpdate();
 
   // Each pair is the Entity Data that will be used for entity manager or asleep enemies, as needed
@@ -28,8 +28,13 @@ class Ufo {
   int Shot();
 
  private:
+  // if horizontal is false, the bullet will go down. the second parameter can be anything.
+  // if isEnemy is true and isHunter is false, will generate a flying enemy
+  pair<unsigned int, Entity*> EntityMaker(bool horizontal, bool right, bool super, float offset = 0, bool isEnemy = false, bool isHunter = false);
+
   b2World* world_;
   b2Body* body_;
+  b2Body* player_;
   ci::gl::Texture2dRef image_;
   int lives_;
 

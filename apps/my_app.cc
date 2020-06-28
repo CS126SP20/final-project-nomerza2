@@ -1413,7 +1413,7 @@ void MyApp::LevelSix() {
   WallInit(-0.2, 0, 0.2, 12, kBlack);
 
   GroundInit(0, 50);
-  ufo_ = new Ufo(world_);
+  ufo_ = new Ufo(world_, player_->getBody());
 
   WallInit(4, 2.2, 1, 1, kRed);
   WallInit(6, 5.4, 1, 1, kRed);
