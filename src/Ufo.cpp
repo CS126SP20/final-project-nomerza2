@@ -71,7 +71,15 @@ vector<pair<unsigned int, Entity*>> Ufo::Attack() {
     result.push_back(EntityMaker(false, false, false));
     result.push_back(EntityMaker(false, false, false, 1));
     result.push_back(EntityMaker(true, true, false));
-  } else if (choice < 55) { //2 on sides, super going down
+  } else if (choice < 50) { //5 down, one on each side
+    result.push_back(EntityMaker(true, false, false));
+    result.push_back(EntityMaker(false, false, false, -1.5));
+    result.push_back(EntityMaker(false, false, false, -.75));
+    result.push_back(EntityMaker(false, false, false));
+    result.push_back(EntityMaker(false, false, false, .75));
+    result.push_back(EntityMaker(false, false, false, 1.5));
+    result.push_back(EntityMaker(true, true, false));
+  } else if (choice < 60) { //2 on sides, super going down
     result.push_back(EntityMaker(true, false, false, .5));
     result.push_back(EntityMaker(true, false, false, -.5));
     result.push_back(EntityMaker(true, true, false, .5));
@@ -80,7 +88,9 @@ vector<pair<unsigned int, Entity*>> Ufo::Attack() {
   } else if (choice < 70) { //supers on the sides, normal down
     result.push_back(EntityMaker(true, false, true));
     result.push_back(EntityMaker(true, true, true));
+    result.push_back(EntityMaker(false, false, false, -1));
     result.push_back(EntityMaker(false, false, false));
+    result.push_back(EntityMaker(false, false, false, 1));
   } else if (choice < 80) { //3 supers
     result.push_back(EntityMaker(true, false, true));
     result.push_back(EntityMaker(true, true, true));
@@ -119,7 +129,7 @@ pair<unsigned int, Entity*> Ufo::EntityMaker(bool horizontal, bool right, bool s
   if (isEnemy) {
     gap = kEnemyHeight;
   } else {
-    gap = .02;
+    gap = .09;
   }
 
   if (horizontal) {
@@ -132,7 +142,7 @@ pair<unsigned int, Entity*> Ufo::EntityMaker(bool horizontal, bool right, bool s
     }
   } else {
     loc = b2Vec2(x + offset, y - kUfoHeight/2 - gap);
-    velocity = b2Vec2(-1 * kBulletSpeed, 0);
+    velocity = b2Vec2(0, -1 * kBulletSpeed);
   }
 
   Entity* entity;

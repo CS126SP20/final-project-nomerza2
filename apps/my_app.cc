@@ -343,14 +343,25 @@ void MyApp::UpdateActiveEnemies() {
     entity_manager_.insert(std::pair<unsigned int, Entity*> (Entity::GetEntityID(), bullet));
   }
 
+  if (ufo_ != nullptr) {
+    ufo_->VelocityUpdate();
+
+    if (enemy_shooting_timer_ == 0) {
+      vector<pair<unsigned int, Entity*>> ufo_attacks = ufo_->Attack();
+
+      for (pair<unsigned int, Entity*> data : ufo_attacks) {
+        entity_manager_.insert(data);
+        if(data.second->GetEntityType() == EntityType::type_enemy) {
+          asleep_enemies_.insert(pair<unsigned int, Enemy*> (data.first, (Enemy*) data.second));
+        }
+      }
+    }
+  }
+
   if (enemy_shooting_timer_ == 0) {
     enemy_shooting_timer_ = kEnemyReloadTime;
   }
   enemy_shooting_timer_--;
-
-  if (ufo_ != nullptr) {
-    ufo_->VelocityUpdate();
-  }
 }
 
 void MyApp::ScrollWindow() {
