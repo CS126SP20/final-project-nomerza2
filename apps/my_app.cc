@@ -1426,9 +1426,12 @@ void MyApp::LevelSix() {
   GroundInit(0, 50);
   ufo_ = new Ufo(world_, player_->getBody());
 
-  WallInit(4, 2.2, 1, 1, kRed);
-  WallInit(6, 5.4, 1, 1, kRed);
-  WallInit(8, 7.8, 1, 1, kRed);
+  MovingWallInit(18, 2.2, 1.7, 1, kRed, false, 0, (kStandardWidth / kPixelsPerMeter), 2.7);
+  MovingWallInit(8, 4.8, 1.7, 1, kRed, false, 0, (kStandardWidth / kPixelsPerMeter), 3.5);
+  MovingWallInit(2, 7.8, 1.7, 1, kRed, false, 0, (kStandardWidth / kPixelsPerMeter), 4.8);
+  RepairInit(2, 0.2);
+  RepairInit(19, 1);
+  RepairInit(12, 6.5);
 
   WallInit(((kStandardWidth / kPixelsPerMeter) + 0.2), 0, 0.2, 12, kBlack);
   end_position_ = 100; // Intentionally unreachable, victory will come from ufo instead
