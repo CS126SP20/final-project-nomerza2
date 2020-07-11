@@ -215,7 +215,8 @@ int Ufo::Shot() {
     return lives_;
   }
 
-  invincible_count = 80; //Matches enemy reload time, effectively ensuring the ufo gets a new shot in first
+  invincible_count = 80; //Matches enemy reload time, effectively ensuring the ufo gets a new shot in before being hit
+
   lives_--;
   return lives_;
 }
